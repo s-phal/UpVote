@@ -7,12 +7,15 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/VotingApp.styles.css" asp-append-version="true" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">VotingApp</a>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light mb-3 mt-2">
+            <div class="container-fluid mx-5">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">LOGO HERE</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -33,7 +36,35 @@
     </header>
     <div class="container">
         <main role="main" class="pb-3">
+            <div class="row">
+                <div class="col-lg-3">
+                    Add idea form goes here. Accusam aliquyam duo consetetur sed consectetuer dolore eu et accusam consetetur.
+                </div>
+                <div class="col-lg-9">
+                    <nav class="d-flex align-items-center justify-content-between small">
+                        <ul class="d-flex list-unstyled text-uppercase fw-bold border-5 border-bottom pb-3" style="letter-spacing:3px">
+                            <li><a href="#" class="text-decoration-none top-links text-black border-primary border-bottom border-5 pb-3">all ideas (87)</a></li>
+                            <li><a href="#" class="text-decoration-none top-links text-secondary border-bottom border-5 pb-3 opacity-75">Considering (6)</a></li>
+                            <li><a href="#" class="text-decoration-none top-links text-secondary border-bottom border-5 pb-3 opacity-75">In Progress (1)</a></li>
+                        </ul>
+                        <ul class="d-flex list-unstyled text-uppercase fw-bold border-5 border-bottom pb-3" style="letter-spacing:3px">
+                            <li><a href="#" class="text-decoration-none top-links text-black border-primary border-bottom border-5 pb-3">implemented (10)</a></li>
+                            <li><a href="#" class="text-decoration-none top-links text-secondary border-bottom border-5 pb-3 opacity-75">closed (6)</a></li>
+                        </ul>
+                    </nav>
+                    <div class="mt-5">
+
+
+
+
+
+
             @RenderBody()
+
+
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 

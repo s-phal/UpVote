@@ -1,19 +1,36 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@inject SignInManager<IdentityUser> SignInManager
-@inject UserManager<IdentityUser> UserManager
+@inject SignInManager<Member> SignInManager
+@inject UserManager<Member> UserManager
 
-<ul class="navbar-nav">
-@if (SignInManager.IsSignedIn(User))
-{
-    <li class="nav-item">
-        <a  class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @User.Identity?.Name!</a>
-    </li>
-    <li class="nav-item">
-        <form  class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-            <button  type="submit" class="nav-link btn btn-link text-dark">Logout</button>
-        </form>
-    </li>
-}
+<ul class="navbar-nav align-items-center">
+    @if (SignInManager.IsSignedIn(User))
+    {
+
+        @foreach (var item in UserManager.Users.Where(m => m.Id == UserManager.GetUserId(User)))
+        {
+            <div class="dropdown">
+                <a type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="~/uploads/avatars/@item.AvatarFileName" class="avatar rounded-circle" />
+                </a>
+                <ul class="dropdown-menu end-0" style="left:auto" aria-labelledby="dropdownMenuButton1">
+                    <li class="px-3 mb-3">
+                        <div class="align-items-center">
+                            <div>
+                                <a class="text-black text-decoration-none">@item.FirstName @item.LastName</a>
+                                <p class="small m-0">@item.Email</p>
+                            </div>
+                        </div>
+                    </li>
+                    <li><hr class="dropdown-divider" /></li>
+                    <li><a class="dropdown-item" href="/Identity/Account/Manage">Edit Profile</a></li>
+                    <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                    <li><button class="dropdown-item" type="submit">Sign Out</button></li>
+                    </form>
+                </ul>
+            </div>
+        }
+
+    }
 else
 {
     <li class="nav-item">
@@ -22,5 +39,5 @@ else
     <li class="nav-item">
         <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>
     </li>
-}
+    }
 </ul>
