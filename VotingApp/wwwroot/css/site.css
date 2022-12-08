@@ -77,3 +77,58 @@ body {
     border-radius: .75rem;
     transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
 }
+
+.rounded-5 {
+    border-radius: 0.75rem !important;
+}
+
+.vote {
+    background-color: #bfbfbf;
+    font-weight: 500 !important;
+    padding-top: 0.40rem !important;
+    padding-bottom: 0.40rem !important;
+    padding-right: 1.4rem !important;
+    padding-left: 1.4rem !important;
+    font-size: .75rem;
+}
+.vote:hover {
+    background-color: #d8d8d8;
+    transition: all 0.25s ease-in;
+}
+
+.open {
+    background-color: #bfbfbf;
+    font-weight: 500 !important;
+    padding-top: 0.40rem !important;
+    padding-bottom: 0.40rem !important;
+    padding-right: 1.8rem !important;
+    padding-left: 1.8rem !important;
+    font-size: .75rem;
+}
+
+.open:hover {
+    background-color: #d8d8d8;
+    transition: all 0.25s ease-in;
+}
+
+.dots {
+    background-color: #bfbfbf;
+    font-weight: 500 !important;
+    padding-top: 0.40rem !important;
+    padding-bottom: 0.40rem !important;
+    padding-right: 1rem !important;
+    padding-left: 1rem !important;
+    font-size: .75rem;
+}
+
+.dots:hover {
+    background-color: #d8d8d8;
+    transition: all 0.25s ease-in;
+}
+
+
+.card:hover {
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.15) !important;
+    transition: all 0.25s ease-in-out;
+}
+
