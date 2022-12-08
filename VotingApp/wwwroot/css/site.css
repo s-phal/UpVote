@@ -208,3 +208,57 @@ body {
     border: 1px solid rgba(0,0,0,.125);
     border-radius: 0.25rem;
 }
+
+.small {
+ 
+    font-size: .7rem;
+}
+
+.comments-container::before {
+    position: absolute;
+    display: block;
+    top: 0;
+    left: 55px;
+    content: "";
+    width: 3px;
+    height: 100%;
+    background: rgb(0, 0, 0, 0.15);
+    opacity: .35;
+
+}
+
+.comment-container::before {
+    position: absolute;
+    display: block;
+    top: 54px;
+    left: 70px;
+    content: "";
+    width: 25px;
+    height: 3px;
+    background: rgb(0, 0, 0, 0.15);
+    opacity: .35;
+}
+
+.comment-container:last-child::after {
+    position: absolute;
+    display: block;
+    top: 57px;
+    left: 67px;
+    content: "";
+    width: 3px;
+    height: calc(100% - 60px);
+    background: #f7f8fc;
+}
+
+.is-admin::before {
+    position: absolute;
+    width: 38px;
+    height: 38px;
+    border-radius: 38px;
+    border: 6px solid #fff;
+    box-shadow: 4px 4px 15px 0 rgba(36, 37, 38, 0.008);
+    left: 50px;
+    background: #dd9cff;
+    opacity: 1;
+}
+
