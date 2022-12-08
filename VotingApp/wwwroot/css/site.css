@@ -96,22 +96,39 @@ body {
     transition: all 0.25s ease-in;
 }
 
-.open {
+.grey-button {
     background-color: #bfbfbf;
     font-weight: 500 !important;
-    padding-top: 0.40rem !important;
-    padding-bottom: 0.40rem !important;
+    padding-top: 0.75rem !important;
+    padding-bottom: 0.75rem !important;
     padding-right: 1.8rem !important;
     padding-left: 1.8rem !important;
-    font-size: .75rem;
+    font-size: .90rem;
 }
 
-.open:hover {
+.grey-button:hover {
     background-color: #d8d8d8;
     transition: all 0.25s ease-in;
 }
 
-.dots {
+.blue-button {
+    background-color: #0d6efd;
+    font-weight: 500 !important;
+    padding-top: 0.75rem !important;
+    padding-bottom: 0.75rem !important;
+    padding-right: 1.8rem !important;
+    padding-left: 1.8rem !important;
+    font-size: .90rem;
+}
+
+.blue-button:hover {
+    background-color: #3b8aff;
+    transition: all 0.25s ease-in;
+}
+
+
+
+.status-button {
     background-color: #bfbfbf;
     font-weight: 500 !important;
     padding-top: 0.40rem !important;
@@ -121,7 +138,7 @@ body {
     font-size: .75rem;
 }
 
-.dots:hover {
+.status-button:hover {
     background-color: #d8d8d8;
     transition: all 0.25s ease-in;
 }
@@ -178,4 +195,16 @@ body {
 
 .bg-gray-100 {
     background-color: rgb(243 244 246);
+}
+
+.card-single {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 1px solid rgba(0,0,0,.125);
+    border-radius: 0.25rem;
 }
