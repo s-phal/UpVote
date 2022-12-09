@@ -176,7 +176,7 @@ body {
     font-weight: 400;
     line-height: 1.5;
     color: #212529;
-    background-color: #fff;
+    background-color: #fff;    
     background-image: url(data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e);
     background-repeat: no-repeat;
     background-position: right 0.75rem center;
@@ -262,3 +262,63 @@ body {
     opacity: 1;
 }
 
+.gradient {
+    border-width: 1px;
+    border-image-slice: 1;
+    background-image: linear-gradient(to bottom, #fff, #fff), linear-gradient(266deg, #67d0ff, #7682ff);
+    background-origin: border-box;
+    background-clip: content-box, border-box;
+    padding: 2px;
+}
+
+.dropdown-reply {
+    position: absolute;
+    z-index: 1000;
+    display: none;
+    width: 25rem;
+    padding: 0.5rem 0;
+    margin: 0;
+    font-size: 1rem;
+    color: #212529;
+    text-align: left;
+    list-style: none;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid rgba(0,0,0,.15);
+    border-radius: 0.25rem;
+}
+
+.form-check-open:checked {
+    background-color: #212529;
+    border-color: #ff0000;
+    border-radius: 50%;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2' fill='%23fff'/%3e%3c/svg%3e");
+}
+
+.form-check-considering:checked {
+    background-color: #600093;
+    border-color: #600093;
+    border-radius: 50%;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2' fill='%23fff'/%3e%3c/svg%3e");
+}
+
+.form-check-inprogress:checked {
+    background-color: #ffc300;
+    border-color: #ff0000;
+    border-radius: 50%;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2' fill='%23fff'/%3e%3c/svg%3e");
+}
+
+.form-check-implemented:checked {
+    background-color: #00ce17;
+    border-color: #ff0000;
+    border-radius: 50%;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2' fill='%23fff'/%3e%3c/svg%3e");
+}
+
+.form-check-closed:checked {
+    background-color: #ff3535;
+    border-color: #ff0000;
+    border-radius: 50%;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2' fill='%23fff'/%3e%3c/svg%3e");
+}
