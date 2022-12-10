@@ -18,13 +18,13 @@ namespace VotingApp.Areas.Identity.Pages.Account.Manage
 {
     public class EmailModel : PageModel
     {
-        private readonly UserManager<MemberModel> _userManager;
-        private readonly SignInManager<MemberModel> _signInManager;
+        private readonly UserManager<Member> _userManager;
+        private readonly SignInManager<Member> _signInManager;
         private readonly IEmailSender _emailSender;
 
         public EmailModel(
-            UserManager<MemberModel> userManager,
-            SignInManager<MemberModel> signInManager,
+            UserManager<Member> userManager,
+            SignInManager<Member> signInManager,
             IEmailSender emailSender)
         {
             _userManager = userManager;
@@ -74,7 +74,7 @@ namespace VotingApp.Areas.Identity.Pages.Account.Manage
             public string NewEmail { get; set; }
         }
 
-        private async Task LoadAsync(MemberModel user)
+        private async Task LoadAsync(Member user)
         {
             var email = await _userManager.GetEmailAsync(user);
             Email = email;

@@ -18,10 +18,10 @@ namespace VotingApp.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class RegisterConfirmationModel : PageModel
     {
-        private readonly UserManager<MemberModel> _userManager;
+        private readonly UserManager<Member> _userManager;
         private readonly IEmailSender _sender;
 
-        public RegisterConfirmationModel(UserManager<MemberModel> userManager, IEmailSender sender)
+        public RegisterConfirmationModel(UserManager<Member> userManager, IEmailSender sender)
         {
             _userManager = userManager;
             _sender = sender;

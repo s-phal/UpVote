@@ -17,13 +17,13 @@ namespace VotingApp.Areas.Identity.Pages.Account
 {
     public class LoginWith2faModel : PageModel
     {
-        private readonly SignInManager<MemberModel> _signInManager;
-        private readonly UserManager<MemberModel> _userManager;
+        private readonly SignInManager<Member> _signInManager;
+        private readonly UserManager<Member> _userManager;
         private readonly ILogger<LoginWith2faModel> _logger;
 
         public LoginWith2faModel(
-            SignInManager<MemberModel> signInManager,
-            UserManager<MemberModel> userManager,
+            SignInManager<Member> signInManager,
+            UserManager<Member> userManager,
             ILogger<LoginWith2faModel> logger)
         {
             _signInManager = signInManager;

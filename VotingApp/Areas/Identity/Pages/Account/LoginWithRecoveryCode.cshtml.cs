@@ -15,13 +15,13 @@ namespace VotingApp.Areas.Identity.Pages.Account
 {
     public class LoginWithRecoveryCodeModel : PageModel
     {
-        private readonly SignInManager<MemberModel> _signInManager;
-        private readonly UserManager<MemberModel> _userManager;
+        private readonly SignInManager<Member> _signInManager;
+        private readonly UserManager<Member> _userManager;
         private readonly ILogger<LoginWithRecoveryCodeModel> _logger;
 
         public LoginWithRecoveryCodeModel(
-            SignInManager<MemberModel> signInManager,
-            UserManager<MemberModel> userManager,
+            SignInManager<Member> signInManager,
+            UserManager<Member> userManager,
             ILogger<LoginWithRecoveryCodeModel> logger)
         {
             _signInManager = signInManager;

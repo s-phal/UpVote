@@ -17,14 +17,14 @@ namespace VotingApp.Areas.Identity.Pages.Account.Manage
 {
     public class ExternalLoginsModel : PageModel
     {
-        private readonly UserManager<MemberModel> _userManager;
-        private readonly SignInManager<MemberModel> _signInManager;
-        private readonly IUserStore<MemberModel> _userStore;
+        private readonly UserManager<Member> _userManager;
+        private readonly SignInManager<Member> _signInManager;
+        private readonly IUserStore<Member> _userStore;
 
         public ExternalLoginsModel(
-            UserManager<MemberModel> userManager,
-            SignInManager<MemberModel> signInManager,
-            IUserStore<MemberModel> userStore)
+            UserManager<Member> userManager,
+            SignInManager<Member> signInManager,
+            IUserStore<Member> userStore)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -70,7 +70,7 @@ namespace VotingApp.Areas.Identity.Pages.Account.Manage
                 .ToList();
 
             string passwordHash = null;
-            if (_userStore is IUserPasswordStore<MemberModel> userPasswordStore)
+            if (_userStore is IUserPasswordStore<Member> userPasswordStore)
             {
                 passwordHash = await userPasswordStore.GetPasswordHashAsync(user, HttpContext.RequestAborted);
             }

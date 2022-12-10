@@ -17,14 +17,14 @@ namespace VotingApp.Areas.Identity.Pages.Account.Manage
 {
     public class IndexModel : PageModel
     {
-        private readonly UserManager<MemberModel> _userManager;
-        private readonly SignInManager<MemberModel> _signInManager;
+        private readonly UserManager<Member> _userManager;
+        private readonly SignInManager<Member> _signInManager;
         private readonly IWebHostEnvironment _hostingEnvironment;
 
 
         public IndexModel(
-            UserManager<MemberModel> userManager,
-            SignInManager<MemberModel> signInManager,
+            UserManager<Member> userManager,
+            SignInManager<Member> signInManager,
             IWebHostEnvironment hostingEnvironment)
         {
             _userManager = userManager;
@@ -80,7 +80,7 @@ namespace VotingApp.Areas.Identity.Pages.Account.Manage
 
         }
 
-        private async Task LoadAsync(MemberModel user)
+        private async Task LoadAsync(Member user)
         {
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);

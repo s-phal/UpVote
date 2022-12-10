@@ -17,9 +17,9 @@ namespace VotingApp.Areas.Identity.Pages.Account
 {
     public class ResetPasswordModel : PageModel
     {
-        private readonly UserManager<MemberModel> _userManager;
+        private readonly UserManager<Member> _userManager;
 
-        public ResetPasswordModel(UserManager<MemberModel> userManager)
+        public ResetPasswordModel(UserManager<Member> userManager)
         {
             _userManager = userManager;
         }

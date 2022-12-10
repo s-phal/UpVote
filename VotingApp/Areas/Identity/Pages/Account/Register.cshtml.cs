@@ -24,17 +24,17 @@ namespace VotingApp.Areas.Identity.Pages.Account
 {
     public class RegisterModel : PageModel
     {
-        private readonly SignInManager<MemberModel> _signInManager;
-        private readonly UserManager<MemberModel> _userManager;
-        private readonly IUserStore<MemberModel> _userStore;
-        private readonly IUserEmailStore<MemberModel> _emailStore;
+        private readonly SignInManager<Member> _signInManager;
+        private readonly UserManager<Member> _userManager;
+        private readonly IUserStore<Member> _userStore;
+        private readonly IUserEmailStore<Member> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
 
         public RegisterModel(
-            UserManager<MemberModel> userManager,
-            IUserStore<MemberModel> userStore,
-            SignInManager<MemberModel> signInManager,
+            UserManager<Member> userManager,
+            IUserStore<Member> userStore,
+            SignInManager<Member> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender)
         {
@@ -155,27 +155,27 @@ namespace VotingApp.Areas.Identity.Pages.Account
             return Page();
         }
 
-        private MemberModel CreateUser()
+        private Member CreateUser()
         {
             try
             {
-                return Activator.CreateInstance<MemberModel>();
+                return Activator.CreateInstance<Member>();
             }
             catch
             {
-                throw new InvalidOperationException($"Can't create an instance of '{nameof(MemberModel)}'. " +
-                    $"Ensure that '{nameof(MemberModel)}' is not an abstract class and has a parameterless constructor, or alternatively " +
+                throw new InvalidOperationException($"Can't create an instance of '{nameof(Member)}'. " +
+                    $"Ensure that '{nameof(Member)}' is not an abstract class and has a parameterless constructor, or alternatively " +
                     $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
             }
         }
 
-        private IUserEmailStore<MemberModel> GetEmailStore()
+        private IUserEmailStore<Member> GetEmailStore()
         {
             if (!_userManager.SupportsUserEmail)
             {
                 throw new NotSupportedException("The default UI requires a user store with email support.");
             }
-            return (IUserEmailStore<MemberModel>)_userStore;
+            return (IUserEmailStore<Member>)_userStore;
         }
     }
 }

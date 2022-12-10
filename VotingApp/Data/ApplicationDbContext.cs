@@ -4,11 +4,14 @@ using VotingApp.Models;
 
 namespace VotingApp.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<MemberModel>
+    public class ApplicationDbContext : IdentityDbContext<Member>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
         }
+        public DbSet<VotingApp.Models.Category> Category { get; set; } = default!;
+        public DbSet<VotingApp.Models.Idea> Idea { get; set; } = default!;
+
     }
 }

@@ -16,10 +16,10 @@ namespace VotingApp.Areas.Identity.Pages.Account
 {
     public class ConfirmEmailChangeModel : PageModel
     {
-        private readonly UserManager<MemberModel> _userManager;
-        private readonly SignInManager<MemberModel> _signInManager;
+        private readonly UserManager<Member> _userManager;
+        private readonly SignInManager<Member> _signInManager;
 
-        public ConfirmEmailChangeModel(UserManager<MemberModel> userManager, SignInManager<MemberModel> signInManager)
+        public ConfirmEmailChangeModel(UserManager<Member> userManager, SignInManager<Member> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;

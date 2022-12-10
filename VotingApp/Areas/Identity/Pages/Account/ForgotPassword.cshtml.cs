@@ -19,10 +19,10 @@ namespace VotingApp.Areas.Identity.Pages.Account
 {
     public class ForgotPasswordModel : PageModel
     {
-        private readonly UserManager<MemberModel> _userManager;
+        private readonly UserManager<Member> _userManager;
         private readonly IEmailSender _emailSender;
 
-        public ForgotPasswordModel(UserManager<MemberModel> userManager, IEmailSender emailSender)
+        public ForgotPasswordModel(UserManager<Member> userManager, IEmailSender emailSender)
         {
             _userManager = userManager;
             _emailSender = emailSender;

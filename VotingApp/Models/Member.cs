@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 
 namespace VotingApp.Models
 {
-    public class MemberModel : IdentityUser
+    public class Member : IdentityUser
     {
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
@@ -13,7 +13,11 @@ namespace VotingApp.Models
 
         public string? AvatarFileName { get; set; } = "default.png";
         [NotMapped]
-        public IFormFile? AvatarImageFile { get; set; }  
+        public IFormFile? AvatarImageFile { get; set; }
+
+        public virtual ICollection<Idea> Ideas { get; set; } = new HashSet<Idea>();
+
+
 
         private static string GenerateDisplayName()
         {
@@ -25,7 +29,5 @@ namespace VotingApp.Models
         }
     }
 
-
-
-
 }
+

@@ -17,9 +17,9 @@ namespace VotingApp.Areas.Identity.Pages.Account
 {
     public class ConfirmEmailModel : PageModel
     {
-        private readonly UserManager<MemberModel> _userManager;
+        private readonly UserManager<Member> _userManager;
 
-        public ConfirmEmailModel(UserManager<MemberModel> userManager)
+        public ConfirmEmailModel(UserManager<Member> userManager)
         {
             _userManager = userManager;
         }

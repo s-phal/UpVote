@@ -15,13 +15,13 @@ namespace VotingApp.Areas.Identity.Pages.Account.Manage
 {
     public class ChangePasswordModel : PageModel
     {
-        private readonly UserManager<MemberModel> _userManager;
-        private readonly SignInManager<MemberModel> _signInManager;
+        private readonly UserManager<Member> _userManager;
+        private readonly SignInManager<Member> _signInManager;
         private readonly ILogger<ChangePasswordModel> _logger;
 
         public ChangePasswordModel(
-            UserManager<MemberModel> userManager,
-            SignInManager<MemberModel> signInManager,
+            UserManager<Member> userManager,
+            SignInManager<Member> signInManager,
             ILogger<ChangePasswordModel> logger)
         {
             _userManager = userManager;

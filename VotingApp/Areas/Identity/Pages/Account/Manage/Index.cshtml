@@ -5,7 +5,7 @@
 }
 
 @model IndexModel
-@inject UserManager<MemberModel> _userManager;
+@inject UserManager<Member> _userManager;
 @{
     // grab user details
     var user = await _userManager.GetUserAsync(User);

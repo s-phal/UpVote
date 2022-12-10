@@ -14,12 +14,12 @@ namespace VotingApp.Areas.Identity.Pages.Account.Manage
 {
     public class SetPasswordModel : PageModel
     {
-        private readonly UserManager<MemberModel> _userManager;
-        private readonly SignInManager<MemberModel> _signInManager;
+        private readonly UserManager<Member> _userManager;
+        private readonly SignInManager<Member> _signInManager;
 
         public SetPasswordModel(
-            UserManager<MemberModel> userManager,
-            SignInManager<MemberModel> signInManager)
+            UserManager<Member> userManager,
+            SignInManager<Member> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
