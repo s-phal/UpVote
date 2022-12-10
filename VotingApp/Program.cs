@@ -17,7 +17,7 @@ namespace VotingApp
                 options.UseNpgsql(connectionString));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-            builder.Services.AddIdentity<Member, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
+            builder.Services.AddIdentity<MemberModel, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddDefaultUI() // Add 
                 .AddDefaultTokenProviders() // Add
                 .AddEntityFrameworkStores<ApplicationDbContext>();

@@ -43,7 +43,7 @@
                     <!-- Add Idea Form END-->
                 </div>
                 <div class="col-lg-9">
-                    <nav class="d-flex align-items-center justify-content-between small">
+                    <nav class="d-none d-md-none d-lg-none d-xl-block d-xl-flex align-items-center justify-content-between small">
                         <ul class="d-flex list-unstyled text-uppercase fw-bold border-5 border-bottom pb-3" style="letter-spacing:3px">
                             <li><a href="#" class="text-decoration-none top-links text-black border-primary border-bottom border-5 pb-3">all ideas (87)</a></li>
                             <li><a href="#" class="text-decoration-none top-links text-secondary border-bottom border-5 pb-3 opacity-75">Considering (6)</a></li>
@@ -70,6 +70,7 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

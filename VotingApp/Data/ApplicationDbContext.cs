@@ -4,7 +4,7 @@ using VotingApp.Models;
 
 namespace VotingApp.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<Member>
+    public class ApplicationDbContext : IdentityDbContext<MemberModel>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)

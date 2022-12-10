@@ -12,8 +12,8 @@ using VotingApp.Data;
 namespace VotingApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221208031857_updatedMember")]
-    partial class updatedMember
+    [Migration("20221209181831_InitCreate")]
+    partial class InitCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -157,7 +157,7 @@ namespace VotingApp.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("VotingApp.Models.Member", b =>
+            modelBuilder.Entity("VotingApp.Models.MemberModel", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -244,7 +244,7 @@ namespace VotingApp.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("VotingApp.Models.Member", null)
+                    b.HasOne("VotingApp.Models.MemberModel", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -253,7 +253,7 @@ namespace VotingApp.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("VotingApp.Models.Member", null)
+                    b.HasOne("VotingApp.Models.MemberModel", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -268,7 +268,7 @@ namespace VotingApp.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("VotingApp.Models.Member", null)
+                    b.HasOne("VotingApp.Models.MemberModel", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -277,7 +277,7 @@ namespace VotingApp.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("VotingApp.Models.Member", null)
+                    b.HasOne("VotingApp.Models.MemberModel", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
