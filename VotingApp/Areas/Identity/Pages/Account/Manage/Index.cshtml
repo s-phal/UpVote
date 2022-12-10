@@ -1,0 +1,60 @@
+﻿@page
+@{
+    ViewData["Title"] = "Profile";
+    ViewData["ActivePage"] = ManageNavPages.Index;
+}
+
+@model IndexModel
+@inject UserManager<MemberModel> _userManager;
+@{
+    // grab user details
+    var user = await _userManager.GetUserAsync(User);
+}
+
+<h3>@ViewData["Title"]</h3>
+<partial name="_StatusMessage" for="StatusMessage" />
+<div class="row">
+    <div class="col-md-6">
+        <form id="profile-form" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <div class="form-floating mb-3">
+                <input asp-for="Username" class="form-control" placeholder="Please choose your username." disabled />
+                <label asp-for="Username" class="form-label"></label>
+            </div>            
+            <div class="form-floating mb-3">
+                <input asp-for="Input.DisplayName" value="@user.DisplayName" class="form-control" placeholder="Please enter your phone number." />
+                <label asp-for="Input.DisplayName" class="form-label"></label>
+                <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+            </div>
+            <div class="row">
+            <div class="form-floating mb-3 col">
+                <input asp-for="Input.FirstName" value="@user.FirstName" class="form-control"  />
+                <label asp-for="Input.FirstName" class="form-label px-4"></label>
+                <span asp-validation- for="Input.PhoneNumber" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3 col">
+                <input asp-for="Input.LastName" value="@user.LastName" class="form-control"  />
+                <label asp-for="Input.LastName" class="form-label px-4"></label>
+                <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+            </div>
+            </div>
+            <div class="AVATAR mt-1">
+                <div class="PROFILE-PICTURE-LABEL">
+                    <label class="text-secondary">Profile Picture</label>
+                    <div class="my-2">
+                        <img src="~/uploads/avatars/@user.AvatarFileName" class="img-thumbnail img-fluid" />
+                    </div>
+                </div>
+                <div class="PICTURE-INPUT input-group">
+                    <input type="file" class="form-control" asp-for="Input.AvatarImageFile" accept="image/*">
+                    <span asp-validation-for="Input.AvatarImageFile" class="text-danger"></span>
+                </div>
+        </div>
+            <button id="update-profile-button" type="submit" class="w-100 btn btn-lg btn-primary mt-3">Save</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
