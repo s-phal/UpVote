@@ -14,13 +14,15 @@ namespace VotingApp.Models
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
 
         [DataType(DataType.Date)]
-        public DateTime PostedDate { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedDate { get; set; } = DateTime.UtcNow;
 
         public int CategoryId { get; set; }
         public virtual Category? Category { get; set; }
 
         public string MemberId { get; set; }
         public virtual Member? Member { get; set; }
+
+        public virtual ICollection<Vote> Votes { get; set; } = new HashSet<Vote>();
 
 
 

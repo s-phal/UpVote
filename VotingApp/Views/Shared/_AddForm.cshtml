@@ -1,28 +1,46 @@
-﻿<div class="ADD-IDEA-FORM mt-sm-0 mt-lg-8 sticky-top card  text-center rounded-5 border-0 shadow py-3" style="top: 40px">
+﻿@using Microsoft.AspNetCore.Identity;
+@using VotingApp.Data;
+@inject UserManager<Member> _userManager;
+@inject ApplicationDbContext _context;
+
+@{
+    var category = _context.Category.ToList();
+}
+
+
+<div class="ADD-IDEA-FORM mt-sm-0 mt-lg-8 sticky-top card  text-center rounded-5 border-0 shadow py-3" style="top: 40px">
+
     <div class="card-body">
         <h5 class="card-title mb-3">Add an idea</h5>
         <p class="card-text mb-3">Let us know what you would like and we'll take a look over!</p>
+    <form asp-action="create" asp-controller="ideas">
         <div class="mb-3">
-            <input type="" class="form-control-idea bg-gray-100 border-0" placeholder="Your Idea">
+        <input type="hidden" name="MemberId" value="@_userManager.GetUserId(User)"/>
+        <input type="text" name="Title" class="form-control-idea bg-gray-100 border-0" placeholder="Your Idea">
         </div>
         <div class="mb-3">
-            <select name="category" class="form-select bg-gray-100 border-0 text-secondary" aria-label=".form-select-sm example">
+            <select name="CategoryId" class="form-select bg-gray-100 border-0 text-secondary" aria-label=".form-select-sm example">
                 <option selected="">Category</option>
-                <option value="1">One</option>
-                <option value="2">Two</option>
-                <option value="3">Three</option>
+                @{
+                    foreach (var catName in category)
+                        {
+                           <option value="@catName.Id">@catName.Name</option>
+                        }
+                }
             </select>
         </div>
         <div class="mb-4">
-            <textarea class="form-control-idea bg-gray-100 border-0" id="exampleFormControlTextarea1" rows="3" placeholder="Describe your idea"></textarea>
+            <textarea name="Description" class="form-control-idea bg-gray-100 border-0" rows="3" placeholder="Describe your idea"></textarea>
         </div>
         <div class="d-flex">
             <div class="col">
                 <button class="grey-button border-0 rounded-5">Attach</button>
             </div>
             <div class="col">
-                <button class="blue-button border-0 text-white rounded-5">Submit</button>
+                <button type="submit" class="blue-button border-0 text-white rounded-5">Submit</button>
             </div>
+    </form>
+
         </div>
     </div>
 </div>

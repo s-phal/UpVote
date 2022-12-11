@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -13,17 +14,27 @@ namespace VotingApp.Controllers
     public class IdeasController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<Member> _userManager;
 
-        public IdeasController(ApplicationDbContext context)
+        public IdeasController(ApplicationDbContext context, UserManager<Member> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Ideas
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Idea.Include(i => i.Category).Include(i => i.Member);
-            return View(await applicationDbContext.ToListAsync());
+            var ideas = await _context.Idea
+                .Include(i => i.Category)
+                .Include(i => i.Member)
+                .Include(i => i.Votes)
+                //.OrderByDescending() TODO Order by vote count
+                .ToListAsync();
+                
+
+
+            return View(ideas);
         }
 
         // GET: Ideas/Details/5
@@ -49,7 +60,7 @@ namespace VotingApp.Controllers
         // GET: Ideas/Create
         public IActionResult Create()
         {
-            ViewData["CategoryId"] = new SelectList(_context.Category, "Id", "Id");
+            ViewData["CategoryId"] = new SelectList(_context.Category, "Id", "Name");
             ViewData["MemberId"] = new SelectList(_context.Users, "Id", "Id");
             return View();
         }
@@ -65,7 +76,17 @@ namespace VotingApp.Controllers
             {
                 _context.Add(idea);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+
+                Vote vote = new Vote()
+                {
+                    IdeaId = idea.Id,
+                    MemberId = idea.MemberId,
+                };
+
+                _context.Add(vote);
+				await _context.SaveChangesAsync();
+
+				return RedirectToAction(nameof(Index));
             }
             ViewData["CategoryId"] = new SelectList(_context.Category, "Id", "Id", idea.CategoryId);
             ViewData["MemberId"] = new SelectList(_context.Users, "Id", "Id", idea.MemberId);
@@ -145,6 +166,23 @@ namespace VotingApp.Controllers
             }
 
             return View(idea);
+        }
+
+
+        public async Task<IActionResult> Vote(Idea idea)
+        {
+            // TODO Allow members to vote only once
+            Vote vote = new Vote()
+            {
+                IdeaId = idea.Id,
+                MemberId = idea.MemberId
+            };
+
+            _context.Add(vote);
+            _context.SaveChanges();
+            return RedirectToAction("index", "ideas");
+
+          
         }
 
         // POST: Ideas/Delete/5

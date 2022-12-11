@@ -1,4 +1,6 @@
-﻿@model VotingApp.Models.Idea
+﻿@using Microsoft.AspNetCore.Identity;
+@model VotingApp.Models.Idea
+@inject UserManager<Member> _userManager;
 
 @{
     ViewData["Title"] = "Create";
@@ -11,6 +13,7 @@
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
+            <input type="hidden" name="MemberId" value="@_userManager.GetUserId(User)" />
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Title" class="control-label"></label>
@@ -26,10 +29,7 @@
                 <label asp-for="CategoryId" class="control-label"></label>
                 <select asp-for="CategoryId" class ="form-control" asp-items="ViewBag.CategoryId"></select>
             </div>
-            <div class="form-group">
-                <label asp-for="MemberId" class="control-label"></label>
-                <select asp-for="MemberId" class ="form-control" asp-items="ViewBag.MemberId"></select>
-            </div>
+
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>

@@ -36,23 +36,25 @@
 </div>
 <!-- Filters END -->
 
-
-
-
+        <!--Index Card START -->
 @{
     foreach (var idea in Model)
     {
-        
+        var voteCount = idea.Votes.Where(vote => vote.IdeaId == idea.Id).Count();
         var ideaOwner = await _userManager.FindByIdAsync(idea.MemberId);
 
-        <!--Index Card START -->
         <div class="card mb-3 border-0 rounded-5 shadow">
             <div class="row g-0">
                 <div class="VOTE-STATS d-none d-md-none d-xl-block col-md-2 border-end">
                     <div class="card-body text-center">
-                        <h5 class="card-title">1200</h5>
+                        <h5 class="card-title">@voteCount</h5>
                         <p class="card-text">Votes</p>
-                        <button class="vote border-0 rounded-5">Vote</button>
+                        <form asp-action ="vote" asp-controller="ideas">
+                        <input type="hidden" name="Id" value="@idea.Id"/>
+                        <input type="hidden" name="MemberId" value="@_userManager.GetUserId(User)"/>
+                        <button type="submit" class="vote border-0 rounded-5">Vote</button>
+                        </form>
+
                     </div>
                 </div>
                 <div class="AVATAR-IMAGE col-1 p-3">
@@ -83,7 +85,7 @@
                 </div>
             </div>
         </div>
-        <!-- Index Card END -->
         
     }
 }
+        <!-- Index Card END -->
