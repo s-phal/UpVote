@@ -96,6 +96,22 @@ body {
     transition: all 0.25s ease-in;
 }
 
+.remove-vote {
+    background-color: #ffa400;
+    font-weight: 500 !important;
+    padding-top: 0.40rem !important;
+    padding-bottom: 0.40rem !important;
+    padding-right: 1.4rem !important;
+    padding-left: 1.4rem !important;
+    font-size: .75rem;
+}
+
+.remove-vote:hover {
+    background-color: #ffb676;
+    transition: all 0.25s ease-in;
+}
+
+
 .grey-button {
     background-color: #bfbfbf;
     font-weight: 500 !important;

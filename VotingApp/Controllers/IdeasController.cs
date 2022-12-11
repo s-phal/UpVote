@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -15,6 +16,7 @@ namespace VotingApp.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<Member> _userManager;
+        private readonly SignInManager<Member> _signInManager;
 
         public IdeasController(ApplicationDbContext context, UserManager<Member> userManager)
         {
@@ -86,6 +88,7 @@ namespace VotingApp.Controllers
                 _context.Add(vote);
 				await _context.SaveChangesAsync();
 
+                // TODO redirect to details page
 				return RedirectToAction(nameof(Index));
             }
             ViewData["CategoryId"] = new SelectList(_context.Category, "Id", "Id", idea.CategoryId);
@@ -168,22 +171,64 @@ namespace VotingApp.Controllers
             return View(idea);
         }
 
-
-        public async Task<IActionResult> Vote(Idea idea)
+        [Authorize]
+        public IActionResult AddVote(Idea idea)
         {
-            // TODO Allow members to vote only once
-            Vote vote = new Vote()
-            {
-                IdeaId = idea.Id,
-                MemberId = idea.MemberId
-            };
+            var memberVoteCount = _context.Vote
+                .Where(v => v.IdeaId == idea.Id && v.MemberId == _userManager.GetUserId(User))
+                .ToList();
 
-            _context.Add(vote);
-            _context.SaveChanges();
+            if(memberVoteCount.Count() == 0)
+            {
+                
+                Vote vote = new Vote()
+                {
+                    IdeaId = idea.Id,
+                    MemberId = idea.MemberId,                    
+                };
+
+                idea.UpdatedDate = DateTime.UtcNow;
+
+                _context.Add(vote);
+                _context.Update(idea);
+                _context.SaveChanges();
+
+            }
+            else
+            {
+                TempData["DisplayMessage"] = "You already Voted!";
+                return RedirectToAction("index", "ideas");
+            }
+            TempData["DisplayMessage"] = "Vote recorded!";
             return RedirectToAction("index", "ideas");
 
-          
+
         }
+
+        [Authorize]
+        public async Task<IActionResult> RemoveVote(Idea idea)
+        {
+            var memberVoteCount =await _context.Vote
+                .Where(v => v.IdeaId == idea.Id && v.MemberId == _userManager.GetUserId(User))
+                .FirstOrDefaultAsync();
+
+            if (memberVoteCount != null)
+            {
+                _context.Vote.Remove(memberVoteCount);
+                await _context.SaveChangesAsync();
+                TempData["DisplayMessage"] = "Vote removed!";
+                return RedirectToAction("index", "ideas");
+            }
+
+            return RedirectToAction("index", "ideas");
+
+
+
+        }
+
+
+
+
 
         // POST: Ideas/Delete/5
         [HttpPost, ActionName("Delete")]
@@ -203,6 +248,19 @@ namespace VotingApp.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         private bool IdeaExists(int id)
         {

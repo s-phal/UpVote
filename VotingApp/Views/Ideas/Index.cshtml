@@ -1,7 +1,19 @@
 ﻿@using Microsoft.AspNetCore.Identity;
+@using VotingApp.Data;
 @model IEnumerable<VotingApp.Models.Idea>
 @inject UserManager<Member> _userManager;
+@inject ApplicationDbContext _context;
 
+
+
+@{ 
+    // If Available, Display Message Banner(passed from result of controller)
+	var displayMessage = "";
+	if (TempData.ContainsKey("DisplayMessage"))
+	{
+		displayMessage = TempData["DisplayMessage"].ToString();
+	}
+}
 
 <!-- Filters START -->
 <div class="row d-flex">
@@ -36,7 +48,20 @@
 </div>
 <!-- Filters END -->
 
-        <!--Index Card START -->
+<!-- Display Message START-->
+@{ 
+    // Placeholder for Displaying Message Banner
+    if(displayMessage != "")
+    {
+        <div class="alert alert-danger alert-dismissible" role="alert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            @displayMessage
+        </div>
+    }
+}
+<!-- Display Message END-->
+
+<!--Index Card START -->
 @{
     foreach (var idea in Model)
     {
@@ -49,11 +74,37 @@
                     <div class="card-body text-center">
                         <h5 class="card-title">@voteCount</h5>
                         <p class="card-text">Votes</p>
-                        <form asp-action ="vote" asp-controller="ideas">
-                        <input type="hidden" name="Id" value="@idea.Id"/>
-                        <input type="hidden" name="MemberId" value="@_userManager.GetUserId(User)"/>
-                        <button type="submit" class="vote border-0 rounded-5">Vote</button>
-                        </form>
+
+                        @{
+                            // display button based on whether the user voted on the Idea or not
+                            var getMemberVote = _context.Vote
+                                .Where(v => v.IdeaId == idea.Id && v.MemberId == _userManager.GetUserId(User))
+                                .ToList();
+
+
+                            if(getMemberVote.Count == 0)
+                            {
+                                <form asp-action ="AddVote" asp-controller="ideas">
+                                <input type="hidden" name="Id" value="@idea.Id"/>
+                                <input type="hidden" name="Title" value="@idea.Title" />
+                                <input type="hidden" name="CategoryId" value="@idea.Category.Id" />
+                                <input type="hidden" name="Description" value="@idea.Description" />
+                                <input type="hidden" name="MemberId" value="@_userManager.GetUserId(User)"/>
+                                <button type="submit" class="vote border-0 rounded-5">Vote</button>
+                                </form>
+                            }
+                            if(getMemberVote.Count != 0)
+                            {
+                                <form asp-action="RemoveVote" asp-controller="ideas">
+                                    <input type="hidden" name="Id" value="@idea.Id" />
+                                    <input type="hidden" name="Title" value="@idea.Title" />
+                                    <input type="hidden" name="CategoryId" value="@idea.Category.Id" />
+                                    <input type="hidden" name="Description" value="@idea.Description" />
+                                    <input type="hidden" name="MemberId" value="@_userManager.GetUserId(User)" />
+                                    <button type="submit" class="remove-vote border-0 rounded-5 text-white">Remove Vote</button>
+                                </form>
+                            }
+                        }
 
                     </div>
                 </div>
@@ -63,6 +114,8 @@
                 <div class="CARD-DETAILS col-md-9">
                     <div class="card-body mb-3">
                         <h5 class="card-title">@idea.Title</h5>
+                        @{// TODO text truncation
+                        }
                         <p class="card-text">@idea.Description</p>
                     </div>
                     <div class="d-flex bd-highlight mb-3">
