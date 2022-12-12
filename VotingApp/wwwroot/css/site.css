@@ -144,7 +144,7 @@ body {
 
 
 
-.status-button {
+.status-open {
     background-color: #bfbfbf;
     font-weight: 500 !important;
     padding-top: 0.40rem !important;
@@ -154,8 +154,68 @@ body {
     font-size: .75rem;
 }
 
-.status-button:hover {
+.status-open:hover {
     background-color: #d8d8d8;
+    transition: all 0.25s ease-in;
+}
+
+.status-considering {
+    background-color: #ffc107;
+    font-weight: 500 !important;
+    padding-top: 0.40rem !important;
+    padding-bottom: 0.40rem !important;
+    padding-right: 1rem !important;
+    padding-left: 1rem !important;
+    font-size: .75rem;
+}
+
+.status-considering:hover {
+    background-color: #ffb676;
+    transition: all 0.25s ease-in;
+}
+
+.status-in-progress {
+    background-color: #0d6efd;
+    font-weight: 500 !important;
+    padding-top: 0.40rem !important;
+    padding-bottom: 0.40rem !important;
+    padding-right: 1rem !important;
+    padding-left: 1rem !important;
+    font-size: .75rem;
+}
+
+.status-in-progress:hover {
+    background-color: #3b8aff;
+    transition: all 0.25s ease-in;
+}
+
+.status-implemented {
+    background-color: #198754;
+    font-weight: 500 !important;
+    padding-top: 0.40rem !important;
+    padding-bottom: 0.40rem !important;
+    padding-right: 1rem !important;
+    padding-left: 1rem !important;
+    font-size: .75rem;
+}
+
+.status-implemented:hover {
+    background-color: #62be93;
+    transition: all 0.25s ease-in;
+}
+
+.status-closed {
+    background-color: #dc3535;
+    font-weight: 500 !important;
+    padding-top: 0.40rem !important;
+    padding-bottom: 0.40rem !important;
+    padding-right: 1rem !important;
+    padding-left: 1rem !important;
+    font-size: .75rem;
+}
+
+.status-closed:hover {
+    background-color: #ff7575;
     transition: all 0.25s ease-in;
 }
 
@@ -206,9 +266,7 @@ body {
 }
 
 
-/*.mt-8 {
-    margin-top:105px
-}*/
+
 
 @media (min-width: 992px) {
     .mt-lg-8 {

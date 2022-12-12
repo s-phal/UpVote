@@ -205,6 +205,7 @@ namespace VotingApp.Controllers
                 .FirstOrDefaultAsync(i => i.Id == idea.Id);
 
             idea.CreatedDate = getCurrentValueFromDB.CreatedDate;
+            idea.MemberId = getCurrentValueFromDB.MemberId;
 
             _context.Update(idea);
                 _context.SaveChanges();

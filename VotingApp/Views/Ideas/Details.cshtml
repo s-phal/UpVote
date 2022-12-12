@@ -1,29 +1,63 @@
-﻿
+﻿@using Humanizer;
+@using Microsoft.AspNetCore.Identity;
+@model VotingApp.Models.Idea
+@inject UserManager<Member> _userManager;
+
+@{
+    double timestamp = Model.CreatedDate.ToOADate();
+    var timeSpan = DateTime.FromOADate(timestamp).AddMicroseconds(-timestamp).Humanize();
+}
+
 <!-- Breadcrumbs START-->
 <div class="d-flex align-items-center fw-bold text-black mb-3">
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left me-2" viewBox="0 0 16 16">
         <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z" />
     </svg>
-    <a href="" class="fw-bold text-decoration-none text-black">All Ideas</a>
+    <a href="~/" class="fw-bold text-decoration-none text-black">All Ideas</a><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left me-2 ms-2" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z" />
+    </svg>@Model.Title
+    
 </div>
 <!-- Breadcrumbs END-->
 <!-- Card START -->
 <div class="card-single mb-3 border-0 rounded-5 shadow-sm">
     <div class="row g-0">
         <div class="AVATAR-IMAGE col-md-1 p-3 ms-2">
-            <img src="https://source.unsplash.com/200x200/?face&crop=face&v1" alt="avatar" class="avatar rounded-3" />
+            <img src="~/uploads/avatars/@Model.Member.AvatarFileName" alt="avatar" class="avatar rounded-3" />
         </div>
         <div class="CARD-DETAILS col ms-1">
             <div class="card-body mb-3">
-                <h5 class="card-title">Yang Guo was the strongest</h5>
-                <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                <h5 class="card-title">@Model.Title</h5>
+                <p class="card-text">@Model.Description</p>
             </div>
             <div class="d-flex bd-highlight mb-3">
-                <div class="TIMESTAMP ps-3 bd-highlight text-secondary fw-bold">Kyro Phal</div>
-                <div class="TIMESTAMP px-3 bd-highlight text-secondary opacity-50">10 hours ago</div>
-                <div class="CATEGORY-NAME px-3 bd-highlight text-secondary opacity-50">Category 1</div>
+                <div class="TIMESTAMP ps-3 bd-highlight text-secondary fw-bold">@Model.Member.FirstName</div>
+                <div class="TIMESTAMP px-3 bd-highlight text-secondary opacity-50">@timeSpan</div>
+                <div class="CATEGORY-NAME px-3 bd-highlight text-secondary opacity-50">@Model.Category.Name</div>
                 <div class="COMMENT-COUNT bd-highlight text-dark">3 Comments</div>
-                <div class="TICKET-STATUS ms-auto bd-highlight pe-2"><button class="status-button border-0 rounded-5">Open</button></div>
+                    @{
+                        if (Model.CurrentStatus == "open")
+                        {
+                            <div class="TICKET-STATUS ms-auto bd-highlight pe-2"><button class="status-open border-0 rounded-5">Open</button></div>
+                        }
+                        if (Model.CurrentStatus == "considering")
+                        {
+                            <div class="TICKET-STATUS ms-auto bd-highlight pe-2"><button class="status-considering border-0 rounded-5">Considering</button></div>
+                        }
+                        if (Model.CurrentStatus == "in-progress")
+                        {
+                            <div class="TICKET-STATUS ms-auto bd-highlight pe-2"><button class="status-in-progress border-0 rounded-5 text-white">In Progress</button></div>
+                        }
+                        if (Model.CurrentStatus == "implemented")
+                        {
+                            <div class="TICKET-STATUS ms-auto bd-highlight pe-2"><button class="status-implemented border-0 rounded-5 text-white">Implemented</button></div>
+                        }
+                        if (Model.CurrentStatus == "closed")
+                        {
+                            <div class="TICKET-STATUS ms-auto bd-highlight pe-2"><button class="status-closed border-0 rounded-5 text-white">Closed</button></div>
+                        }
+                    }
+
                 <div class="bd-highlight pe-3 dropdown">
                     <button class="status-button border-0 rounded-5" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
@@ -32,7 +66,12 @@
                     </button>
                     <ul class="dropdown-menu border-0 shadow" aria-labelledby="dropdownMenuButton1">
                         <li><a class="dropdown-item" href="#">Mark as Spam</a></li>
-                        <li><a class="dropdown-item" href="#">Delete Post</a></li>
+                        @{
+                            if (Model.MemberId == _userManager.GetUserId(User))
+                            {
+                                <li><button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#exampleModal-@Model.Id">Delete Post</button></li>
+                            }
+                        }
                     </ul>
                 </div>
             </div>
@@ -40,6 +79,36 @@
     </div>
 </div>
 <!-- Card END -->
+
+<!-- Modal Idea START -->
+<div class="modal" id="exampleModal-@Model.Id" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Delete post?</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete your post? You can't undo this.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+                <form asp-action="Delete" asp-controller="ideas">
+                    <input type="hidden" name="Id" value="@Model.Id" />
+                    <button type="submit" class="btn btn-danger">Delete post</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Model Idea END -->
+
+
+
+
+
+
 <!-- Buttons START-->
 <div class="d-flex bd-highlight mb-3">
     <div class="REPLY-BUTTON bd-highlight dropdown">

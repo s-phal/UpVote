@@ -134,9 +134,33 @@
                     </div>
                     <div class="d-flex bd-highlight mb-3">
                         <div class="TIMESTAMP px-3 bd-highlight text-secondary opacity-50">@timeSpan</div>
-                        <div class="CATEGORY-NAME px-3 bd-highlight text-secondary opacity-50">@idea.Category.Name</div>
+                        <div class="CATEGORY-NAME px-3 bd-highlight text-secondary opacity-50">@idea.Category.Name</div> @{
+                            // TODO hotlink category
+                        }
                         <div class="COMMENT-COUNT bd-highlight text-dark">3 Comments</div>
-                        <div class="TICKET-STATUS ms-auto bd-highlight pe-2"><button class="status-button border-0 rounded-5">Open</button></div>
+                        @{
+                            if (idea.CurrentStatus == "open")
+                            {
+                                <div class="TICKET-STATUS ms-auto bd-highlight pe-2"><button class="status-open border-0 rounded-5">Open</button></div>
+                            }
+                            if (idea.CurrentStatus == "considering")
+                            {
+                                <div class="TICKET-STATUS ms-auto bd-highlight pe-2"><button class="status-considering border-0 rounded-5">Considering</button></div>
+                            }
+                            if (idea.CurrentStatus == "in-progress")
+                            {
+                                <div class="TICKET-STATUS ms-auto bd-highlight pe-2"><button class="status-in-progress border-0 rounded-5 text-white">In Progress</button></div>
+                            }
+                            if (idea.CurrentStatus == "implemented")
+                            {
+                                <div class="TICKET-STATUS ms-auto bd-highlight pe-2"><button class="status-implemented border-0 rounded-5 text-white">Implemented</button></div>
+                            }
+                            if (idea.CurrentStatus == "closed")
+                            {
+                                <div class="TICKET-STATUS ms-auto bd-highlight pe-2"><button class="status-closed border-0 rounded-5 text-white">Closed</button></div>
+                            }
+                        }
+
                         <div class="bd-highlight pe-3 dropdown">
                             <button class="status-button border-0 rounded-5" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
@@ -160,7 +184,7 @@
 
 
 
-        <!-- Modal -->
+        <!-- Modal START -->
         <div class="modal" id="exampleModal-@idea.Id" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
@@ -182,6 +206,7 @@
                 </div>
             </div>
         </div>
+        <!-- Model END -->
         
     }
 }
