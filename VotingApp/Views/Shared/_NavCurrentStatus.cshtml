@@ -1,0 +1,20 @@
+﻿@using VotingApp.Data;
+@inject ApplicationDbContext _context;
+
+@{
+    var openCount = _context.Idea.Where(i => i.CurrentStatus == "open").ToList().Count();
+    var consideringCount = _context.Idea.Where(i => i.CurrentStatus == "considering").ToList().Count();
+    var inProgressCount = _context.Idea.Where(i => i.CurrentStatus == "in-progress").ToList().Count();
+    var implementedCount = _context.Idea.Where(i => i.CurrentStatus == "implemented").ToList().Count();
+    var closedCount = _context.Idea.Where(i => i.CurrentStatus == "closed").ToList().Count();
+
+}
+<ul class="d-flex list-unstyled text-uppercase fw-bold border-5 border-bottom pb-3" style="letter-spacing:3px">
+    <li><a href="#" class="text-decoration-none top-links text-black border-primary border-bottom border-5 pb-3">all ideas (@openCount)</a></li>
+    <li><a href="#" class="text-decoration-none top-links text-secondary border-bottom border-5 pb-3 opacity-75">Considering (@consideringCount)</a></li>
+    <li><a href="#" class="text-decoration-none top-links text-secondary border-bottom border-5 pb-3 opacity-75">In Progress (@inProgressCount)</a></li>
+</ul>
+<ul class="d-flex list-unstyled text-uppercase fw-bold border-5 border-bottom pb-3" style="letter-spacing:3px">
+    <li><a href="#" class="text-decoration-none top-links text-black border-primary border-bottom border-5 pb-3">implemented (@implementedCount)</a></li>
+    <li><a href="#" class="text-decoration-none top-links text-secondary border-bottom border-5 pb-3 opacity-75">closed (@closedCount)</a></li>
+</ul>
