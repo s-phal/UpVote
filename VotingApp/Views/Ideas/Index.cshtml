@@ -145,9 +145,39 @@
                             </button>
                             <ul class="dropdown-menu border-0 shadow" aria-labelledby="dropdownMenuButton1">
                                 <li><a class="dropdown-item" href="#">Mark as Spam</a></li>
-                                <li><a class="dropdown-item" href="#">Delete Post</a></li>
+                                @{
+                                    if(idea.MemberId == _userManager.GetUserId(User))
+                                    {
+                                        <li><button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#exampleModal-@idea.Id">Delete Post</button></li>                                        
+                                    }
+                                }
                             </ul>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- Modal -->
+        <div class="modal" id="exampleModal-@idea.Id" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Delete post?</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure you want to delete your post? You can't undo this.
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+                        <form asp-action="Delete" asp-controller="ideas">
+                            <input type="hidden" name="Id" value="@idea.Id" />                        
+                        <button type="submit" class="btn btn-danger">Delete post</button>
+                        </form>
                     </div>
                 </div>
             </div>
