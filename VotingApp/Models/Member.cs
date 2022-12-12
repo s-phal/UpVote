@@ -10,12 +10,14 @@ namespace VotingApp.Models
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
         public string? DisplayName { get; set; } = GenerateDisplayName();
-
         public string? AvatarFileName { get; set; } = "default.png";
         [NotMapped]
         public IFormFile? AvatarImageFile { get; set; }
 
+        public string UserRole { get; set; } = "member";
+
         public virtual ICollection<Idea> Ideas { get; set; } = new HashSet<Idea>();
+        public virtual ICollection<Comment> Comments { get; set; } = new HashSet<Comment>();
 
 
 

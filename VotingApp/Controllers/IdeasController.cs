@@ -50,6 +50,8 @@ namespace VotingApp.Controllers
             var idea = await _context.Idea
                 .Include(i => i.Category)
                 .Include(i => i.Member)
+                .Include(i => i.Comments)
+                .ThenInclude(c => c.Member)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (idea == null)
             {
@@ -59,17 +61,6 @@ namespace VotingApp.Controllers
             return View(idea);
         }
 
-        // GET: Ideas/Create
-        public IActionResult Create()
-        {
-            ViewData["CategoryId"] = new SelectList(_context.Category, "Id", "Name");
-            ViewData["MemberId"] = new SelectList(_context.Users, "Id", "Id");
-            return View();
-        }
-
-        // POST: Ideas/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Title,Description,CreatedDate,PostedDate,CategoryId,MemberId")] Idea idea)
@@ -113,9 +104,6 @@ namespace VotingApp.Controllers
             return View(idea);
         }
 
-        // POST: Ideas/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,CreatedDate,PostedDate,CategoryId,MemberId")] Idea idea)
@@ -150,27 +138,8 @@ namespace VotingApp.Controllers
             return View(idea);
         }
 
-        // GET: Ideas/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _context.Idea == null)
-            {
-                return NotFound();
-            }
-
-            var idea = await _context.Idea
-                .Include(i => i.Category)
-                .Include(i => i.Member)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (idea == null)
-            {
-                return NotFound();
-            }
-
-            return View(idea);
-        }
-
         [Authorize]
+        [HttpPost]
         public async Task<IActionResult> AddVote(Idea idea)
         {
             // check to see if user has casted a vote yet:
@@ -208,14 +177,13 @@ namespace VotingApp.Controllers
             idea.MemberId = getCurrentValueFromDB.MemberId;
 
             _context.Update(idea);
-                _context.SaveChanges();
+            _context.SaveChanges();
             TempData["DisplayMessage"] = "Vote recorded!";
             return RedirectToAction("index", "ideas");
-
-
         }
 
         [Authorize]
+        [HttpPost]
         public async Task<IActionResult> RemoveVote(Idea idea)
         {
             var memberVoteCount =await _context.Vote
@@ -232,18 +200,34 @@ namespace VotingApp.Controllers
 
             return RedirectToAction("index", "ideas");
 
+        }
 
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> AddComment(Comment comment)
+        {
+
+           _context.Add(comment);
+            _context.SaveChanges();
+            return RedirectToAction("Details", "ideas", new {id = comment.IdeaId} );
+        }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> DeleteComment(Comment comment)
+        {
+            var theComment = await _context.Comment.FindAsync(comment.Id);
+
+            _context.Comment.Remove(theComment);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("details", "ideas", new { id = comment.IdeaId });
 
         }
 
-
-
-
-
-        // POST: Ideas/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [Authorize]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteIdea(int id)
         {
             if (_context.Idea == null)
             {
@@ -258,19 +242,6 @@ namespace VotingApp.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         private bool IdeaExists(int id)
         {

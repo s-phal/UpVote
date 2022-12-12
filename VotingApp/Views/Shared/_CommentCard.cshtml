@@ -1,0 +1,73 @@
+﻿@using Humanizer;
+@using Microsoft.AspNetCore.Identity;
+@model VotingApp.Models.Idea
+@inject UserManager<Member> _userManager;
+@{
+    string isAdmin = "is-admin";
+    string gradient = "gradient";
+    string textPrimary = "text-primary";
+    string textSecondary = "text-secondary";
+
+}
+
+<!-- Comments START -->
+@{
+    foreach (var comment in Model.Comments)
+    {
+        double timestamp = comment.CreatedDate.ToOADate();
+        var timeSpan = DateTime.FromOADate(timestamp).AddMicroseconds(-timestamp).Humanize();
+
+        <div class="@if (comment.Member.UserRole == "admin") { @isAdmin } comment-container position-relative row mb-2">
+            <div class="col-1">
+                <!--left side -->
+            </div>
+            <div class="col ms-1">
+                <div class="@if (comment.Member.UserRole == "admin") { @gradient } card-single mb-3 border-0 rounded-5 shadow-sm">
+                    <div class="row g-0">
+                        <div class="AVATAR-IMAGE col-md-1 ms-2 pt-3 text-center">
+                            <img src="~/uploads/avatars/@comment.Member.AvatarFileName" alt="avatar" class="avatar rounded-3" />
+                            @if (comment.Member.UserRole == "admin")
+                            {
+                                <span class="small text-primary fw-bold p-1 text-uppercase">admin</span>
+                            }
+                        </div>
+                        <div class="CARD-DETAILS col ms-1">
+                            <div class="card-body mb-3">
+                                <p class="card-text">@comment.Body</p>
+                            </div>
+                            <div class="d-flex bd-highlight mb-3">
+                                <div class="FIRSTNAME 
+                                @if (comment.Member.UserRole == "admin") { @textPrimary } 
+                                @if (comment.Member.UserRole != "admin") { @textSecondary } ps-3 bd-highlight fw-bold ">@comment.Member.FirstName</div>
+                                <div class="TIMESTAMP px-3 bd-highlight text-secondary opacity-50">@timeSpan</div>
+                                <div class="bd-highlight ms-auto pe-3 dropdown">
+                                    <button class="status-button border-0 rounded-5" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
+                                            <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" />
+                                        </svg>
+                                    </button>
+                                    <ul class="dropdown-menu border-0 shadow" aria-labelledby="dropdownMenuButton1">
+                                        <li><a class="dropdown-item" href="#">Mark as Spam</a></li>
+                                        @{
+                                            if (comment.Member.Id == _userManager.GetUserId(User))
+                                            {
+                                                <form asp-action="DeleteComment" asp-controller="ideas">
+                                                    <input type="hidden" name="Id" value="@comment.Id"/>
+                                                    <input type="hidden" name="IdeaId" value="@Model.Id"/>
+
+                                                    <li><button type="submit" class="dropdown-item" href="#">Delete Post</button></li>
+                                                </form>
+                                            }
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+<!-- Comments END-->

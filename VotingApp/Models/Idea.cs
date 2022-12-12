@@ -24,6 +24,7 @@ namespace VotingApp.Models
         public string MemberId { get; set; }
         public virtual Member? Member { get; set; }
 
+        public virtual ICollection<Comment> Comments { get; set; } = new HashSet<Comment>();
         public virtual ICollection<Vote> Votes { get; set; } = new HashSet<Vote>();        
 
     }

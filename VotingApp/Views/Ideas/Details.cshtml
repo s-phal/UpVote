@@ -15,8 +15,8 @@
     </svg>
     <a href="~/" class="fw-bold text-decoration-none text-black">All Ideas</a><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left me-2 ms-2" viewBox="0 0 16 16">
         <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z" />
-    </svg>@Model.Title
-    
+    </svg>
+    @Model.Title
 </div>
 <!-- Breadcrumbs END-->
 <!-- Card START -->
@@ -57,7 +57,6 @@
                             <div class="TICKET-STATUS ms-auto bd-highlight pe-2"><button class="status-closed border-0 rounded-5 text-white">Closed</button></div>
                         }
                     }
-
                 <div class="bd-highlight pe-3 dropdown">
                     <button class="status-button border-0 rounded-5" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
@@ -94,7 +93,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
 
-                <form asp-action="Delete" asp-controller="ideas">
+                <form asp-action="DeleteIdea" asp-controller="ideas">
                     <input type="hidden" name="Id" value="@Model.Id" />
                     <button type="submit" class="btn btn-danger">Delete post</button>
                 </form>
@@ -104,11 +103,6 @@
 </div>
 <!-- Model Idea END -->
 
-
-
-
-
-
 <!-- Buttons START-->
 <div class="d-flex bd-highlight mb-3">
     <div class="REPLY-BUTTON bd-highlight dropdown">
@@ -117,17 +111,19 @@
         </button>
         <ul class="dropdown-menu border-0 rounded-5 shadow-sm mt-1">
             <li style="width:450px" class="border-0">
-                <div class="modal-body rounded-5 mb-0">
-                    <form>
-                        <div class="mb-0">
-                            <textarea class="form-control-idea border-0 bg-gray-100" rows="4" id="message-text"></textarea>
-                        </div>
-                    </form>
-                </div>
-                <div class="d-flex border-0 ms-3 mb-3 mt-2">
-                    <button type="button" class="blue-button border-0 rounded-5 text-white col-5 me-3">Post Comment</button>
-                    <button type="button" class="grey-button border-0 rounded-5 col-4 me-auto" data-bs-dismiss="modal">Action</button>
-                </div>
+                <form asp-action="AddComment" asp-controller="ideas">
+                    <input type="hidden" name="MemberId" value="@_userManager.GetUserId(User)" />
+                    <input type="hidden" name="IdeaId" value="@Model.Id"/>
+                    <div class="modal-body rounded-5 mb-0">
+                            <div class="mb-0">
+                                <textarea name="Body" class="form-control-idea border-0 bg-gray-100" rows="4"></textarea>
+                            </div>
+                    </div>
+                    <div class="d-flex border-0 ms-3 mb-3 mt-2">
+                        <button type="submit" class="blue-button border-0 rounded-5 text-white col-5 me-3">Post Comment</button>
+                        <button type="button" class="grey-button border-0 rounded-5 col-4 me-auto" data-bs-dismiss="modal">Action</button>
+                    </div>
+                 </form>
             </li>
         </ul>
     </div>
@@ -202,193 +198,5 @@
 <!-- Buttons END -->
 
 <div class="comments-container position-relative">
-
-    <!-- Comments START -->
-    <div class="comment-container position-relative row mb-2">
-        <div class="col-1">
-            <!--left side -->
-        </div>
-        <div class="col ms-1">
-            <div class="card-single mb-3 border-0 rounded-5 shadow-sm">
-                <div class="row g-0">
-                    <div class="AVATAR-IMAGE col-md-1 ms-2 pt-3 text-center">
-                        <img src="https://source.unsplash.com/200x200/?face&crop=face&v3" alt="avatar" class="avatar rounded-3" />
-                    </div>
-
-                    <div class="CARD-DETAILS col ms-1">
-                        <div class="card-body mb-3">
-                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                        </div>
-                        <div class="d-flex bd-highlight mb-3">
-                            <div class="TIMESTAMP ps-3 bd-highlight text-secondary fw-bold">Sam</div>
-                            <div class="TIMESTAMP px-3 bd-highlight text-secondary opacity-50">10 hours ago</div>
-                            <div class="bd-highlight ms-auto pe-3 dropdown">
-                                <button class="status-button border-0 rounded-5" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
-                                        <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" />
-                                    </svg>
-                                </button>
-                                <ul class="dropdown-menu border-0 shadow" aria-labelledby="dropdownMenuButton1">
-                                    <li><a class="dropdown-item" href="#">Mark as Spam</a></li>
-                                    <li><a class="dropdown-item" href="#">Delete Post</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Comments END-->
-    <!-- Comments START -->
-    <div class="is-admin comment-container position-relative row mb-2">
-        <div class="col-1">
-            <!--left side -->
-        </div>
-        <div class="col ms-1">
-            <div class="gradient card-single mb-3 border-0 rounded-5 shadow-sm">
-                <div class="row g-0">
-                    <div class="AVATAR-IMAGE col-md-1 ms-2 pt-3 text-center">
-                        <img src="https://source.unsplash.com/200x200/?face&crop=face&v4" alt="avatar" class="avatar rounded-3" />
-                        <span class="small text-primary fw-bold p-1 text-uppercase">admin</span>
-                    </div>
-
-                    <div class="CARD-DETAILS col ms-1">
-                        <div class="card-body mb-3">
-                            <h5 class="card-title">Status Changed to "Under Consideration"</h5>
-                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                        </div>
-                        <div class="d-flex bd-highlight mb-3">
-                            <div class="TIMESTAMP ps-3 bd-highlight text-primary fw-bold">Andrea</div>
-                            <div class="TIMESTAMP px-3 bd-highlight text-secondary opacity-50">10 hours ago</div>
-                            <div class="bd-highlight ms-auto pe-3 dropdown">
-                                <button class="status-button border-0 rounded-5" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
-                                        <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" />
-                                    </svg>
-                                </button>
-                                <ul class="dropdown-menu border-0 shadow" aria-labelledby="dropdownMenuButton1">
-                                    <li><a class="dropdown-item" href="#">Mark as Spam</a></li>
-                                    <li><a class="dropdown-item" href="#">Delete Post</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Comments END-->
-    <!-- Comments START -->
-    <div class="comment-container position-relative row mb-2">
-        <div class="col-1">
-            <!--left side -->
-        </div>
-        <div class="col ms-1">
-            <div class="card-single mb-3 border-0 rounded-5 shadow-sm">
-                <div class="row g-0">
-                    <div class="AVATAR-IMAGE col-md-1 ms-2 pt-3 text-center">
-                        <img src="https://source.unsplash.com/200x200/?face&crop=face&v3" alt="avatar" class="avatar rounded-3" />
-                    </div>
-
-                    <div class="CARD-DETAILS col ms-1">
-                        <div class="card-body mb-3">
-                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                        </div>
-                        <div class="d-flex bd-highlight mb-3">
-                            <div class="TIMESTAMP ps-3 bd-highlight text-secondary fw-bold">Sam</div>
-                            <div class="TIMESTAMP px-3 bd-highlight text-secondary opacity-50">10 hours ago</div>
-                            <div class="bd-highlight ms-auto pe-3 dropdown">
-                                <button class="status-button border-0 rounded-5" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
-                                        <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" />
-                                    </svg>
-                                </button>
-                                <ul class="dropdown-menu border-0 shadow" aria-labelledby="dropdownMenuButton1">
-                                    <li><a class="dropdown-item" href="#">Mark as Spam</a></li>
-                                    <li><a class="dropdown-item" href="#">Delete Post</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Comments END-->
-    <!-- Comments START -->
-    <div class="comment-container position-relative row mb-2">
-        <div class="col-1">
-            <!--left side -->
-        </div>
-        <div class="col ms-1">
-            <div class="card-single mb-3 border-0 rounded-5 shadow-sm">
-                <div class="row g-0">
-                    <div class="AVATAR-IMAGE col-md-1 ms-2 pt-3 text-center">
-                        <img src="https://source.unsplash.com/200x200/?face&crop=face&v3" alt="avatar" class="avatar rounded-3" />
-                    </div>
-
-                    <div class="CARD-DETAILS col ms-1">
-                        <div class="card-body mb-3">
-                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                        </div>
-                        <div class="d-flex bd-highlight mb-3">
-                            <div class="TIMESTAMP ps-3 bd-highlight text-secondary fw-bold">Sam</div>
-                            <div class="TIMESTAMP px-3 bd-highlight text-secondary opacity-50">10 hours ago</div>
-                            <div class="bd-highlight ms-auto pe-3 dropdown">
-                                <button class="status-button border-0 rounded-5" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
-                                        <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" />
-                                    </svg>
-                                </button>
-                                <ul class="dropdown-menu border-0 shadow" aria-labelledby="dropdownMenuButton1">
-                                    <li><a class="dropdown-item" href="#">Mark as Spam</a></li>
-                                    <li><a class="dropdown-item" href="#">Delete Post</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Comments END-->
-    <!-- Comments START -->
-    <div class="comment-container position-relative row mb-2">
-        <div class="col-1">
-            <!--left side -->
-        </div>
-        <div class="col ms-1">
-            <div class="card-single mb-3 border-0 rounded-5 shadow-sm">
-                <div class="row g-0">
-                    <div class="AVATAR-IMAGE col-md-1 ms-2 pt-3 text-center">
-                        <img src="https://source.unsplash.com/200x200/?face&crop=face&v3" alt="avatar" class="avatar rounded-3" />
-                    </div>
-
-                    <div class="CARD-DETAILS col ms-1">
-                        <div class="card-body mb-3">
-                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                        </div>
-                        <div class="d-flex bd-highlight mb-3">
-                            <div class="TIMESTAMP ps-3 bd-highlight text-secondary fw-bold">Sam</div>
-                            <div class="TIMESTAMP px-3 bd-highlight text-secondary opacity-50">10 hours ago</div>
-                            <div class="bd-highlight ms-auto pe-3 dropdown">
-                                <button class="status-button border-0 rounded-5" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
-                                        <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" />
-                                    </svg>
-                                </button>
-                                <ul class="dropdown-menu border-0 shadow" aria-labelledby="dropdownMenuButton1">
-                                    <li><a class="dropdown-item" href="#">Mark as Spam</a></li>
-                                    <li><a class="dropdown-item" href="#">Delete Post</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Comments END-->
+    <partial name="_CommentCard" />
 </div>
