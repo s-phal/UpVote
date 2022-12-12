@@ -16,11 +16,11 @@
     <form asp-action="create" asp-controller="ideas">
         <div class="mb-3">
         <input type="hidden" name="MemberId" value="@_userManager.GetUserId(User)"/>
-        <input type="text" name="Title" class="form-control-idea bg-gray-100 border-0" placeholder="Your Idea">
+        <input type="text" name="Title" class="form-control-idea bg-gray-100 border-0" placeholder="Your Idea" required>
         </div>
         <div class="mb-3">
-            <select name="CategoryId" class="form-select bg-gray-100 border-0 text-secondary" aria-label=".form-select-sm example">
-                <option selected="">Category</option>
+            <select name="CategoryId" class="form-select bg-gray-100 border-0 text-secondary" aria-label=".form-select-sm example" required>
+                <option selected disabled value="">Choose a Category</option>
                 @{
                     foreach (var catName in category)
                         {
@@ -30,7 +30,7 @@
             </select>
         </div>
         <div class="mb-4">
-            <textarea name="Description" class="form-control-idea bg-gray-100 border-0" rows="3" placeholder="Describe your idea"></textarea>
+            <textarea name="Description" class="form-control-idea bg-gray-100 border-0" rows="3" placeholder="Describe your idea" required></textarea>
         </div>
         <div class="d-flex">
             <div class="col">

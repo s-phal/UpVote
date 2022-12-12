@@ -88,8 +88,7 @@ namespace VotingApp.Controllers
                 _context.Add(vote);
 				await _context.SaveChangesAsync();
 
-                // TODO redirect to details page
-				return RedirectToAction(nameof(Index));
+				return RedirectToAction("details","ideas", new { id = idea.Id });
             }
             ViewData["CategoryId"] = new SelectList(_context.Category, "Id", "Id", idea.CategoryId);
             ViewData["MemberId"] = new SelectList(_context.Users, "Id", "Id", idea.MemberId);
@@ -172,33 +171,43 @@ namespace VotingApp.Controllers
         }
 
         [Authorize]
-        public IActionResult AddVote(Idea idea)
+        public async Task<IActionResult> AddVote(Idea idea)
         {
+            // check to see if user has casted a vote yet:
+            // find the row that matches both UserID and IdeaID
+            // record a new vote if the row can not be found (user hasn't voted)
             var memberVoteCount = _context.Vote
                 .Where(v => v.IdeaId == idea.Id && v.MemberId == _userManager.GetUserId(User))
                 .ToList();
 
             if(memberVoteCount.Count() == 0)
-            {
-                
+            {                
                 Vote vote = new Vote()
                 {
                     IdeaId = idea.Id,
                     MemberId = idea.MemberId,                    
                 };
 
-                idea.UpdatedDate = DateTime.UtcNow;
-
                 _context.Add(vote);
-                _context.Update(idea);
-                _context.SaveChanges();
-
             }
             else
             {
                 TempData["DisplayMessage"] = "You already Voted!";
                 return RedirectToAction("index", "ideas");
             }
+
+            // we need to ensure that on post update, Idea
+            // properties does not get overridden.
+            // use the current values from the database
+            // in place of the instantiated data.
+            var getCurrentValueFromDB = await _context.Idea
+                .AsNoTracking()
+                .FirstOrDefaultAsync(i => i.Id == idea.Id);
+
+            idea.CreatedDate = getCurrentValueFromDB.CreatedDate;
+
+            _context.Update(idea);
+                _context.SaveChanges();
             TempData["DisplayMessage"] = "Vote recorded!";
             return RedirectToAction("index", "ideas");
 
