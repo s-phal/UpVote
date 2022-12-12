@@ -114,9 +114,16 @@
                 <div class="CARD-DETAILS col-md-9">
                     <div class="card-body mb-3">
                         <h5 class="card-title">@idea.Title</h5>
-                        @{// TODO text truncation
+                        @{
+                            if (idea.Description.Length >= 261)
+                            {
+                                <p class="card-text">@idea.Description.Substring(0,260)...</p>
+                            }
+                            else
+                            {                                
+                                <p class="card-text">@idea.Description</p>
+                            }
                         }
-                        <p class="card-text">@idea.Description</p>
                     </div>
                     <div class="d-flex bd-highlight mb-3">
                         <div class="TIMESTAMP px-3 bd-highlight text-secondary opacity-50">10 hours ago</div>

@@ -35,7 +35,3 @@ namespace VotingApp.Controllers
         }
     }
 }
-
-
-
-// TODO Truncate body text to 3 lines
