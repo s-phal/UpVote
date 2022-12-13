@@ -19,30 +19,33 @@ namespace VotingApp.Controllers
             _context = context;
         }
 
-        // GET: Categories
-        public async Task<IActionResult> Index()
-        {
-              return _context.Category != null ? 
-                          View(await _context.Category.ToListAsync()) :
-                          Problem("Entity set 'ApplicationDbContext.Category'  is null.");
-        }
 
         // GET: Categories/Details/5
-        public async Task<IActionResult> Details(int? id)
+        [Route("category/")]
+        [Route("category/{name}")]
+        public async Task<IActionResult> Index(string? name)
         {
-            if (id == null || _context.Category == null)
+            if (name == null || _context.Category == null)
             {
-                return NotFound();
+                return RedirectToAction("index", "ideas");
+            }
+           
+            var ideas = await _context.Idea
+                .Include(i => i.Category)
+                .Where(c => c.Category.Name.ToLower() == name.ToLower())
+                .ToListAsync();                
+
+            if (name == null)
+            {
+                return RedirectToAction("index", "ideas");
             }
 
-            var category = await _context.Category
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (category == null)
+            if (ideas.Count() == 0)
             {
-                return NotFound();
+                return RedirectToAction("index", "ideas");
             }
 
-            return View(category);
+            return View(ideas);
         }
 
         // GET: Categories/Create

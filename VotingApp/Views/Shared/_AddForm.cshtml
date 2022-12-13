@@ -4,6 +4,7 @@
 @inject ApplicationDbContext _context;
 
 @{
+    // get list of categories
     var category = _context.Category.ToList();
 }
 
@@ -21,7 +22,7 @@
         <div class="mb-3">
             <select name="CategoryId" class="form-select bg-gray-100 border-0 text-secondary" aria-label=".form-select-sm example" required>
                 <option selected disabled value="">Choose a Category</option>
-                @{
+                @{ //display list of categories
                     foreach (var catName in category)
                         {
                            <option value="@catName.Id">@catName.Name</option>

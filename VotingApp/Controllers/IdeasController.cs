@@ -10,6 +10,9 @@ using Microsoft.EntityFrameworkCore;
 using VotingApp.Data;
 using VotingApp.Models;
 
+
+// TODO order by vote count
+
 namespace VotingApp.Controllers
 {
     public class IdeasController : Controller

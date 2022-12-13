@@ -1,7 +1,6 @@
 ﻿// TODO slug
 // TODO category nav
-// TODO comment count
 // TODO pagination
 // TODO status
-// TODO
+// TODO fix all Route attributes to home page for null and page not found
 
