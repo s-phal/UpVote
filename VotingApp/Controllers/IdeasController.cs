@@ -31,6 +31,7 @@ namespace VotingApp.Controllers
                 .Include(i => i.Category)
                 .Include(i => i.Member)
                 .Include(i => i.Votes)
+                .Include(i => i.Comments)
                 //.OrderByDescending() TODO Order by vote count
                 .ToListAsync();
                 
@@ -50,8 +51,9 @@ namespace VotingApp.Controllers
             var idea = await _context.Idea
                 .Include(i => i.Category)
                 .Include(i => i.Member)
+                .Include(i => i.Votes)
                 .Include(i => i.Comments)
-                .ThenInclude(c => c.Member)
+                    .ThenInclude(c => c.Member)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (idea == null)
             {
@@ -225,7 +227,7 @@ namespace VotingApp.Controllers
             _context.Update(idea);
             _context.SaveChanges();
             TempData["DisplayMessage"] = "Vote recorded!";
-            return RedirectToAction("index", "ideas");
+            return RedirectToAction("details", "ideas", new { id = idea.Id });
         }
 
         [Authorize]
@@ -241,10 +243,11 @@ namespace VotingApp.Controllers
                 _context.Vote.Remove(memberVoteCount);
                 await _context.SaveChangesAsync();
                 TempData["DisplayMessage"] = "Vote removed!";
-                return RedirectToAction("index", "ideas");
+                return RedirectToAction("details", "ideas", new { id = idea.Id });
             }
 
-            return RedirectToAction("index", "ideas");
+            return RedirectToAction("details", "ideas", new { id = idea.Id });
+
 
         }
 

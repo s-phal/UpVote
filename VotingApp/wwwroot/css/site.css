@@ -111,7 +111,6 @@ body {
     transition: all 0.25s ease-in;
 }
 
-
 .grey-button {
     background-color: #bfbfbf;
     font-weight: 500 !important;
@@ -124,6 +123,40 @@ body {
 
 .grey-button:hover {
     background-color: #d8d8d8;
+    transition: all 0.25s ease-in;
+}
+
+
+
+
+
+.vote-button-details {
+    background-color: #bfbfbf;
+    font-weight: 500 !important;
+    padding-top: 0.75rem !important;
+    padding-bottom: 0.75rem !important;
+    padding-right: 1.8rem !important;
+    padding-left: 1.8rem !important;
+    font-size: .90rem;
+}
+
+.vote-button-details:hover {
+    background-color: #d8d8d8;
+    transition: all 0.25s ease-in;
+}
+
+.remove-vote-button-details {
+    background-color: #ffa400;
+    font-weight: 500 !important;
+    padding-top: 0.75rem !important;
+    padding-bottom: 0.75rem !important;
+    padding-right: 1.8rem !important;
+    padding-left: 1.8rem !important;
+    font-size: .90rem;
+}
+
+.remove-vote-button-details:hover {
+    background-color: #ffb676;
     transition: all 0.25s ease-in;
 }
 

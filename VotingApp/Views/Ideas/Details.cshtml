@@ -1,18 +1,33 @@
 ﻿@using Humanizer;
 @using Microsoft.AspNetCore.Identity;
+@using VotingApp.Data;
 @model VotingApp.Models.Idea
 @inject UserManager<Member> _userManager;
 @inject SignInManager<Member> _signInManager;
+@inject ApplicationDbContext _context;
 
 
 @{
+    // convert timespan to human readable
     double timestamp = Model.CreatedDate.ToOADate();
     var timeSpan = DateTime.FromOADate(timestamp).AddMicroseconds(-timestamp).Humanize();
 
-
-    // text colors for moderated Ideas
+    // set text colors for moderated posts
     string textModerated = "text-danger opacity-50";
     string textBlack = "text-black";
+
+    // get vote count
+    var voteCount = Model.Votes.Where(vote => vote.IdeaId == Model.Id).Count();
+
+    // get comment count
+    var commentCount = Model.Comments.Where(c => c.IdeaId == Model.Id).Count();
+
+    // If Available, Display Message Banner(passed from result of controller)
+    var displayMessage = "";
+    if (TempData.ContainsKey("DisplayMessage"))
+    {
+        displayMessage = TempData["DisplayMessage"].ToString();
+    }
 }
 
 <!-- Breadcrumbs START-->
@@ -26,6 +41,19 @@
     @Model.Title
 </div>
 <!-- Breadcrumbs END-->
+
+@{ // displays notifications after certain actions
+    if (displayMessage != "")
+    {
+        <!-- Display Message START-->
+        <div class="alert alert-danger alert-dismissible" role="alert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            @displayMessage
+        </div>
+        <!-- Display Message END--> 
+    }
+}
+
 <!-- Card START -->
 <div class="card-single mb-3 border-0 rounded-5 shadow-sm">
     <div class="row g-0">
@@ -41,8 +69,8 @@
                 <div class="TIMESTAMP ps-3 bd-highlight text-secondary fw-bold">@Model.Member.FirstName</div>
                 <div class="TIMESTAMP px-3 bd-highlight text-secondary opacity-50">@timeSpan</div>
                 <div class="CATEGORY-NAME px-3 bd-highlight text-secondary opacity-50">@Model.Category.Name</div>
-                <div class="COMMENT-COUNT bd-highlight text-dark">3 Comments</div>
-                    @{
+                <div class="COMMENT-COUNT bd-highlight text-dark">@commentCount Comments</div>
+                    @{ // checks status of posts and displays the colors accordingly
                         if (Model.CurrentStatus == "open")
                         {
                             <div class="TICKET-STATUS ms-auto bd-highlight pe-2"><button class="status-open border-0 rounded-5">Open</button></div>
@@ -74,10 +102,9 @@
                             </button>
                             <ul class="dropdown-menu border-0 shadow" aria-labelledby="dropdownMenuButton1">
                                 <li><a class="dropdown-item" href="#">Mark as Spam</a></li>
-                                @{
-                                    // get user role of signed in User
+                                @{  // get role of signed in User
                                     var getUserRole = await _userManager.GetUserAsync(User);
-                                    var userRole = getUserRole.UserRole;
+                                    string userRole = getUserRole.UserRole;
 
                                     if (userRole == "admin")
                                     {
@@ -96,57 +123,6 @@
     </div>
 </div>
 <!-- Card END -->
-
-<!-- Delete Modal START -->
-<div class="modal" id="deleteModal-@Model.Id" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Delete post?</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                Are you sure you want to delete your post? You can't undo this.
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-
-                <form asp-action="DeleteIdea" asp-controller="ideas">
-                    <input type="hidden" name="Id" value="@Model.Id" />
-                    <button type="submit" class="btn btn-danger">Delete post</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Delete Model END -->
-
-<!-- Moderate Modal START -->
-<form asp-action="ModerateIdea" asp-controller="ideas">
-    <input type="hidden" name="Id" value="@Model.Id" />
-    <input type="hidden" name="MemberId" value="@Model.MemberId" />
-    <input type="hidden" name="CategoryId" value="@Model.CategoryId" />
-    <input type="hidden" name="Title" value="@Model.Title" />
-
-    <div class="modal" id="moderateModal-@Model.Id" tabindex="-1" aria-labelledby="moderateModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5">Moderate post?</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <textarea class="form-control" name="Description" >Content has been removed by an Admin.</textarea>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-warning">Update post</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</form>
-<!-- Moderate Model END -->
 
 <!-- Buttons START-->
 <div class="d-flex bd-highlight mb-3">
@@ -234,14 +210,99 @@
 
     <div class="VOTE-COUNT ms-auto bd-highlight me-3">
         <div class="text-center border-0 bg-white px-2 py-1 rounded-5">
-            <div><h6 class="mb-0 fw-bold">12</h6></div>
+            <div><h6 class="mb-0 fw-bold">@voteCount</h6></div>
             <div><p class="mb-0 small text-secondary">Votes</p></div>
         </div>
     </div>
-    <div class="VOTE-BUTTON bd-highlight dropdown"><button class="grey-button border-0 rounded-5">Vote</button></div>
+    <div class="VOTE-BUTTON bd-highlight dropdown">
+         @{
+            // display button based on whether the user voted on the Idea or not
+            var getMemberVote = _context.Vote
+                .Where(v => v.IdeaId == Model.Id && v.MemberId == _userManager.GetUserId(User))
+                .ToList();
+
+            if(getMemberVote.Count == 0)
+            {
+                <form asp-action ="AddVote" asp-controller="ideas">
+                    <input type="hidden" name="Id" value="@Model.Id" />
+                    <input type="hidden" name="Title" value="@Model.Title" />
+                    <input type="hidden" name="CategoryId" value="@Model.Category.Id" />
+                    <input type="hidden" name="Description" value="@Model.Description" />
+                <input type="hidden" name="MemberId" value="@_userManager.GetUserId(User)"/>
+                <button type="submit" class="vote-button-details border-0 rounded-5">Vote</button>
+                </form>
+            }
+            if(getMemberVote.Count != 0)
+            {
+                <form asp-action="RemoveVote" asp-controller="ideas">
+                    <input type="hidden" name="Id" value="@Model.Id" />
+                    <input type="hidden" name="Title" value="@Model.Title" />
+                    <input type="hidden" name="CategoryId" value="@Model.Category.Id" />
+                    <input type="hidden" name="Description" value="@Model.Description" />
+                    <input type="hidden" name="MemberId" value="@_userManager.GetUserId(User)" />
+                    <button type="submit" class="remove-vote-button-details border-0 rounded-5 text-white">Remove Vote</button>
+                </form>
+            }
+        }
+
+
+    </div>
 </div>
 <!-- Buttons END -->
 
+<!-- Comment Container START -->
 <div class="comments-container position-relative">
     <partial name="_CommentCard" />
 </div>
+<!-- Comment Container END -->
+
+<!-- Delete Modal START -->
+<div class="modal" id="deleteModal-@Model.Id" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Delete post?</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete your post? You can't undo this.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+                <form asp-action="DeleteIdea" asp-controller="ideas">
+                    <input type="hidden" name="Id" value="@Model.Id" />
+                    <button type="submit" class="btn btn-danger">Delete post</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Delete Model END -->
+
+<!-- Moderate Modal START -->
+<form asp-action="ModerateIdea" asp-controller="ideas">
+    <input type="hidden" name="Id" value="@Model.Id" />
+    <input type="hidden" name="MemberId" value="@Model.MemberId" />
+    <input type="hidden" name="CategoryId" value="@Model.CategoryId" />
+    <input type="hidden" name="Title" value="@Model.Title" />
+
+    <div class="modal" id="moderateModal-@Model.Id" tabindex="-1" aria-labelledby="moderateModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Moderate post?</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <textarea class="form-control" name="Description" >Content has been removed by an Admin.</textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-warning">Update post</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<!-- Moderate Model END -->

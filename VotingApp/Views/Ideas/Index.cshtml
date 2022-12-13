@@ -16,12 +16,12 @@
         displayMessage = TempData["DisplayMessage"].ToString();
     }
 
-
-
-
     // text colors for moderated Ideas
     string textModerated = "text-danger opacity-50";
     string textBlack = "text-black";
+
+
+    
 }
 
 <!-- Filters START -->
@@ -73,7 +73,12 @@
 @{
     foreach (var idea in Model)
     {
+        // get vote count
         var voteCount = idea.Votes.Where(vote => vote.IdeaId == idea.Id).Count();
+
+        //get comment count
+        var commentCount = idea.Comments.Where(c => c.IdeaId == idea.Id).Count();
+
         var ideaOwner = await _userManager.FindByIdAsync(idea.MemberId);
 
         double timestamp = idea.CreatedDate.ToOADate();
@@ -144,7 +149,7 @@
                         <div class="CATEGORY-NAME px-3 bd-highlight text-secondary opacity-50">@idea.Category.Name</div> @{
                             // TODO hotlink category
                         }
-                        <div class="COMMENT-COUNT bd-highlight text-dark">3 Comments</div>
+                        <div class="COMMENT-COUNT bd-highlight text-dark">@commentCount Comments</div>
                         @{
                             if (idea.CurrentStatus == "open")
                             {
