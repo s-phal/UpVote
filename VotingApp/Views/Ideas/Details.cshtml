@@ -42,17 +42,7 @@
 </div>
 <!-- Breadcrumbs END-->
 
-@{ // displays notifications after certain actions
-    if (displayMessage != "")
-    {
-        <!-- Display Message START-->
-        <div class="alert alert-danger alert-dismissible" role="alert">
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            @displayMessage
-        </div>
-        <!-- Display Message END--> 
-    }
-}
+<partial name="_DisplayMessage" />
 
 <!-- Card START -->
 <div class="card-single mb-3 border-0 rounded-5 shadow-sm">
@@ -223,7 +213,7 @@
 
             if(getMemberVote.Count == 0)
             {
-                <form asp-action ="AddVote" asp-controller="ideas">
+                <form asp-action ="AddVoteDetails" asp-controller="ideas">
                     <input type="hidden" name="Id" value="@Model.Id" />
                     <input type="hidden" name="Title" value="@Model.Title" />
                     <input type="hidden" name="CategoryId" value="@Model.Category.Id" />
@@ -234,13 +224,13 @@
             }
             if(getMemberVote.Count != 0)
             {
-                <form asp-action="RemoveVote" asp-controller="ideas">
+                <form asp-action="RemoveVoteDetails" asp-controller="ideas">
                     <input type="hidden" name="Id" value="@Model.Id" />
                     <input type="hidden" name="Title" value="@Model.Title" />
                     <input type="hidden" name="CategoryId" value="@Model.Category.Id" />
                     <input type="hidden" name="Description" value="@Model.Description" />
                     <input type="hidden" name="MemberId" value="@_userManager.GetUserId(User)" />
-                    <button type="submit" class="remove-vote-button-details border-0 rounded-5 text-white">Remove Vote</button>
+                    <button type="submit" class="remove-vote-button-details border-0 rounded-5 text-white text-uppercase">Voted</button>
                 </form>
             }
         }

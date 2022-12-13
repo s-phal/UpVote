@@ -32,19 +32,34 @@ namespace VotingApp.Controllers
             return View();
         }
 
-        [Route("search/")]
+        [Route("search/{searchTerm?}")]
         public async Task<IActionResult> Search(string? searchTerm)
         {
             if(searchTerm == null)
             {
                 return RedirectToAction("index", "ideas");
             }
+
+
             var searchResults = await _context.Idea
                 .Where(i => i.Title.ToLower().Contains(searchTerm.ToLower()) ||
                             i.Description.ToLower().Contains(searchTerm.ToLower()))
                 .OrderByDescending(i => i.CreatedDate)
                 .ToListAsync();
+
+            if(searchResults.Count() == 0)
+            {
+                TempData["DisplayMessage"] = "Error - your query returned no results.";
+                return View(searchResults);
+
+            }
+
             return View(searchResults);
+        }
+
+        public IActionResult Redirect()
+        {
+            return Redirect("~/status/all");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

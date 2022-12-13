@@ -1,20 +1,28 @@
 ﻿@using VotingApp.Data;
 @inject ApplicationDbContext _context;
+@using Microsoft.AspNetCore.Http.Extensions
 
 @{
-    var openCount = _context.Idea.Where(i => i.CurrentStatus == "open").ToList().Count();
+    // get total Count of each status
+    var totalCount = _context.Idea.ToList().Count();
     var consideringCount = _context.Idea.Where(i => i.CurrentStatus == "considering").ToList().Count();
     var inProgressCount = _context.Idea.Where(i => i.CurrentStatus == "in-progress").ToList().Count();
     var implementedCount = _context.Idea.Where(i => i.CurrentStatus == "implemented").ToList().Count();
     var closedCount = _context.Idea.Where(i => i.CurrentStatus == "closed").ToList().Count();
 
+    // get current page url
+    string getStatus = Context.Request.GetDisplayUrl();
+    string borderPrimary = "border-primary text-dark";
 }
-<ul class="d-flex list-unstyled text-uppercase fw-bold border-5 border-bottom pb-3" style="letter-spacing:3px">
-    <li><a href="#" class="text-decoration-none top-links text-black border-primary border-bottom border-5 pb-3">all ideas (@openCount)</a></li>
-    <li><a href="#" class="text-decoration-none top-links text-secondary border-bottom border-5 pb-3 opacity-75">Considering (@consideringCount)</a></li>
-    <li><a href="#" class="text-decoration-none top-links text-secondary border-bottom border-5 pb-3 opacity-75">In Progress (@inProgressCount)</a></li>
-</ul>
-<ul class="d-flex list-unstyled text-uppercase fw-bold border-5 border-bottom pb-3" style="letter-spacing:3px">
-    <li><a href="#" class="text-decoration-none top-links text-black border-primary border-bottom border-5 pb-3">implemented (@implementedCount)</a></li>
-    <li><a href="#" class="text-decoration-none top-links text-secondary border-bottom border-5 pb-3 opacity-75">closed (@closedCount)</a></li>
-</ul>
+
+<nav class="d-none d-md-none d-lg-none d-xl-block d-xl-flex align-items-center justify-content-between small opacity-75">
+    <ul class="d-flex list-unstyled text-uppercase fw-bold border-5 border-bottom pb-3" style="letter-spacing:3px">
+        <li><a href="~/status/all" class="@if(getStatus.Contains("status/all")) { @borderPrimary } text-decoration-none top-links border-bottom border-5 pb-3">all ideas (@totalCount)</a></li>
+        <li><a href="~/status/considering" class="@if(getStatus.Contains("status/considering")) { @borderPrimary } text-decoration-none top-links border-bottom border-5 pb-3">Considering (@consideringCount)</a></li>
+        <li><a href="~/status/in-progress" class="@if(getStatus.Contains("status/in-progress")) { @borderPrimary } text-decoration-none top-links border-bottom border-5 pb-3">In Progress (@inProgressCount)</a></li>
+    </ul>
+    <ul class="d-flex list-unstyled text-uppercase fw-bold border-5 border-bottom pb-3" style="letter-spacing:3px">
+        <li><a href="~/status/implemented" class="@if(getStatus.Contains("status/implemented")) { @borderPrimary } text-decoration-none top-links border-bottom border-5 pb-3">implemented (@implementedCount)</a></li>
+        <li><a href="~/status/closed" class="@if(getStatus.Contains("status/closed")) { @borderPrimary } text-decoration-none top-links border-bottom border-5 pb-3">closed (@closedCount)</a></li>
+    </ul>
+</nav>

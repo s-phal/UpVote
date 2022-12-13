@@ -1,0 +1,21 @@
+﻿@{
+    // If Available, Display Message Banner(passed from result of controller)
+    var displayMessage = "";
+    if (TempData.ContainsKey("DisplayMessage"))
+    {
+        displayMessage = TempData["DisplayMessage"].ToString();
+    }
+
+    if (displayMessage != "")
+    {
+        string displayMessageClass;
+        if (displayMessage.Contains("Error") || displayMessage.Contains("removed")) { displayMessageClass = "danger"; } else { displayMessageClass = "success"; }
+
+        <div class="alert alert-@displayMessageClass alert-dismissible" role="alert">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            @displayMessage
+        </div>
+    }
+}  
+
+

@@ -50,7 +50,7 @@ namespace VotingApp
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=ideas}/{action=Index}/{id?}");
+                pattern: "{controller=home}/{action=redirect}/{string?}");
             app.MapRazorPages();
 
             app.Run();

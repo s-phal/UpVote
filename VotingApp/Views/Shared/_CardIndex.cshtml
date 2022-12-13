@@ -9,12 +9,7 @@
 
 
 @{
-    // If Available, Display Message Banner(passed from result of controller)
-    var displayMessage = "";
-    if (TempData.ContainsKey("DisplayMessage"))
-    {
-        displayMessage = TempData["DisplayMessage"].ToString();
-    }
+
 
     // text colors for moderated Ideas
     string textModerated = "text-danger opacity-50";
@@ -40,6 +35,8 @@
             }
         </select>
     </div>
+
+
     <div class="FILTER col-lg-3 mb-3 mb-lg-0">
         <select name="filter" class="form-select border-0" aria-label=".form-select-sm example">
             <option selected>Filter</option>
@@ -62,17 +59,9 @@
     </div>
 </div>
 <!-- Filters END -->
+
 <!-- Display Message START-->
-@{
-    // Placeholder for Displaying Message Banner
-    if (displayMessage != "")
-    {
-        <div class="alert alert-danger alert-dismissible" role="alert">
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            @displayMessage
-        </div>
-    }
-}
+<partial name="_DisplayMessage" />
 <!-- Display Message END-->
 @{
     foreach (var idea in Model)
@@ -88,41 +77,49 @@
         double timestamp = idea.CreatedDate.ToOADate();
         var timeSpan = DateTime.FromOADate(timestamp).AddMicroseconds(-timestamp).Humanize();
 
+        var getMemberVote = _context.Vote
+        .Where(v => v.IdeaId == idea.Id && v.MemberId == _userManager.GetUserId(User))
+        .ToList();
+
         <!--Index Card START -->
         <div class="card mb-3 border-0 rounded-5 shadow">
             <div class="row g-0">
                 <div class="VOTE-STATS d-none d-md-none d-xl-block col-md-2 border-end">
                     <div class="card-body text-center">
-                        <h5 class="card-title">@voteCount</h5>
+                        @if (getMemberVote.Count() == 0)
+                        {
+                        <h5 class="card-title">@voteCount</h5>                            
+                        }
+                        @if (getMemberVote.Count() != 0)
+                        {
+                        <h5 class="card-title text-voted">@voteCount</h5>
+                        }
+
                         <p class="card-text">Votes</p>
 
                         @{
+
                             // display button based on whether the user voted on the Idea or not
-                            var getMemberVote = _context.Vote
-                            .Where(v => v.IdeaId == idea.Id && v.MemberId == _userManager.GetUserId(User))
-                            .ToList();
-
-
                             if (getMemberVote.Count == 0)
                             {
-                                <form asp-action="AddVote" asp-controller="ideas">
+                                <form asp-action="AddVoteIndex" asp-controller="ideas">
                                     <input type="hidden" name="Id" value="@idea.Id" />
                                     <input type="hidden" name="Title" value="@idea.Title" />
                                     <input type="hidden" name="CategoryId" value="@idea.Category.Id" />
                                     <input type="hidden" name="Description" value="@idea.Description" />
                                     <input type="hidden" name="MemberId" value="@_userManager.GetUserId(User)" />
-                                    <button type="submit" class="vote border-0 rounded-5">Vote</button>
+                                    <button type="submit" class="vote border-0 rounded-5 text-uppercase">Vote</button>
                                 </form>
                             }
                             if (getMemberVote.Count != 0)
                             {
-                                <form asp-action="RemoveVote" asp-controller="ideas">
+                                <form asp-action="RemoveVoteIndex" asp-controller="ideas">
                                     <input type="hidden" name="Id" value="@idea.Id" />
                                     <input type="hidden" name="Title" value="@idea.Title" />
                                     <input type="hidden" name="CategoryId" value="@idea.Category.Id" />
                                     <input type="hidden" name="Description" value="@idea.Description" />
                                     <input type="hidden" name="MemberId" value="@_userManager.GetUserId(User)" />
-                                    <button type="submit" class="remove-vote border-0 rounded-5 text-white">Remove Vote</button>
+                                    <button type="submit" class="voted border-0 rounded-5 text-white text-uppercase">Voted</button>
                                 </form>
                             }
                         }
