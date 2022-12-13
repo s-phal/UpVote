@@ -18,6 +18,8 @@ namespace VotingApp.Models
         [DataType(DataType.Date)]
         public DateTime UpdatedDate { get; set; } = DateTime.UtcNow;
 
+        public bool IsModerated { get; set; } = false;
+
         public int CategoryId { get; set; }
         public virtual Category? Category { get; set; }
 

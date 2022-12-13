@@ -2,7 +2,9 @@
 @using Microsoft.AspNetCore.Identity;
 @model VotingApp.Models.Idea
 @inject UserManager<Member> _userManager;
+@inject SignInManager<Member> _signInManager;
 @{
+    // string variables to use if comment belongs to an Admin
     string isAdmin = "is-admin";
     string gradient = "gradient";
     string textPrimary = "text-primary";
@@ -16,6 +18,7 @@
     {
         double timestamp = comment.CreatedDate.ToOADate();
         var timeSpan = DateTime.FromOADate(timestamp).AddMicroseconds(-timestamp).Humanize();
+
 
         <div class="@if (comment.Member.UserRole == "admin") { @isAdmin } comment-container position-relative row mb-2">
             <div class="col-1">
@@ -41,7 +44,9 @@
                                 @if (comment.Member.UserRole != "admin") { @textSecondary } ps-3 bd-highlight fw-bold ">@comment.Member.FirstName</div>
                                 <div class="TIMESTAMP px-3 bd-highlight text-secondary opacity-50">@timeSpan</div>
                                 <div class="bd-highlight ms-auto pe-3 dropdown">
-                                    <button class="status-button border-0 rounded-5" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                @if(_signInManager.IsSignedIn(User))
+                                    {                                        
+                                    <button class="three-dots border-0 rounded-5" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
                                             <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" />
                                         </svg>
@@ -49,17 +54,18 @@
                                     <ul class="dropdown-menu border-0 shadow" aria-labelledby="dropdownMenuButton1">
                                         <li><a class="dropdown-item" href="#">Mark as Spam</a></li>
                                         @{
+
                                             if (comment.Member.Id == _userManager.GetUserId(User))
                                             {
                                                 <form asp-action="DeleteComment" asp-controller="ideas">
                                                     <input type="hidden" name="Id" value="@comment.Id"/>
                                                     <input type="hidden" name="IdeaId" value="@Model.Id"/>
-
-                                                    <li><button type="submit" class="dropdown-item" href="#">Delete Post</button></li>
+                                                    <li><button type="submit" class="dropdown-item" href="#">Delete Comment</button></li>
                                                 </form>
                                             }
                                         }
                                     </ul>
+                                    }
                                 </div>
                             </div>
                         </div>

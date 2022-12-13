@@ -142,6 +142,21 @@ body {
     transition: all 0.25s ease-in;
 }
 
+.three-dots {
+    background-color: #bfbfbf;
+    font-weight: 500 !important;
+    padding-top: 0.40rem !important;
+    padding-bottom: 0.40rem !important;
+    padding-right: 1rem !important;
+    padding-left: 1rem !important;
+    font-size: .75rem;
+}
+
+.three-dots:hover {
+    background-color: #d8d8d8;
+    transition: all 0.25s ease-in;
+}
+
 
 
 .status-open {

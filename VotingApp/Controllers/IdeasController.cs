@@ -63,7 +63,7 @@ namespace VotingApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Description,CreatedDate,PostedDate,CategoryId,MemberId")] Idea idea)
+        public async Task<IActionResult> Create([Bind("Id,Title,Description,CreatedDate,UpdatedDate,CategoryId,MemberId")] Idea idea)
         {
             if (ModelState.IsValid)
             {
@@ -106,7 +106,7 @@ namespace VotingApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,CreatedDate,PostedDate,CategoryId,MemberId")] Idea idea)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,CreatedDate,UpdatedDate,CategoryId,MemberId")] Idea idea)
         {
             if (id != idea.Id)
             {
@@ -132,6 +132,52 @@ namespace VotingApp.Controllers
                     }
                 }
                 return RedirectToAction(nameof(Index));
+            }
+            ViewData["CategoryId"] = new SelectList(_context.Category, "Id", "Id", idea.CategoryId);
+            ViewData["MemberId"] = new SelectList(_context.Users, "Id", "Id", idea.MemberId);
+            return View(idea);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ModerateIdea(int id, Idea idea)
+        {
+            if (id != idea.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // we need to ensure that on post update, the
+                    // CreatedDate property does not get overridden.
+                    // use the current values from the database
+                    // in place of the instantiated data.
+                    var getCurrentValueFromDB = await _context.Idea
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(i => i.Id == idea.Id);
+
+                    idea.CreatedDate = getCurrentValueFromDB.CreatedDate;
+                    idea.CurrentStatus = "closed";
+                    idea.IsModerated = true;
+
+                    _context.Update(idea);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!IdeaExists(idea.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction("details","ideas", new { id = id });
             }
             ViewData["CategoryId"] = new SelectList(_context.Category, "Id", "Id", idea.CategoryId);
             ViewData["MemberId"] = new SelectList(_context.Users, "Id", "Id", idea.MemberId);

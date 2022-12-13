@@ -2,10 +2,17 @@
 @using Microsoft.AspNetCore.Identity;
 @model VotingApp.Models.Idea
 @inject UserManager<Member> _userManager;
+@inject SignInManager<Member> _signInManager;
+
 
 @{
     double timestamp = Model.CreatedDate.ToOADate();
     var timeSpan = DateTime.FromOADate(timestamp).AddMicroseconds(-timestamp).Humanize();
+
+
+    // text colors for moderated Ideas
+    string textModerated = "text-danger opacity-50";
+    string textBlack = "text-black";
 }
 
 <!-- Breadcrumbs START-->
@@ -28,7 +35,7 @@
         <div class="CARD-DETAILS col ms-1">
             <div class="card-body mb-3">
                 <h5 class="card-title">@Model.Title</h5>
-                <p class="card-text">@Model.Description</p>
+                <p class="card-text @if(Model.IsModerated) { @textModerated } else { @textBlack }">@Model.Description</p>
             </div>
             <div class="d-flex bd-highlight mb-3">
                 <div class="TIMESTAMP ps-3 bd-highlight text-secondary fw-bold">@Model.Member.FirstName</div>
@@ -57,30 +64,41 @@
                             <div class="TICKET-STATUS ms-auto bd-highlight pe-2"><button class="status-closed border-0 rounded-5 text-white">Closed</button></div>
                         }
                     }
-                <div class="bd-highlight pe-3 dropdown">
-                    <button class="status-button border-0 rounded-5" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
-                            <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" />
-                        </svg>
-                    </button>
-                    <ul class="dropdown-menu border-0 shadow" aria-labelledby="dropdownMenuButton1">
-                        <li><a class="dropdown-item" href="#">Mark as Spam</a></li>
-                        @{
-                            if (Model.MemberId == _userManager.GetUserId(User))
-                            {
-                                <li><button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#exampleModal-@Model.Id">Delete Post</button></li>
-                            }
-                        }
-                    </ul>
-                </div>
+                    @if(_signInManager.IsSignedIn(User))
+                    {                        
+                        <div class="bd-highlight pe-3 dropdown">
+                            <button class="three-dots border-0 rounded-5" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
+                                    <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" />
+                                </svg>
+                            </button>
+                            <ul class="dropdown-menu border-0 shadow" aria-labelledby="dropdownMenuButton1">
+                                <li><a class="dropdown-item" href="#">Mark as Spam</a></li>
+                                @{
+                                    // get user role of signed in User
+                                    var getUserRole = await _userManager.GetUserAsync(User);
+                                    var userRole = getUserRole.UserRole;
+
+                                    if (userRole == "admin")
+                                    {
+                                        <li><button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#moderateModal-@Model.Id">Moderate Post</button></li>
+                                    }                            
+                                    if (Model.MemberId == _userManager.GetUserId(User))
+                                    {
+                                        <li><button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteModal-@Model.Id">Delete Post</button></li>
+                                    }
+                                }
+                            </ul>
+                        </div>
+                    }
             </div>
         </div>
     </div>
 </div>
 <!-- Card END -->
 
-<!-- Modal Idea START -->
-<div class="modal" id="exampleModal-@Model.Id" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<!-- Delete Modal START -->
+<div class="modal" id="deleteModal-@Model.Id" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -101,7 +119,34 @@
         </div>
     </div>
 </div>
-<!-- Model Idea END -->
+<!-- Delete Model END -->
+
+<!-- Moderate Modal START -->
+<form asp-action="ModerateIdea" asp-controller="ideas">
+    <input type="hidden" name="Id" value="@Model.Id" />
+    <input type="hidden" name="MemberId" value="@Model.MemberId" />
+    <input type="hidden" name="CategoryId" value="@Model.CategoryId" />
+    <input type="hidden" name="Title" value="@Model.Title" />
+
+    <div class="modal" id="moderateModal-@Model.Id" tabindex="-1" aria-labelledby="moderateModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Moderate post?</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <textarea class="form-control" name="Description" >Content has been removed by an Admin.</textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-warning">Update post</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<!-- Moderate Model END -->
 
 <!-- Buttons START-->
 <div class="d-flex bd-highlight mb-3">
