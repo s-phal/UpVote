@@ -39,10 +39,12 @@
 
     <div class="FILTER col-lg-3 mb-3 mb-lg-0">
         <select name="filter" class="form-select border-0" aria-label=".form-select-sm example">
-            <option selected>Filter</option>
-            <option value="1">One</option>
-            <option value="2">Two</option>
-            <option value="3">Three</option>
+            <option selected>No Filter</option>
+            <option value="1">Top Voted</option>
+            <option value="2">Most Comments</option>
+            <option value="3">My Ideas- conditional log in</option>
+            <option value="4">SPAM Ideas SPAM comments-  conditional Admin only in - Spam Reports # on cards</option>
+
         </select>
     </div>
     <div class="SEARCH col input-group mb-3 mb-lg-3">
@@ -98,7 +100,6 @@
                         <p class="card-text">Votes</p>
 
                         @{
-
                             // display button based on whether the user voted on the Idea or not
                             if (getMemberVote.Count == 0)
                             {
@@ -164,23 +165,23 @@
                         @{
                             if (idea.CurrentStatus == "open")
                             {
-                                <div class="TICKET-STATUS ms-auto bd-highlight pe-2"><button class="status-open border-0 rounded-5">Open</button></div>
+                                <div class="TICKET-STATUS ms-auto bd-highlight pe-3"><button class="status-open border-0 rounded-5">Open</button></div>
                             }
                             if (idea.CurrentStatus == "considering")
                             {
-                                <div class="TICKET-STATUS ms-auto bd-highlight pe-2"><button class="status-considering border-0 rounded-5">Considering</button></div>
+                                <div class="TICKET-STATUS ms-auto bd-highlight pe-3"><button class="status-considering border-0 rounded-5">Considering</button></div>
                             }
                             if (idea.CurrentStatus == "in-progress")
                             {
-                                <div class="TICKET-STATUS ms-auto bd-highlight pe-2"><button class="status-in-progress border-0 rounded-5 text-white">In Progress</button></div>
+                                <div class="TICKET-STATUS ms-auto bd-highlight pe-3"><button class="status-in-progress border-0 rounded-5 text-white">In Progress</button></div>
                             }
                             if (idea.CurrentStatus == "implemented")
                             {
-                                <div class="TICKET-STATUS ms-auto bd-highlight pe-2"><button class="status-implemented border-0 rounded-5 text-white">Implemented</button></div>
+                                <div class="TICKET-STATUS ms-auto bd-highlight pe-3"><button class="status-implemented border-0 rounded-5 text-white">Implemented</button></div>
                             }
                             if (idea.CurrentStatus == "closed")
                             {
-                                <div class="TICKET-STATUS ms-auto bd-highlight pe-2"><button class="status-closed border-0 rounded-5 text-white">Closed</button></div>
+                                <div class="TICKET-STATUS ms-auto bd-highlight pe-3"><button class="status-closed border-0 rounded-5 text-white">Closed</button></div>
                             }
                         }
                         @if (_signInManager.IsSignedIn(User))

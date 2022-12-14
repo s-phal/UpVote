@@ -6,6 +6,7 @@ namespace VotingApp.Models
     {
         public int Id { get; set; }
         public string Body { get; set; }
+        // public bool StatusUpdated
 
         [DataType(DataType.Date)]
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;

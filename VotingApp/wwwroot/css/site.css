@@ -27,6 +27,11 @@ a {
     text-decoration: none;
 }
 
+.logo-text {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    font-size: 30px;
+}
 .avatar {
     height: 3rem;
     width: 3rem;
