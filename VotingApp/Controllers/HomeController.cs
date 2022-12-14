@@ -17,20 +17,6 @@ namespace VotingApp.Controllers
             _context = context;
         }
 
-        public IActionResult Index()
-        {
-            return View();
-        }
-
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        public IActionResult Idea()
-        {
-            return View();
-        }
 
         [Route("search/{searchTerm?}")]
         public async Task<IActionResult> Search(string? searchTerm)
@@ -42,6 +28,9 @@ namespace VotingApp.Controllers
 
 
             var searchResults = await _context.Idea
+                .Include(i => i.Comments)
+                .Include(i => i.Votes)
+                .Include(i => i.Category)
                 .Where(i => i.Title.ToLower().Contains(searchTerm.ToLower()) ||
                             i.Description.ToLower().Contains(searchTerm.ToLower()))
                 .OrderByDescending(i => i.CreatedDate)

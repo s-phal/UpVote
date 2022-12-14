@@ -9,19 +9,15 @@
     var category = _context.Category.ToList();
 }
 
-<div class="ADD-IDEA-FORM mt-sm-0 mt-lg-8 sticky-top card  text-center rounded-5 border-0 shadow py-3" style="top: 40px">
+<div class="ADD-IDEA-FORM mt-sm-0 mt-lg-8 sticky-top card  text-center rounded-5 border-0 shadow py-3" style="top: 40px;">
     @{
         if (!_signInManager.IsSignedIn(User))
         {
-            <div class="card-body row">
+            <div class="card-body">
                 <h5 class="card-title mb-3">Add an idea</h5>
-                <p class="card-text pb-3">Please login to create an idea.</p>
-                    <div class="my-4">
-                        <a class="blue-button border-0 text-white rounded-5 text-decoration-none" asp-area="Identity" asp-page="/Account/Login">Login</a>
-                    </div>
-                    <div class="my-2">
-                        <a class="grey-button border-0 rounded-5 text-decoration-none text-black" asp-area="Identity" asp-page="/Account/Register">Sign Up</a>
-                    </div>
+                <p class="card-text pb-3">Please login to create an idea.</p>                    
+                <a class="blue-button border-0 text-white rounded-5 text-decoration-none me-1" asp-area="Identity" asp-page="/Account/Login">Login</a>                   
+                <a class="grey-button border-0 rounded-5 text-decoration-none text-black ms-1" asp-area="Identity" asp-page="/Account/Register">Sign Up</a>                   
               </div>
         }
         else

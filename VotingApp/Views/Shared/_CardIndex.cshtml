@@ -71,7 +71,7 @@
         // get vote count
         var voteCount = idea.Votes.Where(vote => vote.IdeaId == idea.Id).Count();
 
-        //get comment count
+        // get comment count
         var commentCount = idea.Comments.Where(c => c.IdeaId == idea.Id).Count();
 
         var ideaOwner = await _userManager.FindByIdAsync(idea.MemberId);
@@ -83,8 +83,11 @@
         .Where(v => v.IdeaId == idea.Id && v.MemberId == _userManager.GetUserId(User))
         .ToList();
 
+        
+        var disableButton = "disabled";
+
         <!--Index Card START -->
-        <div class="card mb-3 border-0 rounded-5 shadow">
+        <div class="card mb-3 border-0 rounded-5 shadow" >
             <div class="row g-0">
                 <div class="VOTE-STATS d-none d-md-none d-xl-block col-md-2 border-end">
                     <div class="card-body text-center">
@@ -94,7 +97,7 @@
                         }
                         @if (getMemberVote.Count() != 0)
                         {
-                        <h5 class="card-title text-voted">@voteCount</h5>
+                        <h5 class="card-title text-voted fw-bold">@voteCount</h5>
                         }
 
                         <p class="card-text">Votes</p>
@@ -109,7 +112,7 @@
                                     <input type="hidden" name="CategoryId" value="@idea.Category.Id" />
                                     <input type="hidden" name="Description" value="@idea.Description" />
                                     <input type="hidden" name="MemberId" value="@_userManager.GetUserId(User)" />
-                                    <button type="submit" class="vote border-0 rounded-5 text-uppercase">Vote</button>
+                                    <button type="submit" class="vote border-0 rounded-5 text-uppercase" @if(idea.CurrentStatus == "closed") { @disableButton }>Vote</button>
                                 </form>
                             }
                             if (getMemberVote.Count != 0)
@@ -119,8 +122,9 @@
                                     <input type="hidden" name="Title" value="@idea.Title" />
                                     <input type="hidden" name="CategoryId" value="@idea.Category.Id" />
                                     <input type="hidden" name="Description" value="@idea.Description" />
+
                                     <input type="hidden" name="MemberId" value="@_userManager.GetUserId(User)" />
-                                    <button type="submit" class="voted border-0 rounded-5 text-white text-uppercase">Voted</button>
+                                    <button type="submit" class="voted border-0 rounded-5 text-white text-uppercase" @if(idea.CurrentStatus == "closed") { @disableButton }>Voted</button>
                                 </form>
                             }
                         }
@@ -132,7 +136,7 @@
                 </div>
                 <div class="CARD-DETAILS col-md-9">
                     <div class="card-body mb-3">
-                        <h5 class="card-title"><a class="text-decoration-none text-black" asp-action="Details" asp-route-id="@idea.Id">@idea.Title</a></h5>
+                        <h5 class="card-title"><a class="text-decoration-none text-black" asp-controller="ideas" asp-action="Details" asp-route-id="@idea.Id">@idea.Title</a></h5>
                         @{
                             if (idea.Description.Length >= 261)
                             {
@@ -142,7 +146,7 @@
  } else {
                             @textBlack
  }"
-                       asp-action="Details" asp-route-id="@idea.Id">@idea.Description.Substring(0,260)...</a>
+                       asp-controller="ideas" asp-action="Details" asp-route-id="@idea.Id">@idea.Description.Substring(0,260)...</a>
                                 </p>
                             }
                             else
@@ -153,7 +157,7 @@
  } else {
                             @textBlack
  }"
-                       asp-action="Details" asp-route-id="@idea.Id">@idea.Description</a>
+                       asp-controller="ideas" asp-action="Details" asp-route-id="@idea.Id">@idea.Description</a>
                                 </p>
                             }
                         }
@@ -161,7 +165,7 @@
                     <div class="d-flex bd-highlight mb-3">
                         <div class="TIMESTAMP px-3 bd-highlight text-secondary opacity-50">@timeSpan</div>
                         <div class="CATEGORY-NAME px-3 bd-highlight opacity-75"><a class="text-decoration-none text-secondary" href="~/category/@idea.Category.Name">@idea.Category.Name</a></div>
-                        <div class="COMMENT-COUNT bd-highlight"><a class="text-secondary text-decoration-none opacity-75" asp-action="Details" asp-route-id="@idea.Id">@commentCount Comments</a></div>
+                        <div class="COMMENT-COUNT bd-highlight"><a class="text-secondary text-decoration-none opacity-75" asp-controller="ideas" asp-action="Details" asp-route-id="@idea.Id">@commentCount Comments</a></div>
                         @{
                             if (idea.CurrentStatus == "open")
                             {

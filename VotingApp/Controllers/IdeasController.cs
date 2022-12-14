@@ -28,18 +28,10 @@ namespace VotingApp.Controllers
         }
 
         // GET: Ideas
-        public async Task<IActionResult> Index()
+        [Route("{string?}")]
+        public IActionResult Index()
         {
-            var ideas = await _context.Idea
-                .Include(i => i.Category)
-                .Include(i => i.Member)
-                .Include(i => i.Votes)
-                .Include(i => i.Comments)
-                .OrderByDescending(i => i.Id)
-                .ToListAsync();           
-
-
-            return View(ideas);
+            return Redirect("~/status/all");
         }
 
         // GET: Ideas/Details/5
@@ -180,9 +172,6 @@ namespace VotingApp.Controllers
             return View(getResults);
         }
 
-
-
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ModerateIdea(int id, Idea idea)
@@ -267,6 +256,8 @@ namespace VotingApp.Controllers
 
             idea.CreatedDate = getCurrentValueFromDB.CreatedDate;
             idea.MemberId = getCurrentValueFromDB.MemberId;
+            idea.CurrentStatus = getCurrentValueFromDB.CurrentStatus;
+
 
             _context.Update(idea);
             _context.SaveChanges();
@@ -297,6 +288,7 @@ namespace VotingApp.Controllers
         [HttpPost]
         public async Task<IActionResult> AddVoteIndex(Idea idea)
         {
+
             // check to see if user has casted a vote yet:
             // find the row that matches both UserID and IdeaID
             // record a new vote if the row can not be found (user hasn't voted)
@@ -331,10 +323,12 @@ namespace VotingApp.Controllers
 
             idea.CreatedDate = getCurrentValueFromDB.CreatedDate;
             idea.MemberId = getCurrentValueFromDB.MemberId;
+            idea.CurrentStatus= getCurrentValueFromDB.CurrentStatus;
+            
 
             _context.Update(idea);
             _context.SaveChanges();
-            //TempData["DisplayMessage"] = "Vote recorded!";
+            TempData["DisplayMessage"] = "Vote casted!";
             return Redirect("~/status/all");
         }
 
@@ -350,11 +344,12 @@ namespace VotingApp.Controllers
             {
                 _context.Vote.Remove(memberVoteCount);
                 await _context.SaveChangesAsync();
-                //TempData["DisplayMessage"] = "Vote removed!";
-                return RedirectToAction("index", "ideas");
+                TempData["DisplayMessage"] = "Vote removed!";
+                return Redirect("~/status/all");
             }
 
-            return RedirectToAction("index", "ideas");
+            return Redirect("~/status/all");
+
         }
 
         [Authorize]

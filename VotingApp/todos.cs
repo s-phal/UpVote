@@ -1,6 +1,5 @@
 ﻿// TODO slug
 // TODO pagination
-// TODO fix all Route attributes to home page for null and page not found
 // TODO improve register and sign in page
 // TODO goto anchor tag on index Vote
 // TODO fix vote count color 
@@ -23,4 +22,3 @@
 // TODO highlight comment when status changes
 // TODO notification bell with badge if new item exist  -ep 59
 // TODO no new notification image
-// TODO Add Page Titles

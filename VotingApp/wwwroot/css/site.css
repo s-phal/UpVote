@@ -107,7 +107,7 @@ a {
 }
 
 .voted {
-    background-color: #0d6efd;
+    background-color: #0dcaf0;
     font-weight: 500 !important;
     padding-top: 0.40rem !important;
     padding-bottom: 0.40rem !important;
@@ -117,12 +117,12 @@ a {
 }
 
 .voted:hover {
-    background-color: #55cbff;
+    background-color: #74d9ed;
     transition: all 0.25s ease-in;
 }
 
 .text-voted {
-    color: #0d6efd;
+    color: #0dcaf0;
 }
 
 .grey-button {

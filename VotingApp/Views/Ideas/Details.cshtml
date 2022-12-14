@@ -22,6 +22,9 @@
     // get comment count
     var commentCount = Model.Comments.Where(c => c.IdeaId == Model.Id).Count();
 
+    // disable vote button
+    var disableButton = "disabled";
+
     // If Available, Display Message Banner(passed from result of controller)
     var displayMessage = "";
     if (TempData.ContainsKey("DisplayMessage"))
@@ -219,7 +222,9 @@
                     <input type="hidden" name="CategoryId" value="@Model.Category.Id" />
                     <input type="hidden" name="Description" value="@Model.Description" />
                 <input type="hidden" name="MemberId" value="@_userManager.GetUserId(User)"/>
-                <button type="submit" class="vote-button-details border-0 rounded-5">Vote</button>
+                    <button type="submit" class="vote-button-details border-0 rounded-5" @if(Model.CurrentStatus == "closed") {
+                @disableButton
+}>Vote</button>
                 </form>
             }
             if(getMemberVote.Count != 0)
@@ -230,7 +235,9 @@
                     <input type="hidden" name="CategoryId" value="@Model.Category.Id" />
                     <input type="hidden" name="Description" value="@Model.Description" />
                     <input type="hidden" name="MemberId" value="@_userManager.GetUserId(User)" />
-                    <button type="submit" class="remove-vote-button-details border-0 rounded-5 text-white text-uppercase">Voted</button>
+                    <button type="submit" class="remove-vote-button-details border-0 rounded-5 text-white text-uppercase" @if(Model.CurrentStatus == "closed") {
+                @disableButton
+}>Voted</button>
                 </form>
             }
         }
