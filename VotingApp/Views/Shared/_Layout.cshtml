@@ -1,4 +1,12 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http.Extensions
+@{
+    string getStatus = Context.Request.GetDisplayUrl().ToLower();
+    string displayNone = "display: none";
+    string col9 = "col-lg-9";
+    
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -13,7 +21,9 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light mb-3 mt-2">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light mb-3 mt-2" style="@if(getStatus.Contains("register") || getStatus.Contains("login")) {
+        @displayNone
+ }">
             <div class="container-fluid mx-5 text-info">
                 <a class="navbar-brand logo-text text-info"  href="~/">
                     <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-triangle-fill" viewBox="0 0 16 16">
@@ -36,14 +46,13 @@
     <div class="container">
         <main role="main" class="pb-3">
             <div class="row">
-                <div class="col-lg-3">
+                <div class="col-lg-3" style="@if(getStatus.Contains("register") || getStatus.Contains("login")) { @displayNone }">
                     <!-- Add Idea Form START-->
                     <partial name="_AddForm" />
                     <!-- Add Idea Form END-->
                 </div>
-                <div class="col-lg-9">
-                        <partial name ="_NavCurrentStatus" />
-                    
+                <div class="@if(getStatus.Contains("register") || getStatus.Contains("login")) { } else { @col9 }">
+                        <partial name ="_NavCurrentStatus" />                    
                     <div class="mt-5">
             @RenderBody()
                     </div>

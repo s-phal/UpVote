@@ -1,0 +1,66 @@
+﻿@using Humanizer;
+@using Microsoft.AspNetCore.Identity;
+@using VotingApp.Data;
+@model IEnumerable<VotingApp.Models.Idea>
+@inject UserManager<Member> _userManager;
+@inject SignInManager<Member> _signInManager;
+
+@inject ApplicationDbContext _context;
+
+@{
+    // get list of categories
+    var category = _context.Category.ToList();
+
+    // get user role of signed in User
+    var getUserRole = await _userManager.GetUserAsync(User);
+
+}
+
+<div class="row d-flex">
+    <div class="CATEGORY col-lg-3 mb-3 mb-lg-0">
+        <form name="categoryFilter" asp-action="index" asp-controller="categories">
+            <select name="name" onchange="categoryFilter.submit()" class="form-select border-0" aria-label=".form-select-sm example">
+                <option selected>Categories</option>
+                @{
+                    // display list of categories
+                    foreach (var catName in category)
+                    {
+                               <option value="@catName.Name">@catName.Name</option>
+                    }
+                }           
+            </select>
+        </form>
+    </div>
+
+
+    <div class="FILTER col-lg-3 mb-3 mb-lg-0">
+        <form name="search" asp-action="search" asp-controller="home">
+            <select name="searchTerm" onchange="search.submit()" class="form-select border-0" aria-label=".form-select-sm example">
+                <option selected>Sort By</option>
+                <option value="topVoted">Top Voted</option>
+                <option value="mostComments">Most Commented</option>
+                @if(_signInManager.IsSignedIn(User))
+                {
+                <option value="myIdeas">My Ideas</option>                    
+                }
+
+                @if (_signInManager.IsSignedIn(User) && getUserRole.UserRole == "admin")
+                {
+                <option value="spam">Has Spam</option>                    
+                }
+            </select>
+        </form>
+    </div>
+    <div class="SEARCH col input-group mb-3 mb-lg-3">
+        <div class="nav-item w-100">
+            <form asp-action="search" asp-controller="home" class="position-relative">
+                <input class="form-control" name="searchTerm" type="search" placeholder="Find an idea" aria-label="Search">
+                <button class="bg-transparent p-2 position-absolute top-50 end-0 translate-middle-y border-0 text-primary-hover text-reset align-items-center" type="submit">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+                    </svg>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>

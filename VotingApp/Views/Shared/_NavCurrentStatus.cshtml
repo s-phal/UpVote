@@ -11,11 +11,16 @@
     var closedCount = _context.Idea.Where(i => i.CurrentStatus == "closed").ToList().Count();
 
     // get current page url
-    string getStatus = Context.Request.GetDisplayUrl();
+    string getStatus = Context.Request.GetDisplayUrl().ToLower();
     string borderPrimary = "border-primary text-dark";
+
+
+    string displayNone = "d-xl-none";
 }
 
-<nav class="d-none d-md-none d-lg-none d-xl-block d-xl-flex align-items-center justify-content-between small opacity-75">
+<nav class="d-none d-md-none d-lg-none d-xl-block d-xl-flex align-items-center justify-content-between small opacity-75 @if(getStatus.Contains("register") || getStatus.Contains("login") || getStatus.Contains("forgotpassword")) {
+ @displayNone
+ }">
     <ul class="d-flex list-unstyled text-uppercase fw-bold border-5 border-bottom pb-3" style="letter-spacing:3px">
         <li><a href="~/status/all" class="@if(getStatus.Contains("status/all")) { @borderPrimary } text-decoration-none top-links border-bottom border-5 pb-3">all ideas (@totalCount)</a></li>
         <li><a href="~/status/considering" class="@if(getStatus.Contains("status/considering")) { @borderPrimary } text-decoration-none top-links border-bottom border-5 pb-3">Considering (@consideringCount)</a></li>

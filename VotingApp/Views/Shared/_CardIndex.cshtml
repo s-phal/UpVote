@@ -23,43 +23,7 @@
 }
 
 <!-- Filters START -->
-<div class="row d-flex">
-    <div class="CATEGORY col-lg-3 mb-3 mb-lg-0">
-        <select name="category" class="form-select border-0" aria-label=".form-select-sm example">
-            <option selected>Categories</option>
-            @{ // display list of categories
-                foreach (var catName in category)
-                {
-                    <option value="@catName.Id">@catName.Name</option>
-                }
-            }
-        </select>
-    </div>
-
-
-    <div class="FILTER col-lg-3 mb-3 mb-lg-0">
-        <select name="filter" class="form-select border-0" aria-label=".form-select-sm example">
-            <option selected>No Filter</option>
-            <option value="1">Top Voted</option>
-            <option value="2">Most Comments</option>
-            <option value="3">My Ideas- conditional log in</option>
-            <option value="4">SPAM Ideas SPAM comments-  conditional Admin only in - Spam Reports # on cards</option>
-
-        </select>
-    </div>
-    <div class="SEARCH col input-group mb-3 mb-lg-3">
-        <div class="nav-item w-100">
-            <form asp-action="search" asp-controller="home" class="position-relative">
-                <input class="form-control" name="searchTerm" type="search" placeholder="Find an idea" aria-label="Search">
-                <button class="bg-transparent p-2 position-absolute top-50 end-0 translate-middle-y border-0 text-primary-hover text-reset align-items-center" type="submit">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
-                    </svg>
-                </button>
-            </form>
-        </div>
-    </div>
-</div>
+<partial name="_Filters" />
 <!-- Filters END -->
 
 <!-- Display Message START-->
@@ -136,6 +100,13 @@
                 </div>
                 <div class="CARD-DETAILS col-md-9">
                     <div class="card-body mb-3">
+                        @{
+                            var getUserRole = await _userManager.GetUserAsync(User);
+                        }
+                        @if(_signInManager.IsSignedIn(User) && getUserRole.UserRole == "admin")
+                        {
+                            if(idea.SpamReports != 0) { <div class="text-danger mb-1 text-uppercase">spam reports: @idea.SpamReports</div> }
+                        }
                         <h5 class="card-title"><a class="text-decoration-none text-black" asp-controller="ideas" asp-action="Details" asp-route-id="@idea.Id">@idea.Title</a></h5>
                         @{
                             if (idea.Description.Length >= 261)
@@ -197,14 +168,16 @@
                                     </svg>
                                 </button>
                                 <ul class="dropdown-menu border-0 shadow" aria-labelledby="dropdownMenuButton1">
-                                    <li><a class="dropdown-item" href="#">Mark as Spam</a></li>
+                                    <li><button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#spamModal-@idea.Id">Mark as Spam</button></li>
+
                                     @{
                                         // get user role of signed in User
-                                        var getUserRole = await _userManager.GetUserAsync(User);
                                         var userRole = getUserRole.UserRole;
                                         if (userRole == "admin")
                                         {
                                             <li><button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#moderateModal-@idea.Id">Moderate Post</button></li>
+                                            <li><button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteModal-@idea.Id">Delete Post</button></li>
+
                                         }
                                         if (idea.MemberId == _userManager.GetUserId(User))
                                         {
@@ -219,6 +192,32 @@
             </div>
         </div>
         <!-- Index Card END -->
+
+
+        <!-- Delete Modal START -->
+        <div class="modal" id="spamModal-@idea.Id" tabindex="-1" aria-labelledby="spamModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Report as Spam?</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Would you like to report this post as spam?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <form asp-action="ReportSpam" asp-controller="ideas">
+                            <input type="hidden" name="Id" value="@idea.Id" />
+                            <input type="hidden" name="SpamReports" value="@idea.SpamReports"/>
+                            <button type="submit" class="btn btn-danger">Report spam</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Delete Model END -->
+
         <!-- Delete Modal START -->
         <div class="modal" id="deleteModal-@idea.Id" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
@@ -241,6 +240,7 @@
             </div>
         </div>
         <!-- Delete Model END -->
+
         <!-- Moderate Modal START -->
         <form asp-action="ModerateIdea" asp-controller="ideas">
             <input type="hidden" name="Id" value="@idea.Id" />

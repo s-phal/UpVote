@@ -113,6 +113,12 @@ namespace VotingApp.Controllers
             {
                 try
                 {
+                    var getCurrentValueFromDB = await _context.Idea
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(i => i.Id == idea.Id);
+
+                    idea.CreatedDate = getCurrentValueFromDB.CreatedDate;
+
                     _context.Update(idea);
                     await _context.SaveChangesAsync();
                 }
@@ -127,7 +133,7 @@ namespace VotingApp.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("details","ideas", new {id = idea.Id});
             }
             ViewData["CategoryId"] = new SelectList(_context.Category, "Id", "Id", idea.CategoryId);
             ViewData["MemberId"] = new SelectList(_context.Users, "Id", "Id", idea.MemberId);
@@ -170,6 +176,23 @@ namespace VotingApp.Controllers
             }
 
             return View(getResults);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SetStatus(Idea idea, Comment comment)
+        {
+            Comment newComment = new Comment()
+            {
+                Body = comment.Body,
+                IdeaId = idea.Id,
+                MemberId = _userManager.GetUserId(User)
+            };
+
+            _context.Add(newComment);
+            _context.Update(idea);
+           await _context.SaveChangesAsync();
+
+            return RedirectToAction("details", "ideas", new { id = idea.Id });
         }
 
         [HttpPost]
@@ -360,6 +383,30 @@ namespace VotingApp.Controllers
            _context.Add(comment);
             _context.SaveChanges();
             return RedirectToAction("Details", "ideas", new {id = comment.IdeaId} );
+        }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> ReportSpam(Idea idea)
+        {
+            var getCurrentValueFromDB = await _context.Idea
+                .AsNoTracking()
+                .FirstOrDefaultAsync(i => i.Id == idea.Id);
+
+            idea.MemberId = getCurrentValueFromDB.MemberId;
+            idea.CreatedDate = getCurrentValueFromDB.CreatedDate;
+            idea.Title = getCurrentValueFromDB.Title;
+            idea.Description = getCurrentValueFromDB.Description;
+            idea.UpdatedDate = getCurrentValueFromDB.UpdatedDate;
+            idea.CategoryId = getCurrentValueFromDB.CategoryId;
+            idea.CurrentStatus = getCurrentValueFromDB.CurrentStatus;
+            idea.IsModerated = getCurrentValueFromDB.IsModerated;
+            idea.SpamReports = idea.SpamReports + 1;
+
+            _context.Update(idea);
+            _context.SaveChanges();
+            TempData["DisplayMessage"] = "Post has been reported.";
+            return Redirect("~/status/all");
         }
 
         [Authorize]

@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Identity;
 @using VotingApp.Data;
+@using Microsoft.AspNetCore.Http.Extensions
 @inject UserManager<Member> _userManager;
 @inject SignInManager<Member> _signInManager;
 @inject ApplicationDbContext _context;
@@ -7,9 +8,19 @@
 @{
     // get list of categories
     var category = _context.Category.ToList();
+
+    // hides this form if current page is either the Login or Registration page.
+    string getStatus = Context.Request.GetDisplayUrl().ToLower();
+    string displayNone = "display: none";
+
 }
 
-<div class="ADD-IDEA-FORM mt-sm-0 mt-lg-8 sticky-top card  text-center rounded-5 border-0 shadow py-3" style="top: 40px;">
+<div class="ADD-IDEA-FORM mt-sm-0 mt-lg-8 sticky-top card  text-center rounded-5 border-0 shadow py-3" style="top: 40px;
+
+    @if(getStatus.Contains("register") || getStatus.Contains("login") || getStatus.Contains("forgotpassword") || getStatus.Contains("ideas/create")) {
+ @displayNone
+ } ">
+
     @{
         if (!_signInManager.IsSignedIn(User))
         {
@@ -46,9 +57,6 @@
                         <textarea name="Description" class="form-control-idea bg-gray-100 border-0" rows="3" placeholder="Describe your idea" required></textarea>
                     </div>
                     <div class="d-flex">
-                        <div class="col">
-                            <button class="grey-button border-0 rounded-5">Attach</button>
-                        </div>
                         <div class="col">
                             <button type="submit" class="blue-button border-0 text-white rounded-5" id="submitButton">Submit</button>
                         </div>

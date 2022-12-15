@@ -32,6 +32,9 @@ namespace VotingApp.Controllers
            
             var ideas = await _context.Idea
                 .Include(i => i.Category)
+                .Include(i => i.Comments)
+                .Include(i => i.Member)
+                .Include(i => i.Votes)
                 .Where(c => c.Category.Name.ToLower() == name.ToLower())
                 .ToListAsync();                
 

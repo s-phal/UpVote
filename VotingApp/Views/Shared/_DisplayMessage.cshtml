@@ -9,7 +9,7 @@
     if (displayMessage != "")
     {
         string displayMessageClass;
-        if (displayMessage.Contains("Error") || displayMessage.Contains("removed")) { displayMessageClass = "danger"; } else { displayMessageClass = "success"; }
+        if (displayMessage.Contains("Error") || displayMessage.Contains("removed") || displayMessage.Contains("reported")) { displayMessageClass = "danger"; } else { displayMessageClass = "info"; }
 
         <div class="alert alert-@displayMessageClass alert-dismissible" role="alert">
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
