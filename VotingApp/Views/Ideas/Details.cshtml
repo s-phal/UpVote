@@ -25,7 +25,8 @@
     var category = _context.Category.ToList();
 
 
-
+    var getUserRole = await _userManager.GetUserAsync(User);
+      
 
     // get vote count
     var voteCount = Model.Votes.Where(vote => vote.IdeaId == Model.Id).Count();
@@ -66,6 +67,11 @@
         </div>
         <div class="CARD-DETAILS col ms-1">
             <div class="card-body mb-3">
+
+                        @if(_signInManager.IsSignedIn(User) && getUserRole.UserRole == "admin")
+                        {
+                            if(Model.SpamReports != 0) { <div class="text-danger mb-1 text-uppercase">spam reports: @Model.SpamReports</div> }
+                        }
                 <h5 class="card-title">@Model.Title</h5>
                 <p class="card-text @if(Model.IsModerated) { @textModerated } else { @textBlack }">@Model.Description</p>
             </div>
@@ -98,7 +104,6 @@
                     }
                     @if(_signInManager.IsSignedIn(User))
                     {
-                    var getUserRole = await _userManager.GetUserAsync(User);
                     string userRole = getUserRole.UserRole;
                         <div class="bd-highlight pe-3 dropdown">
                             <button class="three-dots border-0 rounded-5" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
@@ -107,10 +112,12 @@
                                 </svg>
                             </button>
                             <ul class="dropdown-menu border-0 shadow" aria-labelledby="dropdownMenuButton1">
-                                <li><a class="dropdown-item" href="#">Mark as Spam</a></li>
+                            <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#spamModal-@Model.Id">Mark as Spam</a></li>
                                 
                                     @if (userRole == "admin")
                                     {
+                                        <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#notSpamModal-@Model.Id">Not Spam</a></li>
+
                                         <li><button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#moderateModal-@Model.Id">Moderate Post</button></li>
                                     }                            
                                     @if (Model.MemberId == _userManager.GetUserId(User))
@@ -161,7 +168,6 @@
     // get role of signed in User
     if (_signInManager.IsSignedIn(User))
     {
-    var getUserRole = await _userManager.GetUserAsync(User);
     string userRole = getUserRole.UserRole;
   
 
@@ -266,6 +272,57 @@
 </div>
 <!-- Comment Container END -->
 
+
+
+<!-- Spam Modal START -->
+<div class="modal" id="spamModal-@Model.Id" tabindex="-1" aria-labelledby="spamModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Report as Spam?</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Would you like to report this post as spam?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <form asp-action="ReportSpam" asp-controller="ideas">
+                    <input type="hidden" name="Id" value="@Model.Id" />
+                    <input type="hidden" name="SpamReports" value="@Model.SpamReports"/>
+                    <button type="submit" class="btn btn-danger">Report spam</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Spam Model END -->
+
+<!-- NotSpam Modal START -->
+<div class="modal" id="notSpamModal-@Model.Id" tabindex="-1" aria-labelledby="notSpamModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Mark as not spam?</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                This will reset the counter to 0. Are you sure you would like to perform this action?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <form asp-action="ResetSpamCounter" asp-controller="ideas">
+                    <input type="hidden" name="Id" value="@Model.Id" />
+                    <input type="hidden" name="SpamReports" value="@Model.SpamReports" />
+                    <button type="submit" class="btn btn-info text-white">Reset</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- NotSpam Model END -->
+
+
 <!-- Delete Modal START -->
 <div class="modal" id="deleteModal-@Model.Id" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -354,4 +411,4 @@
         </div>
     </div>
 </form>
-<!-- Moderate Model END -->
+<!-- Edit Model END -->

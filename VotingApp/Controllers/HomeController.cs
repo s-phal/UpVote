@@ -88,15 +88,22 @@ namespace VotingApp.Controllers
 
                 return View(searchResults);
             }
+
+
             if (searchTerm == "spam")
             {
-                var searchResults = await _context.Idea
-                    .Include(i => i.Comments)
-                    .Include(i => i.Votes)
-                    .Include(i => i.Category)
-                    .Where(i => i.SpamReports != 0)
+
+                var getComments = await _context.Comment
+                    .Where(c => c.SpamReports != 0)
+                    .Select(i => i.IdeaId)
                     .ToListAsync();
-                if(searchResults.Count() == 0)
+
+                var searchResults = await _context.Idea
+                    .Where(i => getComments.Contains(i.Id) || i.SpamReports != 0)
+                    .ToListAsync();
+
+
+                if (searchResults.Count() == 0)
                 {
                     TempData["DisplayMessage"] = "There are currently 0 spam reported.";
                     return View(searchResults);
@@ -104,6 +111,27 @@ namespace VotingApp.Controllers
                 }
                 return View(searchResults);
             }
+
+            if (searchTerm == "spamOrig")
+            {
+                var searchResults = await _context.Idea
+                    .Include(i => i.Comments)
+                    .Include(i => i.Votes)
+                    .Include(i => i.Category)
+                    .Where(i => i.SpamReports != 0)
+                    .ToListAsync();
+
+                if (searchResults.Count() == 0)
+                {
+                    TempData["DisplayMessage"] = "There are currently 0 spam reported.";
+                    return View(searchResults);
+
+                }
+                return View(searchResults);
+            }
+
+
+
             if (searchTerm != null)
             {
                 var searchResults = await _context.Idea

@@ -14,6 +14,8 @@ namespace VotingApp.Models
         [DataType(DataType.Date)]
         public DateTime UpdatedDate { get; set; } = DateTime.UtcNow;
 
+        public int SpamReports { get; set; } = 0;
+
         public string MemberId { get; set; }
         public Member? Member { get; set; }
 

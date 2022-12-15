@@ -3,8 +3,6 @@
 // TODO notify voters of ticket status change
 // TODO Add OP badge to comment owners
 
-// TODO Filters
-
 // TODO spam - new column[spam_reports] in Ideas table
 // TODO Not spam drop down list - Reset counter modal
 

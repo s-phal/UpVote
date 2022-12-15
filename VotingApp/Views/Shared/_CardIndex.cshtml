@@ -38,6 +38,10 @@
         // get comment count
         var commentCount = idea.Comments.Where(c => c.IdeaId == idea.Id).Count();
 
+        var spamCommentCount = idea.Comments.Where(c => c.SpamReports != 0).Count();
+
+        var totalSpam = idea.SpamReports + spamCommentCount;
+
         var ideaOwner = await _userManager.FindByIdAsync(idea.MemberId);
 
         double timestamp = idea.CreatedDate.ToOADate();
@@ -105,7 +109,10 @@
                         }
                         @if(_signInManager.IsSignedIn(User) && getUserRole.UserRole == "admin")
                         {
-                            if(idea.SpamReports != 0) { <div class="text-danger mb-1 text-uppercase">spam reports: @idea.SpamReports</div> }
+                            if(idea.SpamReports != 0 || spamCommentCount != 0) {
+                                <div class="text-danger mb-1 text-uppercase">spam reports: @totalSpam</div> 
+                            }
+                     
                         }
                         <h5 class="card-title"><a class="text-decoration-none text-black" asp-controller="ideas" asp-action="Details" asp-route-id="@idea.Id">@idea.Title</a></h5>
                         @{
@@ -194,7 +201,7 @@
         <!-- Index Card END -->
 
 
-        <!-- Delete Modal START -->
+        <!-- Spam Modal START -->
         <div class="modal" id="spamModal-@idea.Id" tabindex="-1" aria-labelledby="spamModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
@@ -216,7 +223,7 @@
                 </div>
             </div>
         </div>
-        <!-- Delete Model END -->
+        <!-- Spam Model END -->
 
         <!-- Delete Modal START -->
         <div class="modal" id="deleteModal-@idea.Id" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
