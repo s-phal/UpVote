@@ -455,6 +455,27 @@ namespace VotingApp.Controllers
 
         [Authorize]
         [HttpPost]
+        public async Task<IActionResult> ResetSpamCommentCounter(Comment comment)
+        {
+            var getCurrentValueFromDB = await _context.Comment
+                .AsNoTracking()
+                .FirstOrDefaultAsync(i => i.Id == comment.Id);
+
+            comment.MemberId = getCurrentValueFromDB.MemberId;
+            comment.Body = getCurrentValueFromDB.Body;
+            comment.CreatedDate = getCurrentValueFromDB.CreatedDate;
+            comment.UpdatedDate = getCurrentValueFromDB.UpdatedDate;
+            comment.SpamReports = 0;
+
+            _context.Update(comment);
+            _context.SaveChanges();
+            TempData["DisplayMessage"] = "Post has been reset.";
+            return RedirectToAction("details", "ideas", new { id = comment.IdeaId});
+        }
+
+
+        [Authorize]
+        [HttpPost]
         public async Task<IActionResult> DeleteComment(Comment comment)
         {
             var theComment = await _context.Comment.FindAsync(comment.Id);

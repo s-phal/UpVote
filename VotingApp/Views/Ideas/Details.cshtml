@@ -114,12 +114,14 @@
                             <ul class="dropdown-menu border-0 shadow" aria-labelledby="dropdownMenuButton1">
                             <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#spamModal-@Model.Id">Mark as Spam</a></li>
                                 
-                                    @if (userRole == "admin")
+                                    @if (userRole == "admin" && Model.SpamReports != 0 )
                                     {
                                         <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#notSpamModal-@Model.Id">Not Spam</a></li>
-
+                                    }
+                                    @if (userRole == "admin")
+                                    {
                                         <li><button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#moderateModal-@Model.Id">Moderate Post</button></li>
-                                    }                            
+                                    }
                                     @if (Model.MemberId == _userManager.GetUserId(User))
                                     {
                                     @if (!Model.IsModerated)

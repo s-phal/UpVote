@@ -69,9 +69,12 @@
                                     </button>
                                     <ul class="dropdown-menu border-0 shadow" aria-labelledby="dropdownMenuButton1">
                                         <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#spamCommentModal-@comment.Id">Mark as Spam</a></li>
-                                        @{
-
-                                            if (comment.Member.Id == _userManager.GetUserId(User))
+                                            @{
+                                                if(_signInManager.IsSignedIn(User) && getUserRole.UserRole == "admin" && comment.SpamReports != 0)
+                                                {
+                                                    <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#notSpamCommentModal-@comment.Id">Not Spam</a></li>
+                                                }
+                                                if (comment.Member.Id == _userManager.GetUserId(User))
                                             {
                                                 <form asp-action="DeleteComment" asp-controller="ideas">
                                                     <input type="hidden" name="Id" value="@comment.Id"/>
@@ -89,7 +92,6 @@
                 </div>
             </div>
         </div>
-
 
 
         <!-- Spam Modal START -->
@@ -119,7 +121,30 @@
         </div>
         <!-- Spam Model END -->
 
-
+        <!-- NotSpam Modal START -->
+        <div class="modal" id="notSpamCommentModal-@comment.Id" tabindex="-1" aria-labelledby="notSpamModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Mark as not spam?</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        This will reset the counter to 0. Are you sure you would like to perform this action?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <form asp-action="ResetSpamCommentCounter" asp-controller="ideas">
+                            <input type="hidden" name="Id" value="@comment.Id" />
+                            <input type="hidden" name="IdeaId" value="@Model.Id" />
+                            <input type="hidden" name="SpamReports" value="@comment.SpamReports" />
+                            <button type="submit" class="btn btn-info text-white">Reset</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- NotSpam Model END -->
 
     }
 }
