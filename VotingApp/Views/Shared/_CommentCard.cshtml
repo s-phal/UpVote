@@ -36,6 +36,11 @@
                             {
                                 <span class="small text-primary fw-bold p-1 text-uppercase">admin</span>
                             }
+                            @if(comment.MemberId == Model.MemberId)
+                            {
+                                <span class="small text-danger fw-bold p-1 text-uppercase">OP</span>
+
+                            }
                         </div>
                         <div class="CARD-DETAILS col ms-1">
                             <div class="card-body mb-3">            
@@ -75,13 +80,14 @@
                                                     <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#notSpamCommentModal-@comment.Id">Not Spam</a></li>
                                                 }
                                                 if (comment.Member.Id == _userManager.GetUserId(User))
-                                            {
-                                                <form asp-action="DeleteComment" asp-controller="ideas">
-                                                    <input type="hidden" name="Id" value="@comment.Id"/>
-                                                    <input type="hidden" name="IdeaId" value="@Model.Id"/>
-                                                    <li><button type="submit" class="dropdown-item" href="#">Delete Comment</button></li>
-                                                </form>
-                                            }
+                                                {
+                                                    <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editCommentModal-@comment.Id">Edit Comment</a></li>
+                                                    <form asp-action="DeleteComment" asp-controller="ideas">
+                                                        <input type="hidden" name="Id" value="@comment.Id"/>
+                                                        <input type="hidden" name="IdeaId" value="@Model.Id"/>
+                                                        <li><button type="submit" class="dropdown-item" href="#">Delete Comment</button></li>
+                                                    </form>
+                                                }
                                         }
                                     </ul>
                                     }
@@ -145,6 +151,33 @@
             </div>
         </div>
         <!-- NotSpam Model END -->
+
+        <!-- Edit Modal START -->
+        <form asp-action="EditComment" asp-controller="ideas">
+            <input type="hidden" name="Id" value="@comment.Id" />
+            <input type="hidden" name="IdeaId" value="@comment.IdeaId" />
+
+            <input type="hidden" name="MemberId" value="@comment.MemberId" />
+
+            <div class="modal" id="editCommentModal-@comment.Id" tabindex="-1" aria-labelledby="editCommentModal-@comment.Id" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5">Edit comment?</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <textarea class="form-control bg-gray-100" rows="8" name="Body">@comment.Body</textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-warning">Update Comment</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <!-- Edit Model END -->
 
     }
 }

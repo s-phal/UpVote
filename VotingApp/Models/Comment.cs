@@ -5,8 +5,9 @@ namespace VotingApp.Models
     public class Comment
     {
         public int Id { get; set; }
+
+        [StringLength(300, ErrorMessage = "Comment must be at least 15 characters and can not exceed 400 characters.", MinimumLength = 5)]
         public string Body { get; set; }
-        // public bool StatusUpdated
 
         [DataType(DataType.Date)]
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;

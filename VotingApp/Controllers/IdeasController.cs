@@ -379,10 +379,36 @@ namespace VotingApp.Controllers
         [HttpPost]
         public async Task<IActionResult> AddComment(Comment comment)
         {
-
-           _context.Add(comment);
+            if (comment.Body == null)
+            {
+                return RedirectToAction("Details", "ideas", new { id = comment.IdeaId });
+            }
+            if (comment.Body.Length > 300)
+            {
+                TempData["DisplayMessage"] = "Error - Comment must not exceed 300 characters.";
+                return RedirectToAction("Details", "ideas", new { id = comment.IdeaId });
+            }
+            _context.Add(comment);
             _context.SaveChanges();
+            TempData["DisplayMessage"] = "Comment has been posted!";
             return RedirectToAction("Details", "ideas", new {id = comment.IdeaId} );
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditComment(Comment comment)
+        {
+            var getCurrentValueFromDB = await _context.Comment
+                .AsNoTracking()
+                .FirstOrDefaultAsync(i => i.Id == comment.Id);
+
+            comment.CreatedDate = getCurrentValueFromDB.CreatedDate;
+            comment.UpdatedDate = DateTime.UtcNow;
+            comment.SpamReports = getCurrentValueFromDB.SpamReports;
+            _context.Update(comment);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("details", "ideas", new { id = comment.IdeaId } );
         }
 
         [Authorize]
