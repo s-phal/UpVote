@@ -6,29 +6,34 @@
 @{
     // string variables to use if comment belongs to an Admin
     string isAdmin = "is-admin";
-    string gradient = "gradient";
+    string gradientOpen = "gradient-status-open";
     string textPrimary = "text-primary";
     string textSecondary = "text-secondary";
 
-    var getUserRole = await _userManager.GetUserAsync(User);
 
+    // set text colors for moderated posts
+    string textModerated = "text-danger opacity-50";
+    string textBlack = "text-black";
+
+    var getUserRole = await _userManager.GetUserAsync(User);
 
 }
 
 <!-- Comments START -->
 @{
-    foreach (var comment in Model.Comments)
+    foreach (var comment in Model.Comments.OrderByDescending(c => c.UpdatedDate))
     {
         double timestamp = comment.CreatedDate.ToOADate();
         var timeSpan = DateTime.FromOADate(timestamp).AddMicroseconds(-timestamp).Humanize();
 
+        string setGradientColor = $"gradient-status-{Model.CurrentStatus}";
 
         <div class="@if (comment.Member.UserRole == "admin") { @isAdmin } comment-container position-relative row mb-2">
             <div class="col-1">
                 <!--left side leave empty -->
             </div>
             <div class="col ms-1">
-                <div class="@if (comment.Member.UserRole == "admin") { @gradient } card-single mb-3 border-0 rounded-5 shadow-sm">
+                <div class="@if (comment.Member.UserRole == "admin"  ) { @setGradientColor } card-single mb-3 border-0 rounded-5 shadow-sm @Model.CurrentStatus">
                     <div class="row g-0">
                         <div class="AVATAR-IMAGE col-md-1 ms-2 pt-3 text-center">
                             <img src="~/uploads/avatars/@comment.Member.AvatarFileName" alt="avatar" class="avatar rounded-3" />
@@ -53,11 +58,8 @@
                                             <div class="text-danger mb-1 text-uppercase">spam reports: @comment.SpamReports</div>
                                         }                                        
                                     }
-
-                            }
-                       
-                                
-                                <p class="card-text">@comment.Body</p>
+                                } 
+                                <p class="card-text @if(comment.IsModerated) { @textModerated } else { @textBlack }">@comment.Body</p>
                             </div>
                             <div class="d-flex bd-highlight mb-3">
                                 <div class="FIRSTNAME 
@@ -79,16 +81,26 @@
                                                 {
                                                     <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#notSpamCommentModal-@comment.Id">Not Spam</a></li>
                                                 }
-                                                if (comment.Member.Id == _userManager.GetUserId(User))
+                                                if (_signInManager.IsSignedIn(User) && getUserRole.UserRole == "admin")
+                                                {
+                                                    <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#moderateCommentModal-@comment.Id">Moderate Comment</a></li>
+                                                     <form asp-action="DeleteComment" asp-controller="ideas">
+                                                        <input type="hidden" name="Id" value="@comment.Id"/>
+                                                        <input type="hidden" name="IdeaId" value="@Model.Id"/>
+                                                        <li><button type="submit" class="dropdown-item">Delete Comment</button></li>
+                                                    </form>
+                                                }
+                                                if (comment.Member.Id == _userManager.GetUserId(User) && comment.IsModerated == false)
                                                 {
                                                     <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editCommentModal-@comment.Id">Edit Comment</a></li>
                                                     <form asp-action="DeleteComment" asp-controller="ideas">
                                                         <input type="hidden" name="Id" value="@comment.Id"/>
                                                         <input type="hidden" name="IdeaId" value="@Model.Id"/>
-                                                        <li><button type="submit" class="dropdown-item" href="#">Delete Comment</button></li>
+                                                        @{string displayNone = "none";}
+                                                        <li><button type="submit" class="dropdown-item"  style=" display: @if (getUserRole.UserRole == "admin") { @displayNone } ">Delete   Comment</button></li>
                                                     </form>
                                                 }
-                                        }
+                                            }
                                     </ul>
                                     }
                                 </div>
@@ -178,6 +190,35 @@
             </div>
         </form>
         <!-- Edit Model END -->
+
+        <!-- Moderate Modal START -->
+        <form asp-action="ModerateComment" asp-controller="ideas">
+            <input type="hidden" name="Id" value="@comment.Id" />
+            <input type="hidden" name="IdeaId" value="@comment.IdeaId" />
+
+            <input type="hidden" name="MemberId" value="@comment.MemberId" />
+
+            <div class="modal" id="moderateCommentModal-@comment.Id" tabindex="-1" aria-labelledby="moderateCommentModal-@comment.Id" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5">Edit comment?</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <textarea class="form-control bg-gray-100" rows="8" name="Body">Content has been removed by an Admin.</textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-warning">Update Comment</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <!-- Moderate Model END -->
+
+
 
     }
 }

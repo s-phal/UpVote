@@ -408,7 +408,27 @@ namespace VotingApp.Controllers
             _context.Update(comment);
             await _context.SaveChangesAsync();
 
+            TempData["DisplayMessage"] = "Comment Updated!";
             return RedirectToAction("details", "ideas", new { id = comment.IdeaId } );
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ModerateComment(Comment comment)
+        {
+            var getCurrentValueFromDB = await _context.Comment
+                .AsNoTracking()
+                .FirstOrDefaultAsync(i => i.Id == comment.Id);
+
+            comment.CreatedDate = getCurrentValueFromDB.CreatedDate;
+            comment.UpdatedDate = DateTime.UtcNow;
+            comment.SpamReports = getCurrentValueFromDB.SpamReports;
+            comment.IsModerated = true;
+            _context.Update(comment);
+            await _context.SaveChangesAsync();
+
+            TempData["DisplayMessage"] = "Comment Updated!";
+            return RedirectToAction("details", "ideas", new { id = comment.IdeaId });
         }
 
         [Authorize]

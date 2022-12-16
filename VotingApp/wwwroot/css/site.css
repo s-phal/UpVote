@@ -402,10 +402,46 @@ a {
     z-index: 100;
 }
 
-.gradient {
+.gradient-status-open {
     border-width: 1px;
     border-image-slice: 1;
     background-image: linear-gradient(to bottom, #fff, #fff), linear-gradient(266deg, #67d0ff, #7682ff);
+    background-origin: border-box;
+    background-clip: content-box, border-box;
+    padding: 2px;
+}
+
+.gradient-status-considering {
+    border-width: 1px;
+    border-image-slice: 1;
+    background-image: linear-gradient(to bottom, #fff, #fff), linear-gradient(266deg, #fff0b7, #ffac00);
+    background-origin: border-box;
+    background-clip: content-box, border-box;
+    padding: 2px;
+}
+
+.gradient-status-in-progress {
+    border-width: 1px;
+    border-image-slice: 1;
+    background-image: linear-gradient(to bottom, #fff, #fff), linear-gradient(266deg, #d2d8ff, #2d45ff);
+    background-origin: border-box;
+    background-clip: content-box, border-box;
+    padding: 2px;
+}
+
+.gradient-status-implemented {
+    border-width: 1px;
+    border-image-slice: 1;
+    background-image: linear-gradient(to bottom, #fff, #fff), linear-gradient(266deg, #c3ffbf, #1fbf00);
+    background-origin: border-box;
+    background-clip: content-box, border-box;
+    padding: 2px;
+}
+
+.gradient-status-closed {
+    border-width: 1px;
+    border-image-slice: 1;
+    background-image: linear-gradient(to bottom, #fff, #fff), linear-gradient(266deg, #ffadad, #e86067);
     background-origin: border-box;
     background-clip: content-box, border-box;
     padding: 2px;

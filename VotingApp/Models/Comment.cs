@@ -17,6 +17,9 @@ namespace VotingApp.Models
 
         public int SpamReports { get; set; } = 0;
 
+        public bool IsModerated { get; set; } = false;
+
+
         public string MemberId { get; set; }
         public Member? Member { get; set; }
 

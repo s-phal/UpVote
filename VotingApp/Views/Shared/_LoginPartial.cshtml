@@ -2,17 +2,67 @@
 @inject SignInManager<Member> SignInManager
 @inject UserManager<Member> UserManager
 
-<ul class="navbar-nav align-items-center">
+<ul class="navbar-nav align-items-center" >
     @if (SignInManager.IsSignedIn(User))
     {
 
         @foreach (var item in UserManager.Users.Where(m => m.Id == UserManager.GetUserId(User)))
         {
-            <div class="dropdown">
-                <a type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+            <li class="nav-item me-4">
+                <div class="dropdown">
+                    <button class="border-0" style="background-color: transparent;" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-bell-fill text-secondary" viewBox="0 0 16 16">
+                            <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901z" />
+                        </svg>
+                    </button>
+                    <!--style="left: -110px; width: 270px;"-->
+                    <ul class="dropdown-menu mt-3 border-0 bg-transparent fs-6 end-0" style="left:auto; width:350px;" aria-labelledby="dropdownMenuButton1">
+
+                        <div class="list-group list-group-dark list-group-borderless">
+                            <a class="list-group-item">
+                                <span class="USERNAME fw-bold">Calvin</span>
+                                <span>commented on</span>
+                                <span class="TITLE fw-bold">Avatar plays tonight</span>
+                                <span class="COMMENT-BODY">In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying on meaningful content. Lorem ipsum may be used as a placeholder before final copy is available.</span>
+                                <span class="TIMESPAN text-secondary small"> 5 days ago</span>
+                            </a>
+                            <a class="list-group-item">
+                                <span class="USERNAME fw-bold">Calvin</span>
+                                <span>commented on</span>
+                                <span class="TITLE fw-bold">Avatar plays tonight</span>
+                                <span class="COMMENT-BODY">In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying on meaningful content. Lorem ipsum may be used as a placeholder before final copy is available.</span>
+                                <span class="TIMESPAN text-secondary small"> 5 days ago</span>
+                            </a>
+                            <a class="list-group-item">
+                                <span class="USERNAME fw-bold">Calvin</span>
+                                <span>commented on</span>
+                                <span class="TITLE fw-bold">Avatar plays tonight</span>
+                                <span class="COMMENT-BODY">In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying on meaningful content. Lorem ipsum may be used as a placeholder before final copy is available.</span>
+                                <span class="TIMESPAN text-secondary small"> 5 days ago</span>
+                            </a>
+                                                        <a class="list-group-item">
+                                <span class="USERNAME fw-bold">Calvin</span>
+                                <span>commented on</span>
+                                <span class="TITLE fw-bold">Avatar plays tonight</span>
+                                <span class="COMMENT-BODY">In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying on meaningful content. Lorem ipsum may be used as a placeholder before final copy is available.</span>
+                                <span class="TIMESPAN text-secondary small"> 5 days ago</span>
+                            </a>
+                        </div>
+                    </ul>
+
+
+
+                </div>
+
+
+            </li>
+           
+            <li class="nav-item">
+                <div class="dropdown">
+                <button class="border-0" style="background-color: transparent;" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                     <img src="~/uploads/avatars/@item.AvatarFileName" class="avatar rounded-circle" />
-                </a>
-                <ul class="dropdown-menu end-0" style="left:auto" aria-labelledby="dropdownMenuButton1">
+                </button>
+                <ul class="dropdown-menu end-0 mt-3" style="left:auto" aria-labelledby="dropdownMenuButton1">
                     <li class="px-3 mb-3">
                         <div class="align-items-center">
                             <div>
@@ -28,6 +78,7 @@
                     </form>
                 </ul>
             </div>
+            </li>         
         }
 
     }
