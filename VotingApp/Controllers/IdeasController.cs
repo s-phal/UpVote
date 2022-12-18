@@ -203,6 +203,19 @@ namespace VotingApp.Controllers
             _context.Update(idea);
            await _context.SaveChangesAsync();
 
+            Notification notification = new Notification()
+            {
+                Description = "status_changed",
+                Subject = idea.Title,
+                CreatedDate = DateTime.UtcNow,
+                UpdatedDate = DateTime.UtcNow,
+                IdeaId = idea.Id,
+                MemberId = idea.MemberId,
+                NotificationOwnerId = _userManager.GetUserId(User)
+            };
+            _context.Add(notification);
+            _context.SaveChanges();
+
             return RedirectToAction("details", "ideas", new { id = idea.Id });
         }
 
@@ -582,6 +595,19 @@ namespace VotingApp.Controllers
             _context.Comment.Remove(theComment);
             await _context.SaveChangesAsync();
             return RedirectToAction("details", "ideas", new { id = comment.IdeaId });
+
+        }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> DeleteNotifications()
+        {
+            var notificationList = await _context.Notification.Where(n => n.MemberId == _userManager.GetUserId(User)).ToListAsync();
+
+            _context.Notification.RemoveRange(notificationList);
+            await _context.SaveChangesAsync();
+            TempData["DisplayMessage"] = "Notifications cleared!";
+            return Redirect("~/status/all");
 
         }
 

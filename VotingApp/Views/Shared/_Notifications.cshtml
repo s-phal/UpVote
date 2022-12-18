@@ -6,11 +6,12 @@
 @{
     var notificationList = _context.Notification.Where(n => n.MemberId == _userManager.GetUserId(User) && n.Description != "added_idea").OrderByDescending( n => n.CreatedDate).ToList();
 
+    string markRead = "Mark all notifications as read";
     string addedIdea = "added an idea";
     string postedComment = "posted a comment in";
-    string upVoted = "casted a vote on";
+    string upVoted = "casted a vote for";
     string noNotifications = "You have no new notifications.";
-    string markRead = "Mark all notifications as read";
+    string statusChanged = "has changed the status of";
 }
 
 
@@ -36,6 +37,7 @@
                         if(notification.Description == "added_idea") { @addedIdea }
                         if(notification.Description == "posted_comment") { @postedComment }
                         if(notification.Description == "upvoted") { @upVoted }
+                        if(notification.Description == "status_changed") { @statusChanged }
                     }                   
                     </span>
                     <span class="TITLE fw-bold">@notification.Subject</span>
@@ -52,7 +54,12 @@
 
 
         <li class="list-group-item border-0 shadow-sm text-end text-secondary">
-            <span>@if (notificationList.Count() == 0) { @noNotifications } else { @markRead }</span>
+            <span>@if (notificationList.Count() == 0) { @noNotifications } else { 
+                <form asp-action="DeleteNotifications" asp-controller="ideas">
+                    <button type="submit" class="border-0 bg-transparent">@markRead</button>
+                </form>
+            
+            }</span>
         </li>
     </ul>
 </div>
