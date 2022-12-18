@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using VotingApp.Data;
@@ -11,9 +12,11 @@ using VotingApp.Data;
 namespace VotingApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221217155907_016-FixTypoNotification")]
+    partial class _016FixTypoNotification
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -350,6 +353,9 @@ namespace VotingApp.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("CommentId")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
 
@@ -364,10 +370,6 @@ namespace VotingApp.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("NotificationOwnerId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("Subject")
                         .IsRequired()
                         .HasColumnType("text");
@@ -376,6 +378,8 @@ namespace VotingApp.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CommentId");
 
                     b.HasIndex("IdeaId");
 
@@ -499,6 +503,12 @@ namespace VotingApp.Migrations
 
             modelBuilder.Entity("VotingApp.Models.Notification", b =>
                 {
+                    b.HasOne("VotingApp.Models.Comment", "Comment")
+                        .WithMany()
+                        .HasForeignKey("CommentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("VotingApp.Models.Idea", "Idea")
                         .WithMany()
                         .HasForeignKey("IdeaId")
@@ -510,6 +520,8 @@ namespace VotingApp.Migrations
                         .HasForeignKey("MemberId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Comment");
 
                     b.Navigation("Idea");
 

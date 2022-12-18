@@ -25,7 +25,9 @@
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
             <div class="mb-3">
-                <select name="CategoryId" class="form-select border-0 text-secondary" aria-label=".form-select-sm example" required>
+                <label asp-for="Category" class="text-secondary mb-2 ps-2"></label>
+
+                <select name="CategoryId" class="form-select border-1 border-warning text-secondary" aria-label=".form-select-sm example" required>
                     <option selected disabled value="">Choose a Category</option>
                     @{
                         //display list of categories

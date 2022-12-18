@@ -71,8 +71,19 @@ namespace VotingApp.Controllers
                     IdeaId = idea.Id,
                     MemberId = idea.MemberId,
                 };
-
                 _context.Add(vote);
+
+                Notification notification = new Notification()
+                {
+                    Description = "added_idea",
+                    Subject = idea.Title,
+                    IdeaId = idea.Id,
+                    MemberId = idea.MemberId,
+                    NotificationOwnerId = idea.MemberId
+
+                };
+                _context.Add(notification);
+
 				await _context.SaveChangesAsync();
 
 				return RedirectToAction("details","ideas", new { id = idea.Id });
@@ -284,6 +295,19 @@ namespace VotingApp.Controllers
 
             _context.Update(idea);
             _context.SaveChanges();
+
+            Notification notification = new Notification()
+            {
+                Description = "upvoted",
+                Subject = idea.Title,
+                CreatedDate = DateTime.UtcNow,
+                UpdatedDate = DateTime.UtcNow,
+                IdeaId = idea.Id,
+                MemberId = idea.MemberId,
+                NotificationOwnerId = _userManager.GetUserId(User)
+            };
+            _context.Add(notification);
+            _context.SaveChanges();
             //TempData["DisplayMessage"] = "Vote recorded!";
             return RedirectToAction("details", "ideas", new { id = idea.Id });
         }
@@ -351,6 +375,20 @@ namespace VotingApp.Controllers
 
             _context.Update(idea);
             _context.SaveChanges();
+
+            Notification notification = new Notification()
+            {
+                Description = "upvoted",
+                Subject = idea.Title,
+                CreatedDate = DateTime.UtcNow,
+                UpdatedDate = DateTime.UtcNow,
+                IdeaId = idea.Id,
+                MemberId = idea.MemberId,
+                NotificationOwnerId = _userManager.GetUserId(User)
+            };
+            _context.Add(notification);
+            _context.SaveChanges();
+
             TempData["DisplayMessage"] = "Vote casted!";
             return Redirect("~/status/all");
         }
@@ -389,6 +427,21 @@ namespace VotingApp.Controllers
                 return RedirectToAction("Details", "ideas", new { id = comment.IdeaId });
             }
             _context.Add(comment);
+            _context.SaveChanges();
+
+            var idea = await _context.Idea.FirstOrDefaultAsync(i =>i.Id == comment.IdeaId);
+
+            Notification notification = new Notification()
+            {
+                Description = "posted_comment",
+                Subject = idea.Title,
+                CreatedDate = DateTime.UtcNow,
+                UpdatedDate = DateTime.UtcNow,
+                IdeaId = idea.Id,
+                MemberId = idea.MemberId,
+                NotificationOwnerId = _userManager.GetUserId(User)
+            };
+            _context.Add(notification);
             _context.SaveChanges();
             TempData["DisplayMessage"] = "Comment has been posted!";
             return RedirectToAction("Details", "ideas", new {id = comment.IdeaId} );

@@ -1,0 +1,58 @@
+﻿@using Microsoft.AspNetCore.Identity;
+@using VotingApp.Data;
+@inject ApplicationDbContext _context;
+@inject UserManager<Member> _userManager;
+
+@{
+    var notificationList = _context.Notification.Where(n => n.MemberId == _userManager.GetUserId(User) && n.Description != "added_idea").OrderByDescending( n => n.CreatedDate).ToList();
+
+    string addedIdea = "added an idea";
+    string postedComment = "posted a comment in";
+    string upVoted = "casted a vote on";
+    string noNotifications = "You have no new notifications.";
+    string markRead = "Mark all notifications as read";
+}
+
+
+
+<div class="dropdown">
+    <button class="border-0" style="background-color: transparent;" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-bell-fill text-secondary" viewBox="0 0 16 16">
+            <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901z" />
+        </svg>
+    </button>
+    <ul class="dropdown-menu mt-3 border-0 bg-transparent fs-6 end-0 overflow-auto" style="left:auto; width:350px; height:600px" aria-labelledby="dropdownMenuButton1" data-boundary="scrollParent">
+        
+        @{
+            foreach (var notification in notificationList)
+            {
+                var user = await _userManager.FindByIdAsync(notification.NotificationOwnerId);
+                
+
+                <li class="list-group-item border-0 shadow-sm">
+                    <span class="USERNAME ">@user.DisplayName</span>
+                    <span class="DESCRIPTION">
+                    @{
+                        if(notification.Description == "added_idea") { @addedIdea }
+                        if(notification.Description == "posted_comment") { @postedComment }
+                        if(notification.Description == "upvoted") { @upVoted }
+                    }                   
+                    </span>
+                    <span class="TITLE fw-bold">@notification.Subject</span>
+                    <div class="text-start">
+                        <span class="TIMESPAN text-secondary small"> 5 days ago</span>
+                    </div>
+                </li>
+                
+            }
+        }
+        
+
+
+
+
+        <li class="list-group-item border-0 shadow-sm text-end text-secondary">
+            <span>@if (notificationList.Count() == 0) { @noNotifications } else { @markRead }</span>
+        </li>
+    </ul>
+</div>

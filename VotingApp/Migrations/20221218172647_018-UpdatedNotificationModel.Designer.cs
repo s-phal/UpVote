@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using VotingApp.Data;
@@ -11,9 +12,11 @@ using VotingApp.Data;
 namespace VotingApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221218172647_018-UpdatedNotificationModel")]
+    partial class _018UpdatedNotificationModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -360,8 +363,11 @@ namespace VotingApp.Migrations
                     b.Property<int>("IdeaId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("MemberId")
+                    b.Property<string>("IdeaOwnerId")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("MemberId")
                         .HasColumnType("text");
 
                     b.Property<string>("NotificationOwnerId")
@@ -507,9 +513,7 @@ namespace VotingApp.Migrations
 
                     b.HasOne("VotingApp.Models.Member", "Member")
                         .WithMany()
-                        .HasForeignKey("MemberId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("MemberId");
 
                     b.Navigation("Idea");
 

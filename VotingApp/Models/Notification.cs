@@ -14,14 +14,13 @@ namespace VotingApp.Models
         [DataType(DataType.DateTime)]
         public DateTime UpdatedDate { get; set; } = DateTime.UtcNow;
 
-        public int IdeadId { get; set; }
+        public int IdeaId { get; set; }
         public virtual Idea? Idea { get; set; }
 
         public string MemberId { get; set; }
         public virtual Member? Member { get; set; }
 
-        public int CommentId { get; set; }
-        public virtual Comment? Comment { get; set; }
+        public string NotificationOwnerId { get; set; }
 
     }
 }
