@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -13,14 +15,17 @@ namespace VotingApp.Controllers
     public class CategoriesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<Member> _userManager;
 
-        public CategoriesController(ApplicationDbContext context)
+        public CategoriesController(ApplicationDbContext context, UserManager<Member> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
 
         // GET: Categories/Details/5
+        [Authorize]
         [Route("category/")]
         [Route("category/{name}")]
         public async Task<IActionResult> Index(string? name)
@@ -52,18 +57,33 @@ namespace VotingApp.Controllers
         }
 
         // GET: Categories/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user.UserRole != "admin")
+            {
+                return Redirect("~/status/all");
+            }
+
             return View();
         }
 
         // POST: Categories/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name")] Category category)
         {
+            var user = await _userManager.GetUserAsync(User);
+            
+            if(user.UserRole != "admin")
+            {
+                return Redirect("~/status/all");
+            }
+
             if (ModelState.IsValid)
             {
                 _context.Add(category);

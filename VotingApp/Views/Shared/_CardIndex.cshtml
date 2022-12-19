@@ -74,7 +74,7 @@
                             // display button based on whether the user voted on the Idea or not
                             if (getMemberVote.Count == 0)
                             {
-                                <form asp-action="AddVoteIndex" asp-controller="ideas">
+                                <form asp-action="AddVoteIndex" asp-controller="Votes">
                                     <input type="hidden" name="Id" value="@idea.Id" />
                                     <input type="hidden" name="Title" value="@idea.Title" />
                                     <input type="hidden" name="CategoryId" value="@idea.Category.Id" />
@@ -85,7 +85,7 @@
                             }
                             if (getMemberVote.Count != 0)
                             {
-                                <form asp-action="RemoveVoteIndex" asp-controller="ideas">
+                                <form asp-action="RemoveVoteIndex" asp-controller="Votes">
                                     <input type="hidden" name="Id" value="@idea.Id" />
                                     <input type="hidden" name="Title" value="@idea.Title" />
                                     <input type="hidden" name="CategoryId" value="@idea.Category.Id" />
@@ -214,7 +214,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <form asp-action="ReportSpam" asp-controller="ideas">
+                        <form asp-action="ReportSpam" asp-controller="Spams">
                             <input type="hidden" name="Id" value="@idea.Id" />
                             <input type="hidden" name="SpamReports" value="@idea.SpamReports"/>
                             <button type="submit" class="btn btn-danger">Report spam</button>

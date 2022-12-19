@@ -6,7 +6,6 @@
 @{
     // string variables to use if comment belongs to an Admin
     string isAdmin = "is-admin";
-    string gradientOpen = "gradient-status-open";
     string textPrimary = "text-primary";
     string textSecondary = "text-secondary";
 
@@ -84,7 +83,7 @@
                                                 if (_signInManager.IsSignedIn(User) && getUserRole.UserRole == "admin")
                                                 {
                                                     <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#moderateCommentModal-@comment.Id">Moderate Comment</a></li>
-                                                     <form asp-action="DeleteComment" asp-controller="ideas">
+                                                     <form asp-action="DeleteComment" asp-controller="Comments">
                                                         <input type="hidden" name="Id" value="@comment.Id"/>
                                                         <input type="hidden" name="IdeaId" value="@Model.Id"/>
                                                         <li><button type="submit" class="dropdown-item">Delete Comment</button></li>
@@ -93,7 +92,7 @@
                                                 if (comment.Member.Id == _userManager.GetUserId(User) && comment.IsModerated == false)
                                                 {
                                                     <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editCommentModal-@comment.Id">Edit Comment</a></li>
-                                                    <form asp-action="DeleteComment" asp-controller="ideas">
+                                                    <form asp-action="DeleteComment" asp-controller="Comments">
                                                         <input type="hidden" name="Id" value="@comment.Id"/>
                                                         <input type="hidden" name="IdeaId" value="@Model.Id"/>
                                                         @{string displayNone = "none";}
@@ -125,7 +124,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <form asp-action="ReportSpamComment" asp-controller="ideas">
+                        <form asp-action="ReportSpamComment" asp-controller="Spams">
                             <input type="hidden" name="Id" value="@comment.Id" />
                             <input type="hidden" name="IdeaId" value="@Model.Id" />
                             <input type="hidden" name="SpamReports" value="@comment.SpamReports"/>
@@ -152,7 +151,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <form asp-action="ResetSpamCommentCounter" asp-controller="ideas">
+                        <form asp-action="ResetSpamCommentCounter" asp-controller="Spams">
                             <input type="hidden" name="Id" value="@comment.Id" />
                             <input type="hidden" name="IdeaId" value="@Model.Id" />
                             <input type="hidden" name="SpamReports" value="@comment.SpamReports" />
@@ -165,7 +164,7 @@
         <!-- NotSpam Model END -->
 
         <!-- Edit Modal START -->
-        <form asp-action="EditComment" asp-controller="ideas">
+        <form asp-action="EditComment" asp-controller="Comments">
             <input type="hidden" name="Id" value="@comment.Id" />
             <input type="hidden" name="IdeaId" value="@comment.IdeaId" />
 
@@ -192,7 +191,7 @@
         <!-- Edit Model END -->
 
         <!-- Moderate Modal START -->
-        <form asp-action="ModerateComment" asp-controller="ideas">
+        <form asp-action="ModerateComment" asp-controller="Comments">
             <input type="hidden" name="Id" value="@comment.Id" />
             <input type="hidden" name="IdeaId" value="@comment.IdeaId" />
 

@@ -17,10 +17,15 @@
 
 
 <div class="dropdown">
-    <button class="border-0" style="background-color: transparent;" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+    <button type="button" class="border-0 position-relative bg-transparent" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-bell-fill text-secondary" viewBox="0 0 16 16">
             <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901z" />
         </svg>
+        @if(notificationList.Count() != 0)
+        {
+            <span class="position-absolute top-0 start-100 translate-middle  bg-danger border border-light rounded-circle p-2" style="margin-left: -10px; margin-top: 5px"></span>            
+        }
+
     </button>
     <ul class="dropdown-menu mt-3 border-0 bg-transparent fs-6 end-0 overflow-auto" style="left:auto; width:350px; height:600px" aria-labelledby="dropdownMenuButton1" data-boundary="scrollParent">
         
@@ -55,7 +60,7 @@
 
         <li class="list-group-item border-0 shadow-sm text-end text-secondary">
             <span>@if (notificationList.Count() == 0) { @noNotifications } else { 
-                <form asp-action="DeleteNotifications" asp-controller="ideas">
+                <form asp-action="DeleteNotifications" asp-controller="notifications">
                     <button type="submit" class="border-0 bg-transparent">@markRead</button>
                 </form>
             
