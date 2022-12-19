@@ -25,11 +25,19 @@
                     // display list of categories
                     foreach (var catName in category)
                     {
-                               <option value="@catName.Name">@catName.Name</option>
+                        <option value="@catName.Name">@catName.Name</option>
                     }
-                }           
+                    if(_signInManager.IsSignedIn(User) && getUserRole.UserRole == "admin")
+                    {
+                        <option value="createNewCategory">Create a New Category</option>
+                        <option value="viewAllCategories">View All Categories</option>
+                    }
+
+                }             
+
             </select>
         </form>
+
     </div>
 
 

@@ -24,12 +24,21 @@ namespace VotingApp.Controllers
         }
 
 
-        // GET: Categories/Details/5
-        [Authorize]
+   
         [Route("category/")]
         [Route("category/{name}")]
         public async Task<IActionResult> Index(string? name)
         {
+            if (name == "createNewCategory")
+            {
+                return Redirect("~/categories/create");
+            }
+
+            if (name == "viewAllCategories")
+            {
+                return RedirectToAction("ViewAll", "categories");
+            }
+
             if (name == null || _context.Category == null)
             {
                 return RedirectToAction("index", "ideas");
@@ -56,7 +65,15 @@ namespace VotingApp.Controllers
             return View(ideas);
         }
 
+        public IActionResult ViewAll()
+        {
+            var categories = _context.Category;
+
+            return View(categories);
+        }
+
         // GET: Categories/Create
+        [Authorize]
         public async Task<IActionResult> Create()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -94,6 +111,7 @@ namespace VotingApp.Controllers
         }
 
         // GET: Categories/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Category == null)
@@ -112,6 +130,7 @@ namespace VotingApp.Controllers
         // POST: Categories/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Category category)
@@ -145,6 +164,7 @@ namespace VotingApp.Controllers
         }
 
         // GET: Categories/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Category == null)
@@ -163,6 +183,7 @@ namespace VotingApp.Controllers
         }
 
         // POST: Categories/Delete/5
+        [Authorize]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -176,9 +197,9 @@ namespace VotingApp.Controllers
             {
                 _context.Category.Remove(category);
             }
-            
+
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("ViewAll","Categories");
         }
 
         private bool CategoryExists(int id)
