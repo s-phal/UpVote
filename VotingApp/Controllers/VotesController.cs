@@ -22,14 +22,15 @@ namespace VotingApp.Controllers
         [HttpPost]
         public async Task<IActionResult> AddVoteIndex(Idea idea)
         {
-
             // check to see if user has casted a vote yet:
-            // find the row that matches both UserID and IdeaID
+            // find the row that matches both UserID
+            // and IdeaID to current user
             // record a new vote if the row can not be found (user hasn't voted)
             var memberVoteCount = _context.Vote
                 .Where(v => v.IdeaId == idea.Id && v.MemberId == _userManager.GetUserId(User))
                 .ToList();
 
+            // instantiate a new vote
             if (memberVoteCount.Count() == 0)
             {
                 Vote vote = new Vote()
@@ -37,32 +38,37 @@ namespace VotingApp.Controllers
                     IdeaId = idea.Id,
                     MemberId = idea.MemberId,
                 };
-
                 _context.Add(vote);
             }
             else
             {
                 return Redirect("~/");
-
             }
 
             // we need to ensure that on post update, Idea
             // properties does not get overridden.
             // use the current values from the database
             // in place of the instantiated data.
+
+            // get row using the given id
             var getCurrentValueFromDB = await _context.Idea
                 .AsNoTracking()
                 .FirstOrDefaultAsync(i => i.Id == idea.Id);
 
+            // use the data in its current state
+            // to populate the properties accordingly
             idea.Slug = getCurrentValueFromDB.Slug;
             idea.CreatedDate = getCurrentValueFromDB.CreatedDate;
             idea.MemberId = getCurrentValueFromDB.MemberId;
             idea.CurrentStatus = getCurrentValueFromDB.CurrentStatus;
 
-
+            // track the idea
+            // write changes to the table
             _context.Update(idea);
             _context.SaveChanges();
 
+            // create a new instance of a Notification
+            // and write it to the database
             Notification notification = new Notification()
             {
                 Description = "upvoted",
@@ -76,6 +82,7 @@ namespace VotingApp.Controllers
             _context.Add(notification);
             _context.SaveChanges();
 
+            // notify user of action
             TempData["DisplayMessage"] = "Vote casted!";
             return Redirect("~/");
         }
@@ -84,10 +91,14 @@ namespace VotingApp.Controllers
         [HttpPost]
         public async Task<IActionResult> RemoveVoteIndex(Idea idea)
         {
+            // get the row which has both Idea.Id
+            // and current User
             var memberVoteCount = await _context.Vote
                 .Where(v => v.IdeaId == idea.Id && v.MemberId == _userManager.GetUserId(User))
                 .FirstOrDefaultAsync();
 
+            // if found, track the vote
+            // write changes to database
             if (memberVoteCount != null)
             {
                 _context.Vote.Remove(memberVoteCount);
@@ -174,8 +185,6 @@ namespace VotingApp.Controllers
                 _context.Vote.Remove(memberVoteCount);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("details", "ideas", new { slug = idea.Slug });
-
-
             }
 
             return RedirectToAction("details", "ideas", new { slug = idea.Slug });

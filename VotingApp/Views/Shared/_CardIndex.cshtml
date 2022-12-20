@@ -1,25 +1,24 @@
 ﻿@using Humanizer;
 @using Microsoft.AspNetCore.Identity;
 @using VotingApp.Data;
+@using VotingApp.Helpers;
 @using X.PagedList.Mvc.Core;
 @model X.PagedList.IPagedList<VotingApp.Models.Idea>
 @inject UserManager<Member> _userManager;
 @inject SignInManager<Member> _signInManager;
-
 @inject ApplicationDbContext _context;
 
 
 @{
-
-
     // text colors for moderated Ideas
     string textModerated = "text-danger opacity-50";
     string textBlack = "text-black";
     
-    // get list of categories
+    // get list of categories from database
     var category = _context.Category.ToList();
 
-
+    // get user properties
+    var getUserRole = await _userManager.GetUserAsync(User);
 
 }
 
@@ -30,49 +29,54 @@
 <!-- Display Message START-->
 <partial name="_DisplayMessage" />
 <!-- Display Message END-->
+
 @{
     foreach (var idea in Model)
     {
+        var disableButton = "disabled";
+
         // get vote count
         var voteCount = idea.Votes.Where(vote => vote.IdeaId == idea.Id).Count();
 
         // get comment count
         var commentCount = idea.Comments.Where(c => c.IdeaId == idea.Id).Count();
 
+        // get spam count on comments
         var spamCommentCount = idea.Comments.Where(c => c.SpamReports != 0).Count();
 
+        // get combined total spam count of both ideas and comments
         var totalSpam = idea.SpamReports + spamCommentCount;
 
+        // get user property of idea owner
         var ideaOwner = await _userManager.FindByIdAsync(idea.MemberId);
 
-        double timestamp = idea.CreatedDate.ToOADate();
-        var timeSpan = DateTime.FromOADate(timestamp).AddMicroseconds(-timestamp).Humanize();
+        // convert timespan to human readable
+        var timeSpan = new HelperMethods(_context).ConvertTimeSpan(idea);
 
+        // get the vote count of the specified Idea voted by the user
         var getMemberVote = _context.Vote
         .Where(v => v.IdeaId == idea.Id && v.MemberId == _userManager.GetUserId(User))
         .ToList();
-
         
-        var disableButton = "disabled";
 
         <!--Index Card START -->
         <div class="card mb-3 border-0 rounded-5 shadow" >
             <div class="row g-0">
-                <div class="VOTE-STATS d-none d-md-none d-xl-block col-md-2 border-end">
+                <div class="d-none d-md-none d-xl-block col-md-2 border-end">
                     <div class="card-body text-center">
                         @if (getMemberVote.Count() == 0)
                         {
-                        <h5 class="card-title">@voteCount</h5>                            
+                            // leave text class on default if user has not voted
+                            <h5 class="card-title">@voteCount</h5>                            
                         }
                         @if (getMemberVote.Count() != 0)
                         {
-                        <h5 class="card-title text-voted fw-bold">@voteCount</h5>
+                            // change text class if user already voted
+                            <h5 class="card-title text-voted fw-bold">@voteCount</h5>
                         }
-
                         <p class="card-text">Votes</p>
-
                         @{
-                            // display button based on whether the user voted on the Idea or not
+                            // add to vote count if the user has not voted yet
                             if (getMemberVote.Count == 0)
                             {
                                 <form asp-action="AddVoteIndex" asp-controller="Votes">
@@ -81,9 +85,16 @@
                                     <input type="hidden" name="CategoryId" value="@idea.Category.Id" />
                                     <input type="hidden" name="Description" value="@idea.Description" />
                                     <input type="hidden" name="MemberId" value="@_userManager.GetUserId(User)" />
-                                    <button type="submit" class="vote border-0 rounded-5 text-uppercase" @if(idea.CurrentStatus == "closed") { @disableButton }>Vote</button>
+                                    <button type="submit" class="vote border-0 rounded-5 text-uppercase" 
+                                    @if(idea.CurrentStatus == "closed") 
+                                    {
+                                        // disable the button if post status is closed
+                                        @disableButton 
+                                    }
+                                    >Vote</button>
                                 </form>
                             }
+                            // remove the vote count if user already voted
                             if (getMemberVote.Count != 0)
                             {
                                 <form asp-action="RemoveVoteIndex" asp-controller="Votes">
@@ -93,24 +104,29 @@
                                     <input type="hidden" name="Description" value="@idea.Description" />
 
                                     <input type="hidden" name="MemberId" value="@_userManager.GetUserId(User)" />
-                                    <button type="submit" class="voted border-0 rounded-5 text-white text-uppercase" @if(idea.CurrentStatus == "closed") { @disableButton }>Voted</button>
+                                    <button type="submit" class="voted border-0 rounded-5 text-white text-uppercase" 
+                                    @if(idea.CurrentStatus == "closed") 
+                                    {
+                                        // disable the button if post status is closed
+                                        @disableButton 
+                                    }
+                                        >Voted</button>
                                 </form>
                             }
                         }
 
                     </div>
                 </div>
-                <div class="AVATAR-IMAGE col-1 p-3">
+                <div class="col-1 p-3">
                     <img src="~/uploads/avatars/@ideaOwner.AvatarFileName" alt="avatar" class="avatar rounded-3" />
                 </div>
-                <div class="CARD-DETAILS col-md-9">
+                <div class="col-md-9">
                     <div class="card-body mb-3">
-                        @{
-                            var getUserRole = await _userManager.GetUserAsync(User);
-                        }
                         @if(_signInManager.IsSignedIn(User) && getUserRole.UserRole == "admin")
                         {
-                            if(idea.SpamReports != 0 || spamCommentCount != 0) {
+                            // display spam count if more than 0. User must be in the admin role to see.
+                            if(idea.SpamReports != 0 || spamCommentCount != 0) 
+                            {
                                 <div class="text-danger mb-1 text-uppercase">spam reports: @totalSpam</div> 
                             }
                      
@@ -119,6 +135,7 @@
                         @{
                             if (idea.Description.Length >= 261)
                             {
+                                // truncate the description if the length exceed the character limit
                                 <p class="card-text">
                                     <a href="/ideas/details/@idea.Slug" class="text-decoration-none @if(idea.IsModerated) { @textModerated } else { @textBlack }">@idea.Description.Substring(0,260)...
                                     </a>
@@ -133,29 +150,30 @@
                         }
                     </div>
                     <div class="d-flex bd-highlight mb-3">
-                        <div class="TIMESTAMP px-3 bd-highlight text-secondary opacity-50">@timeSpan</div>
-                        <div class="CATEGORY-NAME px-3 bd-highlight opacity-75"><a class="text-decoration-none text-secondary" href="~/categories/@idea.Category.Name">@idea.Category.Name</a></div>
-                        <div class="COMMENT-COUNT bd-highlight"><a href="/ideas/details/@idea.Slug" class="text-secondary text-decoration-none opacity-75">@commentCount Comments</a></div>
+                        <div class="px-3 bd-highlight text-secondary opacity-50">@timeSpan</div>
+                        <div class="px-3 bd-highlight opacity-75"><a class="text-decoration-none text-secondary" href="~/categories/@idea.Category.Name">@idea.Category.Name</a></div>
+                        <div class="bd-highlight"><a href="/ideas/details/@idea.Slug" class="text-secondary text-decoration-none opacity-75">@commentCount Comments</a></div>
                         @{
+                            // checks status of the post and displays the button colors accordingly
                             if (idea.CurrentStatus == "open")
                             {
-                                <div class="TICKET-STATUS ms-auto bd-highlight pe-3"><button class="status-open border-0 rounded-5">Open</button></div>
+                                <div class="ms-auto bd-highlight pe-3"><button class="status-open border-0 rounded-5">Open</button></div>
                             }
                             if (idea.CurrentStatus == "considering")
                             {
-                                <div class="TICKET-STATUS ms-auto bd-highlight pe-3"><button class="status-considering border-0 rounded-5">Considering</button></div>
+                                <div class="ms-auto bd-highlight pe-3"><button class="status-considering border-0 rounded-5">Considering</button></div>
                             }
                             if (idea.CurrentStatus == "in-progress")
                             {
-                                <div class="TICKET-STATUS ms-auto bd-highlight pe-3"><button class="status-in-progress border-0 rounded-5 text-white">In Progress</button></div>
+                                <div class="ms-auto bd-highlight pe-3"><button class="status-in-progress border-0 rounded-5 text-white">In Progress</button></div>
                             }
                             if (idea.CurrentStatus == "implemented")
                             {
-                                <div class="TICKET-STATUS ms-auto bd-highlight pe-3"><button class="status-implemented border-0 rounded-5 text-white">Implemented</button></div>
+                                <div class="ms-auto bd-highlight pe-3"><button class="status-implemented border-0 rounded-5 text-white">Implemented</button></div>
                             }
                             if (idea.CurrentStatus == "closed")
                             {
-                                <div class="TICKET-STATUS ms-auto bd-highlight pe-3"><button class="status-closed border-0 rounded-5 text-white">Closed</button></div>
+                                <div class="ms-auto bd-highlight pe-3"><button class="status-closed border-0 rounded-5 text-white">Closed</button></div>
                             }
                         }
                         @if (_signInManager.IsSignedIn(User))
@@ -170,16 +188,18 @@
                                     <li><button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#spamModal-@idea.Id">Mark as Spam</button></li>
 
                                     @{
-                                        // get user role of signed in User
-                                        var userRole = getUserRole.UserRole;
-                                        if (userRole == "admin")
+                                        if (getUserRole.UserRole == "admin")
                                         {
+                                            // display admin dropdown-items if user is an admin
                                             <li><button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#moderateModal-@idea.Id">Moderate Post</button></li>
                                             <li><button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteModal-@idea.Id">Delete Post</button></li>
 
                                         }
-                                        if (idea.MemberId == _userManager.GetUserId(User))
+                                        if (idea.MemberId == _userManager.GetUserId(User) && getUserRole.UserRole != "admin")
                                         {
+                                            // allow user to delete their own post.
+                                            // the != admin condition is to prevent double "delete post" items 
+                                            // from showing up on on admins list
                                             <li><button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteModal-@idea.Id">Delete Post</button></li>
                                         }
                                     }
@@ -191,7 +211,6 @@
             </div>
         </div>
         <!-- Index Card END -->
-
 
         <!-- Spam Modal START -->
         <div class="modal" id="spamModal-@idea.Id" tabindex="-1" aria-labelledby="spamModalLabel" aria-hidden="true">
@@ -271,22 +290,19 @@
 
 
 
-@{
-    var statusTerm = "";
-    var ModelName = "";
-    if (TempData.ContainsKey("StatusTerm"))
-    {
-        statusTerm = TempData["StatusTerm"].ToString();         
-    }
 
-    if (TempData.ContainsKey("ModelName"))
-    {
-        ModelName = TempData["ModelName"].ToString();
-    }
-}
 
 <nav>
     @{
+        var ModelName = "";
+
+        // keys are passed in from controllers
+        // they are used to make pagination links functional   
+        if (TempData.ContainsKey("ModelName"))
+        {
+            ModelName = TempData["ModelName"].ToString();
+        }
+
         @Html.PagedListPager(Model, page => Url.Action(ModelName, new { page }), new X.PagedList.Web.Common.PagedListRenderOptions
             {
                 PageClasses = new string[] { "page-link" },

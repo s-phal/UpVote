@@ -1,23 +1,21 @@
 ﻿@model IEnumerable<VotingApp.Models.Category>
 
-    <div class="bg-white">
-        <ul class="p-3">
-
+<div class="bg-white">
+    <ul class="p-3">
      @{
          foreach (var category in Model)
-        {
-        
-                <li class="dropdown-item border-0 fs-5 d-flex">
-                    <a href="~/categories/@category.Name" class="dropdown-item">@category.Name</a>
-                    <form asp-action="Delete" asp-controller="Categories">
-                        <input type="hidden" name="Id" value="@category.Id" />
-                        <button type="Submit" class="bg-transparent border-0">Delete</button>
-                    </form>
-                </li>       
+        {        
+            <li class="dropdown-item border-0 fs-5 d-flex">
+                <a href="~/categories/@category.Name" class="dropdown-item">@category.Name</a>
+                <form asp-action="Delete" asp-controller="Categories">
+                    <input type="hidden" name="Id" value="@category.Id" />
+                    <button type="Submit" class="bg-transparent border-0">Delete</button>
+                </form>
+            </li>       
         }
      }
-        </ul>
-    </div>
+     </ul>
+</div>
 <div>
     <a href="~/categories/create">Create a new category</a>
 </div>

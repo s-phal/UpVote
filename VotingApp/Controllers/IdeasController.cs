@@ -28,7 +28,7 @@ namespace VotingApp.Controllers
             _userManager = userManager;
         }
 
-        // START PAGE
+        // POINT OF ENTRY
         [Route("")]
         [Route("ideas/{s?}")]
         public async Task<IActionResult> Index(string? s, int? page)

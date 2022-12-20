@@ -18,13 +18,15 @@ namespace VotingApp.Controllers
             _userManager = userManager;
         }
 
-
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> DeleteNotifications()
         {
+            // get all rows in the Notification table that matches the current user
             var notificationList = await _context.Notification.Where(n => n.MemberId == _userManager.GetUserId(User)).ToListAsync();
 
+            // track the range of rows
+            // write to the database
             _context.Notification.RemoveRange(notificationList);
             await _context.SaveChangesAsync();
             return Redirect("~/");

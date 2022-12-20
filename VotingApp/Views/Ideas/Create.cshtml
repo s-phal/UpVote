@@ -6,13 +6,14 @@
 @inject ApplicationDbContext _context;
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Add an idea";
 
+    // get all rows in Category Table
     var category = _context.Category.ToList();
 
 }
 
-<h1>Create</h1>
+<h1>Add an idea</h1>
 <hr />
 <div class="row">
     <div class="col">
@@ -29,11 +30,9 @@
             </div>
             <div class="mb-3">
                 <label asp-for="Category" class="text-secondary mb-2 ps-2"></label>
-
                 <select name="CategoryId" class="form-select border-1 border-warning text-secondary" aria-label=".form-select-sm example" required>
                     <option selected disabled value="">Choose a Category</option>
                     @{
-                        //display list of categories
                         foreach (var catName in category)
                         {
                             <option value="@catName.Id">@catName.Name</option>
@@ -46,8 +45,6 @@
                 <textarea asp-for="Description" class="form-control" rows="8"></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
-
-
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>

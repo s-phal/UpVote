@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Text;
 using VotingApp.Data;
 using VotingApp.Models;
+using Humanizer;
 
 namespace VotingApp.Helpers
 {
@@ -16,6 +17,7 @@ namespace VotingApp.Helpers
             _context = context;
         }  
  
+        // generates a slug using idea.Title
         public string GenerateSlug(Idea idea)
         {
             if (idea.Title == null) return "";
@@ -71,6 +73,8 @@ namespace VotingApp.Helpers
                 return sb.ToString();
         }
 
+        // converts internation characters to ascii
+        // used by GenerateSlug() method
         private string RemapInternationalCharToAscii(char c)
         {
             string s = c.ToString().ToLowerInvariant();
@@ -152,9 +156,19 @@ namespace VotingApp.Helpers
             }
         }
 
+        // check if the slug name exist in the database
         public bool SlugExist(string slug)
         {
             return _context.Idea.Any(Post => Post.Slug == slug);
+        }
+
+        // converts given timespan into human readable
+        public string ConvertTimeSpan(Idea idea)
+        {
+            double timestamp = idea.CreatedDate.ToOADate();
+            var timeSpan = DateTime.FromOADate(timestamp).AddMicroseconds(-timestamp).Humanize();
+
+            return timeSpan;
         }
 
 

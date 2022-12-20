@@ -1,4 +1,5 @@
-﻿@using Humanizer;
+﻿@using VotingApp.Helpers;
+@using Humanizer;
 @using Microsoft.AspNetCore.Identity;
 @using VotingApp.Data;
 @model VotingApp.Models.Idea
@@ -9,8 +10,7 @@
 
 @{
     // convert timespan to human readable
-    double timestamp = Model.CreatedDate.ToOADate();
-    var timeSpan = DateTime.FromOADate(timestamp).AddMicroseconds(-timestamp).Humanize();
+    var timeSpan = new HelperMethods(_context).ConvertTimeSpan(Model);
 
     // set text colors for moderated posts
     string textModerated = "text-danger opacity-50";
@@ -24,9 +24,8 @@
     // get category context
     var category = _context.Category.ToList();
 
-
-    var getUserRole = await _userManager.GetUserAsync(User);
-      
+    // get user properties
+    var getUserRole = await _userManager.GetUserAsync(User);      
 
     // get vote count
     var voteCount = Model.Votes.Where(vote => vote.IdeaId == Model.Id).Count();
@@ -36,13 +35,6 @@
 
     // disable vote button
     var disableButton = "disabled";
-
-    // If Available, Display Message Banner(passed from result of controller)
-    var displayMessage = "";
-    if (TempData.ContainsKey("DisplayMessage"))
-    {
-        displayMessage = TempData["DisplayMessage"].ToString();
-    }
 }
 
 <!-- Breadcrumbs START-->
@@ -62,49 +54,48 @@
 <!-- Card START -->
 <div class="card-single mb-3 border-0 rounded-5 shadow-sm">
     <div class="row g-0">
-        <div class="AVATAR-IMAGE col-md-1 p-3 ms-2">
+        <div class="col-md-1 p-3 ms-2">
             <img src="~/uploads/avatars/@Model.Member.AvatarFileName" alt="avatar" class="avatar rounded-3" />
         </div>
-        <div class="CARD-DETAILS col ms-1">
+        <div class="col ms-1">
             <div class="card-body mb-3">
-
-                        @if(_signInManager.IsSignedIn(User) && getUserRole.UserRole == "admin")
-                        {
-                            if(Model.SpamReports != 0) { <div class="text-danger mb-1 text-uppercase">spam reports: @Model.SpamReports</div> }
-                        }
+                @if(_signInManager.IsSignedIn(User) && getUserRole.UserRole == "admin")
+                {
+                    // display spam count if more than 0. User must be in the admin role to see.
+                    if(Model.SpamReports != 0) { <div class="text-danger mb-1 text-uppercase">spam reports: @Model.SpamReports</div> }
+                }
                 <h5 class="card-title">@Model.Title</h5>
                 <p class="card-text @if(Model.IsModerated) { @textModerated } else { @textBlack }">@Model.Description</p>
             </div>
             <div class="d-flex bd-highlight mb-3">
-                <div class="TIMESTAMP ps-3 bd-highlight text-secondary fw-bold">@Model.Member.FirstName</div>
-                <div class="TIMESTAMP px-3 bd-highlight text-secondary opacity-50">@timeSpan</div>
-                <div class="CATEGORY-NAME px-3 bd-highlight text-secondary opacity-50">@Model.Category.Name</div>
-                <div class="COMMENT-COUNT bd-highlight text-dark">@commentCount Comments</div>
-                    @{ // checks status of posts and displays the colors accordingly
+                <div class="ps-3 bd-highlight text-secondary fw-bold">@Model.Member.FirstName</div>
+                <div class="px-3 bd-highlight text-secondary opacity-50">@timeSpan</div>
+                <div class="px-3 bd-highlight text-secondary opacity-50">@Model.Category.Name</div>
+                <div class="bd-highlight text-dark">@commentCount Comments</div>
+                    @{ // checks status of the post and displays the button colors accordingly
                         if (Model.CurrentStatus == "open")
                         {
-                            <div class="TICKET-STATUS ms-auto bd-highlight pe-2"><button class="status-open border-0 rounded-5">Open</button></div>
+                            <div class="ms-auto bd-highlight pe-2"><button class="status-open border-0 rounded-5">Open</button></div>
                         }
                         if (Model.CurrentStatus == "considering")
                         {
-                            <div class="TICKET-STATUS ms-auto bd-highlight pe-2"><button class="status-considering border-0 rounded-5">Considering</button></div>
+                            <div class="ms-auto bd-highlight pe-2"><button class="status-considering border-0 rounded-5">Considering</button></div>
                         }
                         if (Model.CurrentStatus == "in-progress")
                         {
-                            <div class="TICKET-STATUS ms-auto bd-highlight pe-2"><button class="status-in-progress border-0 rounded-5 text-white">In Progress</button></div>
+                            <div class="ms-auto bd-highlight pe-2"><button class="status-in-progress border-0 rounded-5 text-white">In Progress</button></div>
                         }
                         if (Model.CurrentStatus == "implemented")
                         {
-                            <div class="TICKET-STATUS ms-auto bd-highlight pe-2"><button class="status-implemented border-0 rounded-5 text-white">Implemented</button></div>
+                            <div class="ms-auto bd-highlight pe-2"><button class="status-implemented border-0 rounded-5 text-white">Implemented</button></div>
                         }
                         if (Model.CurrentStatus == "closed")
                         {
-                            <div class="TICKET-STATUS ms-auto bd-highlight pe-2"><button class="status-closed border-0 rounded-5 text-white">Closed</button></div>
+                            <div class="ms-auto bd-highlight pe-2"><button class="status-closed border-0 rounded-5 text-white">Closed</button></div>
                         }
                     }
                     @if(_signInManager.IsSignedIn(User))
                     {
-                    string userRole = getUserRole.UserRole;
                         <div class="bd-highlight pe-3 dropdown">
                             <button class="three-dots border-0 rounded-5" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
@@ -112,25 +103,29 @@
                                 </svg>
                             </button>
                             <ul class="dropdown-menu border-0 shadow" aria-labelledby="dropdownMenuButton1">
-                            <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#spamModal-@Model.Id">Mark as Spam</a></li>
-                                
-                                    @if (userRole == "admin" && Model.SpamReports != 0 )
+                                <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#spamModal-@Model.Id">Mark as Spam</a></li>                                
+                                    @if (getUserRole.UserRole == "admin" && Model.SpamReports != 0 )
                                     {
+                                        // display the Not Spam dropdown item only if user is an admin
+                                        // and spam count is more than 0
                                         <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#notSpamModal-@Model.Id">Not Spam</a></li>
                                     }
-                                    @if (userRole == "admin")
+                                    @if (getUserRole.UserRole == "admin")
                                     {
+                                        // display the Moderate Post dropdown item only if user is an admin
                                         <li><button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#moderateModal-@Model.Id">Moderate Post</button></li>
                                     }
                                     @if (Model.MemberId == _userManager.GetUserId(User))
                                     {
-                                    @if (!Model.IsModerated)
-                                    {                                    
-                                        <li><button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editModal-@Model.Id">Edit Post</button></li>
-                                    }
+                                        @if (!Model.IsModerated)
+                                        {
+                                            // only allow user to edit post if post is not moderated
+                                            // otherwise if post is moderated the user will not see this dropdown item
+                                            <li><button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editModal-@Model.Id">Edit Post</button></li>
+                                        }
+                                        // current user may delete own post
                                         <li><button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteModal-@Model.Id">Delete Post</button></li>
-                                    }
-                                
+                                    }                                
                             </ul>
                         </div>
                     }
@@ -142,7 +137,7 @@
 
 <!-- Buttons START-->
 <div class="d-flex bd-highlight mb-3">
-    <div class="REPLY-BUTTON bd-highlight dropdown">
+    <div class="bd-highlight dropdown">
         <button class="blue-button text-white border-0 rounded-5 " href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             Reply
         </button>
@@ -152,9 +147,9 @@
                     <input type="hidden" name="MemberId" value="@_userManager.GetUserId(User)" />
                     <input type="hidden" name="IdeaId" value="@Model.Id"/>
                     <div class="modal-body rounded-5 mb-0">
-                            <div class="mb-0">
-                                <textarea name="Body" class="form-control-idea border-0 bg-gray-100" rows="4" required></textarea>
-                            </div>
+                        <div class="mb-0">
+                            <textarea name="Body" class="form-control-idea border-0 bg-gray-100" rows="4" required></textarea>
+                        </div>
                     </div>
                     <div class="d-flex border-0 ms-3 mb-3 mt-2">
                         <button type="submit" class="blue-button border-0 rounded-5 text-white col-5 me-3">Post Comment</button>
@@ -164,17 +159,11 @@
         </ul>
     </div>
 
-    @{
-
-    // get role of signed in User
-    if (_signInManager.IsSignedIn(User))
+@{
+    // display Set-Status dropdown if signed in user is an admin
+    if (_signInManager.IsSignedIn(User) && getUserRole.UserRole == "admin")
     {
-    string userRole = getUserRole.UserRole;
-  
-
-        @if(userRole == "admin")
-        {
-            <div class="SET-STATUS px-3 bd-highlight dropdown">
+        <div class="px-3 bd-highlight dropdown">
             <button class="grey-button border-0 rounded-5 dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 Set Status
             </button>
@@ -195,62 +184,59 @@
                             <option class="text-danger fw-bold" value="closed">Closed</option>
                         </select>
                         <div class="modal-body rounded-5 p-0 pt-3">
-                                <div class="mb-0">
-                                        <textarea name="Body" class="form-control-idea border-1 border-light" rows="4">Status has been changed</textarea>
-                                </div>
+                            <div class="mb-0">
+                                <textarea name="Body" class="form-control-idea border-1 border-light" rows="4">Status has been changed</textarea>
+                            </div>
                         </div>
                         <div class="border-0 mb-3 mt-3">
                             <button type="submit" class="blue-button border-0 rounded-5 text-white col me-auto" data-bs-dismiss="modal">Update</button>
                         </div>
                     </form>
-
-
-
                 </li>
             </ul>
-        </div>        
-        }
+        </div>
     }
-    }
-
-
-    <div class="VOTE-COUNT ms-auto bd-highlight me-3">
+}
+    <div class="ms-auto bd-highlight me-3">
         <div class="text-center border-0 bg-white px-2 py-1 rounded-5">
             <div>
                 @if (getMemberVote.Count() == 0)
                 {
+                    // leave text class on default if user has not voted
                     <h6 class="mb-0 fw-bold">@voteCount</h6>
                 }
                 @if (getMemberVote.Count() != 0)
                 {
+                    // change text clas if user already voted
                     <h6 class="mb-0 fw-bold text-voted">@voteCount</h6>                    
                 }
-
-                
-            
             </div>
             <div><p class="mb-0 small text-secondary">Votes</p></div>
         </div>
     </div>
-    <div class="VOTE-BUTTON bd-highlight dropdown">
+    <div class="bd-highlight dropdown">
          @{
-
             if(getMemberVote.Count == 0)
             {
+                // add to vote count if the user has not voted yet
                 <form asp-action ="AddVoteDetails" asp-controller="Votes">
                     <input type="hidden" name="Id" value="@Model.Id" />
                     <input type="hidden" name="Title" value="@Model.Title" />
                     <input type="hidden" name="Slug" value="@Model.Slug" />
                     <input type="hidden" name="CategoryId" value="@Model.Category.Id" />
                     <input type="hidden" name="Description" value="@Model.Description" />
-                <input type="hidden" name="MemberId" value="@_userManager.GetUserId(User)"/>
-                    <button type="submit" class="vote-button-details border-0 rounded-5" @if(Model.CurrentStatus == "closed") {
-                @disableButton
-}>Vote</button>
+                    <input type="hidden" name="MemberId" value="@_userManager.GetUserId(User)"/>                    
+                    <button type="submit" class="vote-button-details border-0 rounded-5" 
+                    @if(Model.CurrentStatus == "closed") 
+                    {
+                        // disable the button if post status is closed
+                        @disableButton
+                    }>Vote</button>
                 </form>
             }
             if(getMemberVote.Count != 0)
             {
+                // remove the vote count if user already voted
                 <form asp-action="RemoveVoteDetails" asp-controller="Votes">
                     <input type="hidden" name="Id" value="@Model.Id" />
                     <input type="hidden" name="Title" value="@Model.Title" />
@@ -258,14 +244,15 @@
                     <input type="hidden" name="CategoryId" value="@Model.Category.Id" />
                     <input type="hidden" name="Description" value="@Model.Description" />
                     <input type="hidden" name="MemberId" value="@_userManager.GetUserId(User)" />
-                    <button type="submit" class="remove-vote-button-details border-0 rounded-5 text-white text-uppercase" @if(Model.CurrentStatus == "closed") {
-                @disableButton
-}>Voted</button>
+                    <button type="submit" class="remove-vote-button-details border-0 rounded-5 text-white text-uppercase" 
+                    @if(Model.CurrentStatus == "closed") 
+                    {
+                        // disable the button if post status is closed
+                        @disableButton
+                    }>Voted</button>
                 </form>
             }
         }
-
-
     </div>
 </div>
 <!-- Buttons END -->
