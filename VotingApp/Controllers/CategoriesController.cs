@@ -23,53 +23,56 @@ namespace VotingApp.Controllers
             _context = context;
             _userManager = userManager;
         }
-        [Route("categories/{name?}")]
-        public async Task<IActionResult> Index(string? name, int? page)
+        [Route("categories/{categoryName?}")]
+        public async Task<IActionResult> Index(string? categoryName, int? page)
         {
-            int pageSize = 8; // Views per page
-            int pageNumber = (page ?? 1); // If no parameter is given, defaults to 1
+            // pagination properties
+            // posts per page
+            int pageSize = 8;
+            int pageNumber = (page ?? 1); 
 
-            if (name == "createNewCategory")
+            // redirect based on given POSTS data
+            if (categoryName == "createNewCategory")
             {
                 return Redirect("~/categories/create");
             }
-
-            if (name == "viewAllCategories")
+            if (categoryName == "viewAllCategories")
             {
-                return RedirectToAction("ViewAll", "categories");
+                return Redirect("~/categories/viewall");
             }
-
-            if (name == null || _context.Category == null)
+            if (categoryName == null)
             {
-                return RedirectToAction("index", "ideas");
+                // passed to pagination method in View, neccessary dynamic hrefs
+                TempData["ModelName"] = "all";
+                return Redirect("~/");
             }
            
-            var ideas = await _context.Idea
+            // grab all ideas with given category name
+            var idea = await _context.Idea
                 .Include(i => i.Category)
                 .Include(i => i.Comments)
                 .Include(i => i.Member)
                 .Include(i => i.Votes)
-                .Where(c => c.Category.Name.ToLower() == name.ToLower())
-                .ToListAsync();                
-
-            if (name == null)
+                .Where(c => c.Category.Name.ToLower() == categoryName.ToLower())
+                .ToListAsync();
+            
+            // redirect to homepage if no categories were found
+            if (idea.Count() == 0)
             {
-                return RedirectToAction("index", "ideas");
+                return Redirect("~/");
             }
 
-            if (ideas.Count() == 0)
-            {
-                return RedirectToAction("index", "ideas");
-            }
-            TempData["StatusTerm"] = name;
-            return View(ideas.ToPagedList(pageNumber, pageSize));
-
+            // passed to pagination method in View, neccessary for dynamic hrefs
+            TempData["ModelName"] = categoryName;
+            return View(idea.ToPagedList(pageNumber, pageSize));
         }
+
+        [Authorize]
         [Route("categories/viewall")]
         public IActionResult ViewAll()
         {
+            // renders view with list of all categories
             var categories = _context.Category;
-
             return View(categories);
         }
 
@@ -77,28 +80,30 @@ namespace VotingApp.Controllers
         [Route("categories/create")]
         public async Task<IActionResult> Create()
         {
+            // get current user properties
             var user = await _userManager.GetUserAsync(User);
 
-            if (user.UserRole != "admin")
-            {
-                return Redirect("~/");
+            // redirect if user is not in admin role
+            if (user.UserRole != "admin") 
+            { 
+                return Redirect("~/"); 
             }
 
             return View();
         }
 
-        // POST: Categories/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("categories/create")]
         public async Task<IActionResult> Create([Bind("Id,Name")] Category category)
         {
+            // get current user properties
             var user = await _userManager.GetUserAsync(User);
-            
-            if(user.UserRole != "admin")
+
+            // redirect if user is not in admin role
+            if (user.UserRole != "admin")
             {
                 return Redirect("~/");
             }
@@ -107,82 +112,12 @@ namespace VotingApp.Controllers
             {
                 _context.Add(category);
                 await _context.SaveChangesAsync();
+                // redirect to categories list after creation
                 return Redirect("~/categories/viewall");
             }
             return View(category);
         }
 
-        // GET: Categories/Edit/5
-        [Authorize]
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null || _context.Category == null)
-            {
-                return NotFound();
-            }
-
-            var category = await _context.Category.FindAsync(id);
-            if (category == null)
-            {
-                return NotFound();
-            }
-            return View(category);
-        }
-
-        // POST: Categories/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [Authorize]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Category category)
-        {
-            if (id != category.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(category);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CategoryExists(category.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(category);
-        }
-
-        // GET: Categories/Delete/5
-        [Authorize]
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _context.Category == null)
-            {
-                return NotFound();
-            }
-
-            var category = await _context.Category
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (category == null)
-            {
-                return NotFound();
-            }
-
-            return View(category);
-        }
 
         // POST: Categories/Delete/5
         [Authorize]
@@ -195,9 +130,13 @@ namespace VotingApp.Controllers
             {
                 return Problem("Entity set 'ApplicationDbContext.Category'  is null.");
             }
+            // find category row using given ID
+            // if found, remove the row
+            // write changes to database
             var category = await _context.Category.FindAsync(id);
             if (category != null)
             {
+               
                 _context.Category.Remove(category);
             }
 

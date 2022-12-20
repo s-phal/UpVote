@@ -19,9 +19,12 @@
 <div class="row d-flex">
     <div class="CATEGORY col-lg-3 mb-3 mb-lg-0">
         <form name="categoryFilter" asp-action="index" asp-controller="categories">
-            <select name="name" onchange="categoryFilter.submit()" class="form-select border-0" aria-label=".form-select-sm example">
+            <select name="categoryName" onchange="categoryFilter.submit()" class="form-select border-0" aria-label=".form-select-sm example">
                 <option selected>Categories</option>
                 @{
+                    <option value="">All</option>
+
+
                     // display list of categories
                     foreach (var catName in category)
                     {
@@ -30,7 +33,7 @@
                     if(_signInManager.IsSignedIn(User) && getUserRole.UserRole == "admin")
                     {
                         <option value="createNewCategory">Create a New Category</option>
-                        <option value="viewAllCategories">View All Categories</option>
+                        <option value="viewAllCategories">Delete a Category</option>
                     }
 
                 }             

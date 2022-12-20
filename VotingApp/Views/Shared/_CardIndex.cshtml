@@ -134,7 +134,7 @@
                     </div>
                     <div class="d-flex bd-highlight mb-3">
                         <div class="TIMESTAMP px-3 bd-highlight text-secondary opacity-50">@timeSpan</div>
-                        <div class="CATEGORY-NAME px-3 bd-highlight opacity-75"><a class="text-decoration-none text-secondary" href="~/category/@idea.Category.Name">@idea.Category.Name</a></div>
+                        <div class="CATEGORY-NAME px-3 bd-highlight opacity-75"><a class="text-decoration-none text-secondary" href="~/categories/@idea.Category.Name">@idea.Category.Name</a></div>
                         <div class="COMMENT-COUNT bd-highlight"><a href="/ideas/details/@idea.Slug" class="text-secondary text-decoration-none opacity-75">@commentCount Comments</a></div>
                         @{
                             if (idea.CurrentStatus == "open")
@@ -273,16 +273,21 @@
 
 @{
     var statusTerm = "";
+    var ModelName = "";
     if (TempData.ContainsKey("StatusTerm"))
     {
-        statusTerm = TempData["StatusTerm"].ToString();
-         
+        statusTerm = TempData["StatusTerm"].ToString();         
+    }
+
+    if (TempData.ContainsKey("ModelName"))
+    {
+        ModelName = TempData["ModelName"].ToString();
     }
 }
 
 <nav>
     @{
-        @Html.PagedListPager(Model, page => Url.Action(statusTerm, new { page }), new X.PagedList.Web.Common.PagedListRenderOptions
+        @Html.PagedListPager(Model, page => Url.Action(ModelName, new { page }), new X.PagedList.Web.Common.PagedListRenderOptions
             {
                 PageClasses = new string[] { "page-link" },
                 UlElementClasses = new string[] { "pagination pagination-sm justify-content-end" },
