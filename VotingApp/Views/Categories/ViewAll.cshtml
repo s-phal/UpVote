@@ -8,7 +8,7 @@
         {
         
                 <li class="dropdown-item border-0 fs-5 d-flex">
-                    <a href="~/category/@category.Name" class="dropdown-item">@category.Name</a>
+                    <a href="~/categories/@category.Name" class="dropdown-item">@category.Name</a>
                     <form asp-action="Delete" asp-controller="Categories">
                         <input type="hidden" name="Id" value="@category.Id" />
                         <button type="Submit" class="bg-transparent border-0">Delete</button>
@@ -19,3 +19,7 @@
      }
         </ul>
     </div>
+
+<div>
+    <a href="~/categories/create">Create a new category</a>
+</div>

@@ -23,10 +23,6 @@ namespace VotingApp.Controllers
             _context = context;
             _userManager = userManager;
         }
-
-
-   
-        [Route("category/{name?}")]
         [Route("categories/{name?}")]
         public async Task<IActionResult> Index(string? name, int? page)
         {
@@ -69,7 +65,7 @@ namespace VotingApp.Controllers
             return View(ideas.ToPagedList(pageNumber, pageSize));
 
         }
-
+        [Route("categories/viewall")]
         public IActionResult ViewAll()
         {
             var categories = _context.Category;
@@ -78,13 +74,14 @@ namespace VotingApp.Controllers
         }
 
         [Authorize]
+        [Route("categories/create")]
         public async Task<IActionResult> Create()
         {
             var user = await _userManager.GetUserAsync(User);
 
             if (user.UserRole != "admin")
             {
-                return Redirect("~/status/all");
+                return Redirect("~/");
             }
 
             return View();
@@ -96,20 +93,21 @@ namespace VotingApp.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Route("categories/create")]
         public async Task<IActionResult> Create([Bind("Id,Name")] Category category)
         {
             var user = await _userManager.GetUserAsync(User);
             
             if(user.UserRole != "admin")
             {
-                return Redirect("~/status/all");
+                return Redirect("~/");
             }
 
             if (ModelState.IsValid)
             {
                 _context.Add(category);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return Redirect("~/categories/viewall");
             }
             return View(category);
         }
@@ -190,6 +188,7 @@ namespace VotingApp.Controllers
         [Authorize]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Route("categories/delete")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.Category == null)

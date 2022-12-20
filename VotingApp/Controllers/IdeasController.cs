@@ -325,6 +325,8 @@ namespace VotingApp.Controllers
 
 
         // GET: Ideas/Edit/5
+        [Authorize]
+        //[Route("ideas/edit")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Idea == null)
@@ -343,6 +345,7 @@ namespace VotingApp.Controllers
         }
 
         [HttpPost]
+        [Route("ideas/edit")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,CreatedDate,UpdatedDate,CategoryId,MemberId")] Idea idea)
         {
@@ -359,6 +362,7 @@ namespace VotingApp.Controllers
                         .AsNoTracking()
                         .FirstOrDefaultAsync(i => i.Id == idea.Id);
 
+                    idea.Slug = getCurrentValueFromDB.Slug;                    
                     idea.CreatedDate = getCurrentValueFromDB.CreatedDate;
 
                     _context.Update(idea);
@@ -375,7 +379,7 @@ namespace VotingApp.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("details", "ideas", new { id = idea.Id });
+                return RedirectToAction("details", "ideas", new { slug = idea.Slug });
             }
             ViewData["CategoryId"] = new SelectList(_context.Category, "Id", "Id", idea.CategoryId);
             ViewData["MemberId"] = new SelectList(_context.Users, "Id", "Id", idea.MemberId);
