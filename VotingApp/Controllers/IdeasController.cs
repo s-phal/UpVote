@@ -89,12 +89,13 @@ namespace VotingApp.Controllers
 
         // GET: Ideas/Details/5
         [Route("ideas/details/{slug?}")]
-        public async Task<IActionResult> Details(string? slug)
+        public async Task<IActionResult> Details(string? slug, int? id)
         {
             if (string.IsNullOrEmpty(slug))
             {
                 return NotFound();
             }
+
 
             var idea = await _context.Idea
                 .Include(i => i.Category)
@@ -103,6 +104,18 @@ namespace VotingApp.Controllers
                 .Include(i => i.Comments)
                     .ThenInclude(c => c.Member)
                 .FirstOrDefaultAsync(m => m.Slug == slug);
+            if(slug.All(char.IsDigit))
+            {
+                var ideaId = await _context.Idea
+                .Include(i => i.Category)
+                .Include(i => i.Member)
+                .Include(i => i.Votes)
+                .Include(i => i.Comments)
+                    .ThenInclude(c => c.Member)
+                .FirstOrDefaultAsync(idea => idea.Id.ToString() == slug);
+                return View(ideaId);
+
+            }
             if (idea == null)
             {
                 return NotFound();
