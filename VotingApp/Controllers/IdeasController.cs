@@ -82,7 +82,6 @@ namespace VotingApp.Controllers
             return View(getResults.ToPagedList(pageNumber, pageSize));
         }
 
-        // GET: Ideas/Details/5
         [Route("ideas/details/{slug?}")]
         public async Task<IActionResult> Details(string? slug, int? id)
         {
@@ -134,6 +133,7 @@ namespace VotingApp.Controllers
             {
                 // instantiates the helper method that generates slugs
                 var generateSlug = new Helpers.HelperMethods(_context);
+
                 // generate a slug based on idea.Title
                 string slug = generateSlug.GenerateSlug(idea);      
 
@@ -144,24 +144,27 @@ namespace VotingApp.Controllers
                     ModelState.AddModelError("Title", "Error, Slug already exists. Please choose another title.");
                     return View(idea);
                 }
-                // append slug property to idea.Slug if it is unique
+                // if slug is unique, append it to the idea
                 if (generateSlug.SlugExist(slug) == false)
                 {
                     idea.Slug = slug;
                 }
 
+                // failsafe code for when user get redirected for
+                // not meeting character limit
                 if (idea.CategoryId == 0)
                 {
                     TempData["DisplayMessage"] = "Error - Please choose a category";
                     return View(idea);
-
                 }
 
                 // track and write to database
                 _context.Add(idea);
                 await _context.SaveChangesAsync();
 
-        
+
+                // create a new instance of a Vote
+                // then track it
                 Vote vote = new Vote()
                 {
                     IdeaId = idea.Id,
@@ -169,6 +172,8 @@ namespace VotingApp.Controllers
                 };
                 _context.Add(vote);
 
+                // create a new instance of a Notification
+                // then track it
                 Notification notification = new Notification()
                 {
                     Description = "added_idea",
@@ -180,39 +185,12 @@ namespace VotingApp.Controllers
                 };
                 _context.Add(notification);
 
+                // write both vote and notification to DB
                 await _context.SaveChangesAsync();
 
                 return RedirectToAction("details", "ideas", new { slug = idea.Slug });
             }
 
-            ViewData["CategoryId"] = new SelectList(_context.Category, "Id", "Id", idea.CategoryId);
-            ViewData["MemberId"] = new SelectList(_context.Users, "Id", "Id", idea.MemberId);
-            return View(idea);
-        }
-
-        //private bool SlugExist(string slug)
-        //{
-        //    return _context.Idea.Any(Post => Post.Slug == slug);
-        //}
-
-
-
-
-        // GET: Ideas/Edit/5
-        [Authorize]
-        //[Route("ideas/edit")]
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null || _context.Idea == null)
-            {
-                return NotFound();
-            }
-
-            var idea = await _context.Idea.FindAsync(id);
-            if (idea == null)
-            {
-                return NotFound();
-            }
             ViewData["CategoryId"] = new SelectList(_context.Category, "Id", "Id", idea.CategoryId);
             ViewData["MemberId"] = new SelectList(_context.Users, "Id", "Id", idea.MemberId);
             return View(idea);
@@ -232,13 +210,23 @@ namespace VotingApp.Controllers
             {
                 try
                 {
+                    // when editing a row we want to preserve certain
+                    // data in its previous state. CreatedDate, Slugs, etc
+                    // should remain the same. without this logic, each new instance
+                    // will add new default values.
+
+                    // get row using the given id
                     var getCurrentValueFromDB = await _context.Idea
                         .AsNoTracking()
                         .FirstOrDefaultAsync(i => i.Id == idea.Id);
 
+                    // use the data in its current state
+                    // to populate the properties accordingly
                     idea.Slug = getCurrentValueFromDB.Slug;                    
                     idea.CreatedDate = getCurrentValueFromDB.CreatedDate;
 
+                    // track the idea
+                    // write to the database
                     _context.Update(idea);
                     await _context.SaveChangesAsync();
                 }
@@ -255,16 +243,17 @@ namespace VotingApp.Controllers
                 }
                 return RedirectToAction("details", "ideas", new { slug = idea.Slug });
             }
-            ViewData["CategoryId"] = new SelectList(_context.Category, "Id", "Id", idea.CategoryId);
-            ViewData["MemberId"] = new SelectList(_context.Users, "Id", "Id", idea.MemberId);
             return View(idea);
         }
-
 
         [HttpPost]
         [Route("ideas/setstatus")]
         public async Task<IActionResult> SetStatus(Idea idea, Comment comment)
         {
+            // a new comment is created when an admin
+            // changes the status of an idea
+
+            // create a new instance of the Comment
             Comment newComment = new Comment()
             {
                 Body = comment.Body,
@@ -272,10 +261,14 @@ namespace VotingApp.Controllers
                 MemberId = _userManager.GetUserId(User)
             };
 
+            // track the comment
+            // track the idea
+            // write to the database
             _context.Add(newComment);
             _context.Update(idea);
             await _context.SaveChangesAsync();
 
+            // create a new instance of the Comment
             Notification notification = new Notification()
             {
                 Description = "status_changed",
@@ -286,9 +279,13 @@ namespace VotingApp.Controllers
                 MemberId = idea.MemberId,
                 NotificationOwnerId = _userManager.GetUserId(User)
             };
+
+            // track the notification
+            // write to the database
             _context.Add(notification);
             _context.SaveChanges();
 
+            // redirect to created idea
             return RedirectToAction("details", "ideas", new { slug = idea.Slug });
         }
 
@@ -306,19 +303,25 @@ namespace VotingApp.Controllers
             {
                 try
                 {
-                    // we need to ensure that on post update, the
-                    // CreatedDate property does not get overridden.
-                    // use the current values from the database
-                    // in place of the instantiated data.
+                    // when modifying a row we want to preserve certain
+                    // data in its previous state. CreatedDate, Slugs, etc
+                    // should remain the same. without this logic, each new instance
+                    // will add new default values.
+
+                    // get row using the given id
                     var getCurrentValueFromDB = await _context.Idea
                         .AsNoTracking()
                         .FirstOrDefaultAsync(i => i.Id == idea.Id);
 
+                    // use the data in its current state
+                    // to populate the properties accordingly
                     idea.Slug = getCurrentValueFromDB.Slug;
                     idea.CreatedDate = getCurrentValueFromDB.CreatedDate;
                     idea.CurrentStatus = "closed";
                     idea.IsModerated = true;
 
+                    // track the idea
+                    // write to the database
                     _context.Update(idea);
                     await _context.SaveChangesAsync();
                 }
@@ -335,8 +338,6 @@ namespace VotingApp.Controllers
                 }
                 return RedirectToAction("details", "ideas", new { slug = idea.Slug });
             }
-            ViewData["CategoryId"] = new SelectList(_context.Category, "Id", "Id", idea.CategoryId);
-            ViewData["MemberId"] = new SelectList(_context.Users, "Id", "Id", idea.MemberId);
             return View(idea);
         }
 
@@ -350,12 +351,16 @@ namespace VotingApp.Controllers
             {
                 return Problem("Entity set 'ApplicationDbContext.Idea'  is null.");
             }
+            // find the row in Idea tables using given id
             var idea = await _context.Idea.FindAsync(id);
+            
+            // if found, track it
             if (idea != null)
             {
                 _context.Idea.Remove(idea);
-            }
+            }           
             
+            // write changes to database
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

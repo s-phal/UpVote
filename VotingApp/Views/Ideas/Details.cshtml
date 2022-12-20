@@ -394,7 +394,7 @@
                 </div>
                 <div class="modal-body">
                     <label class="text-secondary mb-1 ps-1">Title</label>
-                    <input type="text" name="Title" class="form-control bg-gray-100 mb-3" value="@Model.Title" />
+                    <input type="text" name="Title" class="form-control bg-gray-100 mb-3" value="@Model.Title" required/>
                     <label class="text-secondary mb-1 ps-1">Description</label>
                     <select name="CategoryId" class="form-select bg-gray-100 border-0 text-secondary mb-3" aria-label=".form-select-sm example" required>
                         <option selected disabled value="">Choose a Category</option>
@@ -406,7 +406,7 @@
                             }
                         }
                     </select>
-                    <textarea class="form-control bg-gray-100" rows="8" name="Description">@Model.Description</textarea>
+                    <textarea class="form-control bg-gray-100" rows="8" name="Description" required>@Model.Description</textarea>
 
                 </div>
                 <div class="modal-footer">
