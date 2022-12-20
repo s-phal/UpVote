@@ -167,7 +167,6 @@
         <form asp-action="EditComment" asp-controller="Comments">
             <input type="hidden" name="Id" value="@comment.Id" />
             <input type="hidden" name="IdeaId" value="@comment.IdeaId" />
-
             <input type="hidden" name="MemberId" value="@comment.MemberId" />
 
             <div class="modal" id="editCommentModal-@comment.Id" tabindex="-1" aria-labelledby="editCommentModal-@comment.Id" aria-hidden="true">

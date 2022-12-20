@@ -18,7 +18,6 @@ namespace VotingApp.Controllers
             _userManager = userManager;
         }
 
-
         [Route("search/{searchTerm?}")]
         [Route("filters/{searchTerm?}")]
         public async Task<IActionResult> Search(string? searchTerm, int? page)

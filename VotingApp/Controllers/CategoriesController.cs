@@ -23,6 +23,7 @@ namespace VotingApp.Controllers
             _context = context;
             _userManager = userManager;
         }
+
         [Route("categories/{categoryName?}")]
         public async Task<IActionResult> Index(string? categoryName, int? page)
         {
@@ -69,8 +70,17 @@ namespace VotingApp.Controllers
 
         [Authorize]
         [Route("categories/viewall")]
-        public IActionResult ViewAll()
+        public async Task<IActionResult> ViewAll()
         {
+            // get user properties
+            var user = await _userManager.GetUserAsync(User);
+
+            // redirect if user is not in admin role
+            if(user.UserRole != "admin")
+            {
+                return Redirect("~/categories/");
+            }
+
             // renders view with list of all categories
             var categories = _context.Category;
             return View(categories);
