@@ -384,6 +384,7 @@ namespace VotingApp.Controllers
 
 
         [HttpPost]
+        [Route("ideas/setstatus")]
         public async Task<IActionResult> SetStatus(Idea idea, Comment comment)
         {
             Comment newComment = new Comment()
@@ -410,11 +411,12 @@ namespace VotingApp.Controllers
             _context.Add(notification);
             _context.SaveChanges();
 
-            return RedirectToAction("details", "ideas", new { id = idea.Id });
+            return RedirectToAction("details", "ideas", new { slug = idea.Slug });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Route("ideas/moderateidea/")]
         public async Task<IActionResult> ModerateIdea(int id, Idea idea)
         {
             if (id != idea.Id)
@@ -434,6 +436,7 @@ namespace VotingApp.Controllers
                         .AsNoTracking()
                         .FirstOrDefaultAsync(i => i.Id == idea.Id);
 
+                    idea.Slug = getCurrentValueFromDB.Slug;
                     idea.CreatedDate = getCurrentValueFromDB.CreatedDate;
                     idea.CurrentStatus = "closed";
                     idea.IsModerated = true;
@@ -452,7 +455,7 @@ namespace VotingApp.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("details", "ideas", new { id = id });
+                return RedirectToAction("details", "ideas", new { slug = idea.Slug });
             }
             ViewData["CategoryId"] = new SelectList(_context.Category, "Id", "Id", idea.CategoryId);
             ViewData["MemberId"] = new SelectList(_context.Users, "Id", "Id", idea.MemberId);

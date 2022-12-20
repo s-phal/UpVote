@@ -50,6 +50,7 @@ namespace VotingApp.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(i => i.Id == idea.Id);
 
+            idea.Slug = getCurrentValueFromDB.Slug;
             idea.MemberId = getCurrentValueFromDB.MemberId;
             idea.CreatedDate = getCurrentValueFromDB.CreatedDate;
             idea.Title = getCurrentValueFromDB.Title;
@@ -63,13 +64,16 @@ namespace VotingApp.Controllers
             _context.Update(idea);
             _context.SaveChanges();
             TempData["DisplayMessage"] = "Post has been reset.";
-            return Redirect("~/status/all");
+            return Redirect("~/");
         }
 
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> ResetSpamCommentCounter(Comment comment)
         {
+            var idea = await _context.Idea
+                .FirstOrDefaultAsync(i => i.Id == comment.IdeaId);
+
             var getCurrentValueFromDB = await _context.Comment
                 .AsNoTracking()
                 .FirstOrDefaultAsync(i => i.Id == comment.Id);
@@ -83,7 +87,7 @@ namespace VotingApp.Controllers
             _context.Update(comment);
             _context.SaveChanges();
             TempData["DisplayMessage"] = "Comment has been reset.";
-            return RedirectToAction("details", "ideas", new { id = comment.IdeaId });
+            return RedirectToAction("details", "ideas", new { slug = idea.Slug });
         }
 
         [Authorize]

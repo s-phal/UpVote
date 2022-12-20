@@ -77,6 +77,8 @@ namespace VotingApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ModerateComment(Comment comment)
         {
+            var idea = await _context.Idea.FirstOrDefaultAsync(i => i.Id == comment.IdeaId);
+
             var getCurrentValueFromDB = await _context.Comment
                 .AsNoTracking()
                 .FirstOrDefaultAsync(i => i.Id == comment.Id);
@@ -89,7 +91,7 @@ namespace VotingApp.Controllers
             await _context.SaveChangesAsync();
 
             TempData["DisplayMessage"] = "Comment Updated!";
-            return RedirectToAction("details", "ideas", new { id = comment.IdeaId });
+            return RedirectToAction("details", "ideas", new { slug = idea.Slug });
         }
 
         [Authorize]
