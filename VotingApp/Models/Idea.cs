@@ -11,6 +11,8 @@ namespace VotingApp.Models
         [StringLength(400, ErrorMessage = "Description must be at least 15 characters and can not exceed 400 characters.", MinimumLength = 15)]
         public string Description { get; set; }
 
+        public string? Slug { get; set; }
+
         public string CurrentStatus { get; set; } = "open";
 
         [DataType(DataType.Date)]

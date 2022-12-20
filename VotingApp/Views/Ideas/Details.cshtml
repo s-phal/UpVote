@@ -239,6 +239,7 @@
                 <form asp-action ="AddVoteDetails" asp-controller="Votes">
                     <input type="hidden" name="Id" value="@Model.Id" />
                     <input type="hidden" name="Title" value="@Model.Title" />
+                    <input type="hidden" name="Slug" value="@Model.Slug" />
                     <input type="hidden" name="CategoryId" value="@Model.Category.Id" />
                     <input type="hidden" name="Description" value="@Model.Description" />
                 <input type="hidden" name="MemberId" value="@_userManager.GetUserId(User)"/>
@@ -252,6 +253,7 @@
                 <form asp-action="RemoveVoteDetails" asp-controller="Votes">
                     <input type="hidden" name="Id" value="@Model.Id" />
                     <input type="hidden" name="Title" value="@Model.Title" />
+                    <input type="hidden" name="Slug" value="@Model.Slug" />
                     <input type="hidden" name="CategoryId" value="@Model.Category.Id" />
                     <input type="hidden" name="Description" value="@Model.Description" />
                     <input type="hidden" name="MemberId" value="@_userManager.GetUserId(User)" />

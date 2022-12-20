@@ -115,28 +115,19 @@
                             }
                      
                         }
-                        <h5 class="card-title"><a class="text-decoration-none text-black" asp-controller="ideas" asp-action="Details" asp-route-id="@idea.Id">@idea.Title</a></h5>
+                        <h5 class="card-title"><a href="/ideas/details/@idea.Slug" class="text-decoration-none text-black">@idea.Title</a></h5>
                         @{
                             if (idea.Description.Length >= 261)
                             {
                                 <p class="card-text">
-                                    <a class="text-decoration-none @if(idea.IsModerated) {
-                            @textModerated
- } else {
-                            @textBlack
- }"
-                       asp-controller="ideas" asp-action="Details" asp-route-id="@idea.Id">@idea.Description.Substring(0,260)...</a>
+                                    <a href="/ideas/details/@idea.Slug" class="text-decoration-none @if(idea.IsModerated) { @textModerated } else { @textBlack }">@idea.Description.Substring(0,260)...
+                                    </a>
                                 </p>
                             }
                             else
                             {
                                 <p class="card-text">
-                                    <a class="text-decoration-none @if(idea.IsModerated) {
-                              @textModerated
- } else {
-                            @textBlack
- }"
-                       asp-controller="ideas" asp-action="Details" asp-route-id="@idea.Id">@idea.Description</a>
+                                    <a href="/ideas/details/@idea.Slug" class="text-decoration-none @if(idea.IsModerated) { @textModerated } else { @textBlack }">@idea.Description</a>
                                 </p>
                             }
                         }
@@ -144,7 +135,7 @@
                     <div class="d-flex bd-highlight mb-3">
                         <div class="TIMESTAMP px-3 bd-highlight text-secondary opacity-50">@timeSpan</div>
                         <div class="CATEGORY-NAME px-3 bd-highlight opacity-75"><a class="text-decoration-none text-secondary" href="~/category/@idea.Category.Name">@idea.Category.Name</a></div>
-                        <div class="COMMENT-COUNT bd-highlight"><a class="text-secondary text-decoration-none opacity-75" asp-controller="ideas" asp-action="Details" asp-route-id="@idea.Id">@commentCount Comments</a></div>
+                        <div class="COMMENT-COUNT bd-highlight"><a href="/ideas/details/@idea.Slug" class="text-secondary text-decoration-none opacity-75">@commentCount Comments</a></div>
                         @{
                             if (idea.CurrentStatus == "open")
                             {

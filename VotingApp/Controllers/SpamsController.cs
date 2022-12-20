@@ -24,6 +24,8 @@ namespace VotingApp.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(i => i.Id == idea.Id);
 
+            idea.SpamReports = idea.SpamReports + 1;
+
             idea.MemberId = getCurrentValueFromDB.MemberId;
             idea.CreatedDate = getCurrentValueFromDB.CreatedDate;
             idea.Title = getCurrentValueFromDB.Title;
@@ -32,7 +34,7 @@ namespace VotingApp.Controllers
             idea.CategoryId = getCurrentValueFromDB.CategoryId;
             idea.CurrentStatus = getCurrentValueFromDB.CurrentStatus;
             idea.IsModerated = getCurrentValueFromDB.IsModerated;
-            idea.SpamReports = idea.SpamReports + 1;
+            idea.Slug = getCurrentValueFromDB.Slug;
 
             _context.Update(idea);
             _context.SaveChanges();
@@ -88,6 +90,8 @@ namespace VotingApp.Controllers
         [HttpPost]
         public async Task<IActionResult> ReportSpamComment(Comment comment)
         {
+            var idea = await _context.Idea.FirstOrDefaultAsync(i => i.Id == comment.IdeaId);
+
             var getCurrentValueFromDB = await _context.Comment
                 .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Id == comment.Id);
@@ -101,7 +105,7 @@ namespace VotingApp.Controllers
             _context.Update(comment);
             _context.SaveChanges();
             TempData["DisplayMessage"] = "Comment has been reported.";
-            return RedirectToAction("details", "ideas", new { id = comment.IdeaId });
+            return RedirectToAction("details", "ideas", new { slug = idea.Slug });
         }
     }
 }

@@ -54,6 +54,7 @@ namespace VotingApp.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(i => i.Id == idea.Id);
 
+            idea.Slug = getCurrentValueFromDB.Slug;
             idea.CreatedDate = getCurrentValueFromDB.CreatedDate;
             idea.MemberId = getCurrentValueFromDB.MemberId;
             idea.CurrentStatus = getCurrentValueFromDB.CurrentStatus;
@@ -122,7 +123,8 @@ namespace VotingApp.Controllers
             }
             else
             {
-                return RedirectToAction("details", "ideas", new { id = idea.Id });
+                return RedirectToAction("details", "ideas", new { slug = idea.Slug });
+
 
             }
 
@@ -133,7 +135,7 @@ namespace VotingApp.Controllers
             var getCurrentValueFromDB = await _context.Idea
                 .AsNoTracking()
                 .FirstOrDefaultAsync(i => i.Id == idea.Id);
-
+            idea.Slug = getCurrentValueFromDB.Slug;
             idea.CreatedDate = getCurrentValueFromDB.CreatedDate;
             idea.MemberId = getCurrentValueFromDB.MemberId;
             idea.CurrentStatus = getCurrentValueFromDB.CurrentStatus;
@@ -154,7 +156,9 @@ namespace VotingApp.Controllers
             };
             _context.Add(notification);
             _context.SaveChanges();
-            return RedirectToAction("details", "ideas", new { id = idea.Id });
+            return RedirectToAction("details", "ideas", new { slug = idea.Slug });
+
+
         }
 
         [Authorize]
@@ -169,11 +173,13 @@ namespace VotingApp.Controllers
             {
                 _context.Vote.Remove(memberVoteCount);
                 await _context.SaveChangesAsync();
-                //TempData["DisplayMessage"] = "Vote removed!";
-                return RedirectToAction("details", "ideas", new { id = idea.Id });
+                return RedirectToAction("details", "ideas", new { slug = idea.Slug });
+
+
             }
 
-            return RedirectToAction("details", "ideas", new { id = idea.Id });
+            return RedirectToAction("details", "ideas", new { slug = idea.Slug });
+
         }
 
 

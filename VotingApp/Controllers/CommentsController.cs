@@ -22,19 +22,19 @@ namespace VotingApp.Controllers
         [HttpPost]
         public async Task<IActionResult> AddComment(Comment comment)
         {
+            var idea = await _context.Idea.FirstOrDefaultAsync(i => i.Id == comment.IdeaId);
             if (comment.Body == null)
             {
-                return RedirectToAction("Details", "ideas", new { id = comment.IdeaId });
+                return RedirectToAction("Details", "ideas", new { slug = idea.Slug });
             }
             if (comment.Body.Length > 300)
             {
                 TempData["DisplayMessage"] = "Error - Comment must not exceed 300 characters.";
-                return RedirectToAction("Details", "ideas", new { id = comment.IdeaId });
+                return RedirectToAction("Details", "ideas", new { slug = idea.Slug });
             }
             _context.Add(comment);
             _context.SaveChanges();
 
-            var idea = await _context.Idea.FirstOrDefaultAsync(i => i.Id == comment.IdeaId);
 
             Notification notification = new Notification()
             {
@@ -49,7 +49,7 @@ namespace VotingApp.Controllers
             _context.Add(notification);
             _context.SaveChanges();
             TempData["DisplayMessage"] = "Comment has been posted!";
-            return RedirectToAction("Details", "ideas", new { id = comment.IdeaId });
+            return RedirectToAction("Details", "ideas", new { slug = idea.Slug});
         }
 
         [Authorize]
@@ -57,6 +57,7 @@ namespace VotingApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditComment(Comment comment)
         {
+            var idea = await _context.Idea.FirstOrDefaultAsync(i => i.Id == comment.IdeaId);
             var getCurrentValueFromDB = await _context.Comment
                 .AsNoTracking()
                 .FirstOrDefaultAsync(i => i.Id == comment.Id);
@@ -68,7 +69,7 @@ namespace VotingApp.Controllers
             await _context.SaveChangesAsync();
 
             TempData["DisplayMessage"] = "Comment Updated!";
-            return RedirectToAction("details", "ideas", new { id = comment.IdeaId });
+            return RedirectToAction("details", "ideas", new { slug = idea.Slug });
         }
 
         [Authorize]
@@ -95,12 +96,14 @@ namespace VotingApp.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteComment(Comment comment)
         {
+            var idea = await _context.Idea.FirstOrDefaultAsync(i => i.Id == comment.IdeaId);
+
             var theComment = await _context.Comment.FindAsync(comment.Id);
 
             _context.Comment.Remove(theComment);
             await _context.SaveChangesAsync();
             TempData["DisplayMessage"] = "Comment has been removed.";
-            return RedirectToAction("details", "ideas", new { id = comment.IdeaId });
+            return RedirectToAction("details", "ideas", new { slug = idea.Slug });
 
         }
 

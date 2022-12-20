@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -12,7 +13,6 @@ using VotingApp.Models;
 using X.PagedList;
 
 
-// TODO order by vote count
 
 namespace VotingApp.Controllers
 {
@@ -88,10 +88,10 @@ namespace VotingApp.Controllers
         }
 
         // GET: Ideas/Details/5
-        [Route("ideas/details/{id?}")]
-        public async Task<IActionResult> Details(int? id)
+        [Route("ideas/details/{slug?}")]
+        public async Task<IActionResult> Details(string? slug)
         {
-            if (id == null || _context.Idea == null)
+            if (string.IsNullOrEmpty(slug))
             {
                 return NotFound();
             }
@@ -102,7 +102,7 @@ namespace VotingApp.Controllers
                 .Include(i => i.Votes)
                 .Include(i => i.Comments)
                     .ThenInclude(c => c.Member)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Slug == slug);
             if (idea == null)
             {
                 return NotFound();
@@ -116,10 +116,21 @@ namespace VotingApp.Controllers
         [Route("/ideas/create")]
         public async Task<IActionResult> Create([Bind("Id,Title,Description,CreatedDate,UpdatedDate,CategoryId,MemberId")] Idea idea)
         {
-
-
             if (ModelState.IsValid)
             {
+                string slug = GenerateSlug(idea);
+                if(SlugExist(slug) == true)
+                {
+                    ModelState.AddModelError("Title", "Error, Slug already exists. Please choose another title.");
+                    ViewData["CategoryId"] = new SelectList(_context.Category, "Id", "Name", idea.CategoryId);
+                    ViewData["MemberId"] = new SelectList(_context.Set<Member>(), "Id", "Id", idea.MemberId);
+                    return View(idea);
+                }
+                if (SlugExist(slug) == false)
+                {
+                    idea.Slug = slug;
+                }
+
                 if (idea.CategoryId == 0)
                 {
                     TempData["DisplayMessage"] = "Error - Please choose a category";
@@ -149,13 +160,156 @@ namespace VotingApp.Controllers
 
                 await _context.SaveChangesAsync();
 
-                return RedirectToAction("details", "ideas", new { id = idea.Id });
+                return RedirectToAction("details", "ideas", new { slug = idea.Slug });
             }
 
             ViewData["CategoryId"] = new SelectList(_context.Category, "Id", "Id", idea.CategoryId);
             ViewData["MemberId"] = new SelectList(_context.Users, "Id", "Id", idea.MemberId);
             return View(idea);
         }
+
+        private bool SlugExist(string slug)
+        {
+            return _context.Idea.Any(Post => Post.Slug == slug);
+        }
+
+        public string GenerateSlug(Idea idea)
+        {
+            if (idea.Title == null) return "";
+            const int maxlen = 80;
+            var len = idea.Title.Length;
+            var prevdash = false;
+            var sb = new StringBuilder(len);
+            char c;
+            for (int i = 0; i < len; i++)
+            {
+                c = idea.Title[i];
+                if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9'))
+                {
+                    sb.Append(c);
+                    prevdash = false;
+                }
+                else if (c >= 'A' && c <= 'Z')
+                {
+                    // tricky way to convert to lowercase
+                    sb.Append((char)(c | 32));
+                    prevdash = false;
+                }
+                else if (c == ' ' || c == ',' || c == '.' || c == '/' ||
+                        c == '\\' || c == '-' || c == '_' || c == '=')
+                {
+                    if (!prevdash && sb.Length > 0)
+                    {
+                        sb.Append('-');
+                        prevdash = true;
+                    }
+                }
+                else if (c == '#')
+                {
+                    if (i > 0)
+                        if (idea.Title[i - 1] == 'C' || idea.Title[i - 1] == 'F')
+                            sb.Append("-sharp");
+                }
+                else if (c == '+')
+                {
+                    sb.Append("-plus");
+                }
+                else if ((int)c >= 128)
+                {
+                    int prevlen = sb.Length;
+                    sb.Append(RemapInternationalCharToAscii(c));
+                    if (prevlen != sb.Length) prevdash = false;
+                }
+                if (sb.Length == maxlen) break;
+            }
+            if (prevdash)
+                return sb.ToString().Substring(0, sb.Length - 1);
+            else
+                return sb.ToString();
+        }
+
+        private string RemapInternationalCharToAscii(char c)
+        {
+            string s = c.ToString().ToLowerInvariant();
+            if ("àåáâäãåą".Contains(s))
+            {
+                return "a";
+            }
+            else if ("èéêëę".Contains(s))
+            {
+                return "e";
+            }
+            else if ("ìíîïı".Contains(s))
+            {
+                return "i";
+            }
+            else if ("òóôõöøőð".Contains(s))
+            {
+                return "o";
+            }
+            else if ("ùúûüŭů".Contains(s))
+            {
+                return "u";
+            }
+            else if ("çćčĉ".Contains(s))
+            {
+                return "c";
+            }
+            else if ("żźž".Contains(s))
+            {
+                return "z";
+            }
+            else if ("śşšŝ".Contains(s))
+            {
+                return "s";
+            }
+            else if ("ñń".Contains(s))
+            {
+                return "n";
+            }
+            else if ("ýÿ".Contains(s))
+            {
+                return "y";
+            }
+            else if ("ğĝ".Contains(s))
+            {
+                return "g";
+            }
+            else if (c == 'ř')
+            {
+                return "r";
+            }
+            else if (c == 'ł')
+            {
+                return "l";
+            }
+            else if (c == 'đ')
+            {
+                return "d";
+            }
+            else if (c == 'ß')
+            {
+                return "ss";
+            }
+            else if (c == 'Þ')
+            {
+                return "th";
+            }
+            else if (c == 'ĥ')
+            {
+                return "h";
+            }
+            else if (c == 'ĵ')
+            {
+                return "j";
+            }
+            else
+            {
+                return "";
+            }
+        }
+
+
 
         // GET: Ideas/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -291,8 +445,6 @@ namespace VotingApp.Controllers
             ViewData["MemberId"] = new SelectList(_context.Users, "Id", "Id", idea.MemberId);
             return View(idea);
         }
-
-
 
         [Authorize]
         [HttpPost]

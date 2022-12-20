@@ -1,10 +1,11 @@
 ﻿@using Microsoft.AspNetCore.Identity;
+@using Microsoft.EntityFrameworkCore;
 @using VotingApp.Data;
 @inject ApplicationDbContext _context;
 @inject UserManager<Member> _userManager;
 
 @{
-    var notificationList = _context.Notification.Where(n => n.MemberId == _userManager.GetUserId(User) && n.Description != "added_idea").OrderByDescending( n => n.CreatedDate).ToList();
+    var notificationList = await _context.Notification.Where(n => n.MemberId == _userManager.GetUserId(User) && n.Description != "added_idea").OrderByDescending( n => n.CreatedDate).ToListAsync();
 
     string markRead = "Mark all notifications as read";
     string addedIdea = "added an idea";
@@ -36,7 +37,7 @@
                 
 
                 <li class="list-group-item border-0 shadow-sm">
-                <a href="~/ideas/Details?id=@notification.IdeaId" class="text-decoration-none">
+                <a href="~/ideas/Details/@notification.IdeaId" class="text-decoration-none">
                     <span class="USERNAME ">@user.DisplayName</span>
                     <span class="DESCRIPTION">
                     @{
