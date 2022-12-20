@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using VotingApp.Data;
 using VotingApp.Models;
 using X.PagedList;
+using VotingApp;
 
 
 
@@ -28,17 +29,16 @@ namespace VotingApp.Controllers
         }
 
         // START PAGE
+        [Route("")]
         [Route("ideas/{s?}")]
-        public async Task<IActionResult> DisplayStatus(string? s, int? page)
+        public async Task<IActionResult> Index(string? s, int? page)
         {
-            int pageSize = 8; // Views per page
-            int pageNumber = (page ?? 1); // If no parameter is given, defaults to 1
+            // pagination properties
+            // posts per page
+            int pageSize = 8; 
+            int pageNumber = (page ?? 1);
 
-
-            if (s == "create")
-            {
-                return RedirectToAction("create", "ideas");
-            }
+            // redirect based on given POSTS data
             if (s == "all" || s == null)
             {
                 var getAll = await _context.Idea
@@ -49,17 +49,19 @@ namespace VotingApp.Controllers
                 .OrderByDescending(i => i.Id)
                 .ToListAsync();
 
+                // passed to pagination method in View, neccessary for dynamic hrefs
                 if (s == null)
                 {
-                    TempData["StatusTerm"] = "";
+                    TempData["ModelName"] = "";
                 }
                 else
                 {
-                    TempData["StatusTerm"] = s;
+                    TempData["ModelName"] = s;
                 }
                 return View(getAll.ToPagedList(pageNumber, pageSize));
             }
 
+            // get rows based on given searchTerm
             var getResults = await _context.Idea
                 .Include(i => i.Category)
                 .Include(i => i.Member)
@@ -69,34 +71,28 @@ namespace VotingApp.Controllers
                 .OrderByDescending(i => i.Id)
                 .ToListAsync();
 
+            // redirect if rows return 0
             if (getResults.Count() == 0)
             {
                 return Redirect("~/?s=all");
 
             }
 
-            TempData["StatusTerm"] = s;
+            TempData["ModelName"] = s;
             return View(getResults.ToPagedList(pageNumber, pageSize));
-        }
-
-
-        [Route("~/")]
-        public IActionResult Index()
-        {
-            return Redirect("~/ideas/?s=all");
-
         }
 
         // GET: Ideas/Details/5
         [Route("ideas/details/{slug?}")]
         public async Task<IActionResult> Details(string? slug, int? id)
         {
+            // redirect to homepage if slug is null
             if (string.IsNullOrEmpty(slug))
             {
-                return NotFound();
+                return Redirect("~/");
             }
 
-
+            // get row using given slug
             var idea = await _context.Idea
                 .Include(i => i.Category)
                 .Include(i => i.Member)
@@ -104,6 +100,8 @@ namespace VotingApp.Controllers
                 .Include(i => i.Comments)
                     .ThenInclude(c => c.Member)
                 .FirstOrDefaultAsync(m => m.Slug == slug);
+
+            // get row using id if no slug is available
             if(slug.All(char.IsDigit))
             {
                 var ideaId = await _context.Idea
@@ -116,9 +114,12 @@ namespace VotingApp.Controllers
                 return View(ideaId);
 
             }
+
+            // redirect to homepage and display message if post not found
             if (idea == null)
             {
-                return NotFound();
+                TempData["DisplayMessage"] = "Error - Post not found";
+                return Redirect("~/");
             }
 
             return View(idea);
@@ -131,15 +132,20 @@ namespace VotingApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                string slug = GenerateSlug(idea);
-                if(SlugExist(slug) == true)
+                // instantiates the helper method that generates slugs
+                var generateSlug = new Helpers.HelperMethods(_context);
+                // generate a slug based on idea.Title
+                string slug = generateSlug.GenerateSlug(idea);      
+
+                // slug must be unique
+                // this method will check if slug already exist in DB
+                if(generateSlug.SlugExist(slug) == true)
                 {
                     ModelState.AddModelError("Title", "Error, Slug already exists. Please choose another title.");
-                    ViewData["CategoryId"] = new SelectList(_context.Category, "Id", "Name", idea.CategoryId);
-                    ViewData["MemberId"] = new SelectList(_context.Set<Member>(), "Id", "Id", idea.MemberId);
                     return View(idea);
                 }
-                if (SlugExist(slug) == false)
+                // append slug property to idea.Slug if it is unique
+                if (generateSlug.SlugExist(slug) == false)
                 {
                     idea.Slug = slug;
                 }
@@ -150,9 +156,12 @@ namespace VotingApp.Controllers
                     return View(idea);
 
                 }
+
+                // track and write to database
                 _context.Add(idea);
                 await _context.SaveChangesAsync();
 
+        
                 Vote vote = new Vote()
                 {
                     IdeaId = idea.Id,
@@ -181,146 +190,11 @@ namespace VotingApp.Controllers
             return View(idea);
         }
 
-        private bool SlugExist(string slug)
-        {
-            return _context.Idea.Any(Post => Post.Slug == slug);
-        }
+        //private bool SlugExist(string slug)
+        //{
+        //    return _context.Idea.Any(Post => Post.Slug == slug);
+        //}
 
-        public string GenerateSlug(Idea idea)
-        {
-            if (idea.Title == null) return "";
-            const int maxlen = 80;
-            var len = idea.Title.Length;
-            var prevdash = false;
-            var sb = new StringBuilder(len);
-            char c;
-            for (int i = 0; i < len; i++)
-            {
-                c = idea.Title[i];
-                if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9'))
-                {
-                    sb.Append(c);
-                    prevdash = false;
-                }
-                else if (c >= 'A' && c <= 'Z')
-                {
-                    // tricky way to convert to lowercase
-                    sb.Append((char)(c | 32));
-                    prevdash = false;
-                }
-                else if (c == ' ' || c == ',' || c == '.' || c == '/' ||
-                        c == '\\' || c == '-' || c == '_' || c == '=')
-                {
-                    if (!prevdash && sb.Length > 0)
-                    {
-                        sb.Append('-');
-                        prevdash = true;
-                    }
-                }
-                else if (c == '#')
-                {
-                    if (i > 0)
-                        if (idea.Title[i - 1] == 'C' || idea.Title[i - 1] == 'F')
-                            sb.Append("-sharp");
-                }
-                else if (c == '+')
-                {
-                    sb.Append("-plus");
-                }
-                else if ((int)c >= 128)
-                {
-                    int prevlen = sb.Length;
-                    sb.Append(RemapInternationalCharToAscii(c));
-                    if (prevlen != sb.Length) prevdash = false;
-                }
-                if (sb.Length == maxlen) break;
-            }
-            if (prevdash)
-                return sb.ToString().Substring(0, sb.Length - 1);
-            else
-                return sb.ToString();
-        }
-
-        private string RemapInternationalCharToAscii(char c)
-        {
-            string s = c.ToString().ToLowerInvariant();
-            if ("àåáâäãåą".Contains(s))
-            {
-                return "a";
-            }
-            else if ("èéêëę".Contains(s))
-            {
-                return "e";
-            }
-            else if ("ìíîïı".Contains(s))
-            {
-                return "i";
-            }
-            else if ("òóôõöøőð".Contains(s))
-            {
-                return "o";
-            }
-            else if ("ùúûüŭů".Contains(s))
-            {
-                return "u";
-            }
-            else if ("çćčĉ".Contains(s))
-            {
-                return "c";
-            }
-            else if ("żźž".Contains(s))
-            {
-                return "z";
-            }
-            else if ("śşšŝ".Contains(s))
-            {
-                return "s";
-            }
-            else if ("ñń".Contains(s))
-            {
-                return "n";
-            }
-            else if ("ýÿ".Contains(s))
-            {
-                return "y";
-            }
-            else if ("ğĝ".Contains(s))
-            {
-                return "g";
-            }
-            else if (c == 'ř')
-            {
-                return "r";
-            }
-            else if (c == 'ł')
-            {
-                return "l";
-            }
-            else if (c == 'đ')
-            {
-                return "d";
-            }
-            else if (c == 'ß')
-            {
-                return "ss";
-            }
-            else if (c == 'Þ')
-            {
-                return "th";
-            }
-            else if (c == 'ĥ')
-            {
-                return "h";
-            }
-            else if (c == 'ĵ')
-            {
-                return "j";
-            }
-            else
-            {
-                return "";
-            }
-        }
 
 
 

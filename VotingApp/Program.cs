@@ -50,7 +50,7 @@ namespace VotingApp
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Ideas}/{action=DisplayStatus}/{string?}");
+                pattern: "{controller=ideas}/{action=index}/{string?}");
             app.MapRazorPages();
 
             app.Run();

@@ -162,7 +162,8 @@ namespace VotingApp.Controllers
 
             }
 
-            return RedirectToAction("index", "ideas");
+            // redirect to homepage if nothing matches
+            return RedirectToAction("~/");
         }
     }
 }
