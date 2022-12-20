@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using VotingApp.Data;
 using VotingApp.Models;
+using X.PagedList;
 
 namespace VotingApp.Controllers
 {
@@ -25,10 +26,13 @@ namespace VotingApp.Controllers
 
 
    
-        [Route("category/")]
-        [Route("category/{name}")]
-        public async Task<IActionResult> Index(string? name)
+        [Route("category/{name?}")]
+        [Route("categories/{name?}")]
+        public async Task<IActionResult> Index(string? name, int? page)
         {
+            int pageSize = 8; // Views per page
+            int pageNumber = (page ?? 1); // If no parameter is given, defaults to 1
+
             if (name == "createNewCategory")
             {
                 return Redirect("~/categories/create");
@@ -61,8 +65,9 @@ namespace VotingApp.Controllers
             {
                 return RedirectToAction("index", "ideas");
             }
+            TempData["StatusTerm"] = name;
+            return View(ideas.ToPagedList(pageNumber, pageSize));
 
-            return View(ideas);
         }
 
         public IActionResult ViewAll()
@@ -72,7 +77,6 @@ namespace VotingApp.Controllers
             return View(categories);
         }
 
-        // GET: Categories/Create
         [Authorize]
         public async Task<IActionResult> Create()
         {

@@ -42,7 +42,7 @@ namespace VotingApp.Controllers
             }
             else
             {
-                return Redirect("~/status/all");
+                return Redirect("~/");
 
             }
 
@@ -76,7 +76,7 @@ namespace VotingApp.Controllers
             _context.SaveChanges();
 
             TempData["DisplayMessage"] = "Vote casted!";
-            return Redirect("~/status/all");
+            return Redirect("~/");
         }
 
         [Authorize]
@@ -92,10 +92,10 @@ namespace VotingApp.Controllers
                 _context.Vote.Remove(memberVoteCount);
                 await _context.SaveChangesAsync();
                 TempData["DisplayMessage"] = "Vote removed!";
-                return Redirect("~/status/all");
+                return Redirect("~/");
             }
 
-            return Redirect("~/status/all");
+            return Redirect("~/");
 
         }
 
@@ -122,7 +122,6 @@ namespace VotingApp.Controllers
             }
             else
             {
-                //TempData["DisplayMessage"] = "Error - you already voted!";
                 return RedirectToAction("details", "ideas", new { id = idea.Id });
 
             }
@@ -155,7 +154,6 @@ namespace VotingApp.Controllers
             };
             _context.Add(notification);
             _context.SaveChanges();
-            //TempData["DisplayMessage"] = "Vote recorded!";
             return RedirectToAction("details", "ideas", new { id = idea.Id });
         }
 

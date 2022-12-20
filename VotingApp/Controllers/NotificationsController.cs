@@ -27,7 +27,7 @@ namespace VotingApp.Controllers
 
             _context.Notification.RemoveRange(notificationList);
             await _context.SaveChangesAsync();
-            return Redirect("~/status/all");
+            return Redirect("~/");
 
         }
     }

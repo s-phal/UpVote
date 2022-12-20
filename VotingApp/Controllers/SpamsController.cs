@@ -37,7 +37,7 @@ namespace VotingApp.Controllers
             _context.Update(idea);
             _context.SaveChanges();
             TempData["DisplayMessage"] = "Post has been reported.";
-            return Redirect("~/status/all");
+            return Redirect("~/ideas/");
         }
 
         [Authorize]

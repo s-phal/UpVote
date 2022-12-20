@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using VotingApp.Data;
 using VotingApp.Models;
+using X.PagedList;
 
 
 // TODO order by vote count
@@ -26,14 +27,68 @@ namespace VotingApp.Controllers
             _userManager = userManager;
         }
 
-        // GET: Ideas
-        [Route("{string?}")]
+        // START PAGE
+        [Route("ideas/{s?}")]
+        public async Task<IActionResult> DisplayStatus(string? s, int? page)
+        {
+            int pageSize = 8; // Views per page
+            int pageNumber = (page ?? 1); // If no parameter is given, defaults to 1
+
+
+            if (s == "create")
+            {
+                return RedirectToAction("create", "ideas");
+            }
+            if (s == "all" || s == null)
+            {
+                var getAll = await _context.Idea
+                .Include(i => i.Category)
+                .Include(i => i.Member)
+                .Include(i => i.Votes)
+                .Include(i => i.Comments)
+                .OrderByDescending(i => i.Id)
+                .ToListAsync();
+
+                if (s == null)
+                {
+                    TempData["StatusTerm"] = "";
+                }
+                else
+                {
+                    TempData["StatusTerm"] = s;
+                }
+                return View(getAll.ToPagedList(pageNumber, pageSize));
+            }
+
+            var getResults = await _context.Idea
+                .Include(i => i.Category)
+                .Include(i => i.Member)
+                .Include(i => i.Votes)
+                .Include(i => i.Comments)
+                .Where(i => i.CurrentStatus.ToLower() == s.ToLower())
+                .OrderByDescending(i => i.Id)
+                .ToListAsync();
+
+            if (getResults.Count() == 0)
+            {
+                return Redirect("~/?s=all");
+
+            }
+
+            TempData["StatusTerm"] = s;
+            return View(getResults.ToPagedList(pageNumber, pageSize));
+        }
+
+
+        [Route("~/")]
         public IActionResult Index()
         {
-            return Redirect("~/status/all");
+            return Redirect("~/ideas/?s=all");
+
         }
 
         // GET: Ideas/Details/5
+        [Route("ideas/details/{id?}")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Idea == null)
@@ -58,10 +113,19 @@ namespace VotingApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Route("/ideas/create")]
         public async Task<IActionResult> Create([Bind("Id,Title,Description,CreatedDate,UpdatedDate,CategoryId,MemberId")] Idea idea)
         {
+
+
             if (ModelState.IsValid)
             {
+                if (idea.CategoryId == 0)
+                {
+                    TempData["DisplayMessage"] = "Error - Please choose a category";
+                    return View(idea);
+
+                }
                 _context.Add(idea);
                 await _context.SaveChangesAsync();
 
@@ -83,10 +147,11 @@ namespace VotingApp.Controllers
                 };
                 _context.Add(notification);
 
-				await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
 
-				return RedirectToAction("details","ideas", new { id = idea.Id });
+                return RedirectToAction("details", "ideas", new { id = idea.Id });
             }
+
             ViewData["CategoryId"] = new SelectList(_context.Category, "Id", "Id", idea.CategoryId);
             ViewData["MemberId"] = new SelectList(_context.Users, "Id", "Id", idea.MemberId);
             return View(idea);
@@ -143,50 +208,13 @@ namespace VotingApp.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("details","ideas", new {id = idea.Id});
+                return RedirectToAction("details", "ideas", new { id = idea.Id });
             }
             ViewData["CategoryId"] = new SelectList(_context.Category, "Id", "Id", idea.CategoryId);
             ViewData["MemberId"] = new SelectList(_context.Users, "Id", "Id", idea.MemberId);
             return View(idea);
         }
 
-
-        [Route("status/{statusTerm?}")]
-        public async Task<IActionResult> DisplayStatus(string? statusTerm)
-        {
-            if (statusTerm == null)
-            {
-                return RedirectToAction("index", "ideas");
-            }
-            if (statusTerm == "all")
-            {
-                var getAll = await _context.Idea
-                .Include(i => i.Category)
-                .Include(i => i.Member)
-                .Include(i => i.Votes)
-                .Include(i => i.Comments)
-                .OrderByDescending(i => i.Id)
-                .ToListAsync();
-
-                return View(getAll);
-            }
-
-            var getResults = await _context.Idea
-                .Include(i => i.Category)
-                .Include(i => i.Member)
-                .Include(i => i.Votes)
-                .Include(i => i.Comments)
-                .Where(i => i.CurrentStatus.ToLower() == statusTerm.ToLower())
-                .OrderByDescending(i => i.Id)
-                .ToListAsync();
-
-            if (getResults.Count() == 0)
-            {
-                return RedirectToAction("index", "ideas");
-            }
-
-            return View(getResults);
-        }
 
         [HttpPost]
         public async Task<IActionResult> SetStatus(Idea idea, Comment comment)
@@ -200,7 +228,7 @@ namespace VotingApp.Controllers
 
             _context.Add(newComment);
             _context.Update(idea);
-           await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
 
             Notification notification = new Notification()
             {
@@ -257,7 +285,7 @@ namespace VotingApp.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("details","ideas", new { id = id });
+                return RedirectToAction("details", "ideas", new { id = id });
             }
             ViewData["CategoryId"] = new SelectList(_context.Category, "Id", "Id", idea.CategoryId);
             ViewData["MemberId"] = new SelectList(_context.Users, "Id", "Id", idea.MemberId);
@@ -269,6 +297,7 @@ namespace VotingApp.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Route("ideas/delete")]
         public async Task<IActionResult> DeleteIdea(int id)
         {
             if (_context.Idea == null)

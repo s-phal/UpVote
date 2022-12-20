@@ -9,17 +9,20 @@
     // get list of categories
     var category = _context.Category.ToList();
 
-    // hides this form if current page is either the Login or Registration page.
-    string getStatus = Context.Request.GetDisplayUrl().ToLower();
+    // get the URL of the current page.
+    string getUrl = Context.Request.GetDisplayUrl().ToLower();
     string displayNone = "display: none";
 
 }
 
 <div class="ADD-IDEA-FORM mt-sm-0 mt-lg-8 sticky-top card  text-center rounded-5 border-0 shadow py-3" style="top: 40px;
 
-    @if(getStatus.Contains("register") || getStatus.Contains("login") || getStatus.Contains("forgotpassword") || getStatus.Contains("ideas/create")) {
- @displayNone
- } ">
+    @if(getUrl.Contains("register") || getUrl.Contains("login") || getUrl.Contains("forgotpassword") || getUrl.Contains("ideas/create")) 
+    {   
+        // hides the _AddForm partial for the pages listed above
+        @displayNone
+    } 
+ ">
 
     @{
         if (!_signInManager.IsSignedIn(User))

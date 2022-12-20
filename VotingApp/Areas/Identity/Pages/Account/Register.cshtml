@@ -37,10 +37,13 @@
                                 <label asp-for="Input.ConfirmPassword">Confirm Password</label>
                                 <span asp-validation-for="Input.Password" class="text-danger"></span>
                             </div>
-                            <button id="registerSubmit" type="submit" class="w-100 btn btn-lg text-white btn-info rounded-5">Register</button>
+                            <button id="registerSubmit" type="submit" class="w-100 btn btn-lg text-white btn-info rounded-5 mb-4">Register</button>
 
+                        <a class="text-secondary" asp-area="Identity" asp-page="/Account/Login">Login</a>
                         </div>
                     </form>
+
+
                 </div>
             </div>
         </div>

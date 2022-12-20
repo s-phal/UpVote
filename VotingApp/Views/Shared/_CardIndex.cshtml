@@ -1,7 +1,8 @@
 ﻿@using Humanizer;
 @using Microsoft.AspNetCore.Identity;
 @using VotingApp.Data;
-@model IEnumerable<VotingApp.Models.Idea>
+@using X.PagedList.Mvc.Core;
+@model X.PagedList.IPagedList<VotingApp.Models.Idea>
 @inject UserManager<Member> _userManager;
 @inject SignInManager<Member> _signInManager;
 
@@ -277,3 +278,26 @@
     }
 }
 
+
+
+@{
+    var statusTerm = "";
+    if (TempData.ContainsKey("StatusTerm"))
+    {
+        statusTerm = TempData["StatusTerm"].ToString();
+         
+    }
+}
+
+<nav>
+    @{
+        @Html.PagedListPager(Model, page => Url.Action(statusTerm, new { page }), new X.PagedList.Web.Common.PagedListRenderOptions
+            {
+                PageClasses = new string[] { "page-link" },
+                UlElementClasses = new string[] { "pagination pagination-sm justify-content-end" },
+                LiElementClasses = new string[] { "page-item" },
+                DisplayEllipsesWhenNotShowingAllPageNumbers = true,
+                MaximumPageNumbersToDisplay = 5
+            });
+    }
+</nav>

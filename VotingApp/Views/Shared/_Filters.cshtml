@@ -42,7 +42,7 @@
 
 
     <div class="FILTER col-lg-3 mb-3 mb-lg-0">
-        <form name="search" asp-action="search" asp-controller="home">
+        <form name="search" asp-action="search" asp-controller="Filters">
             <select name="searchTerm" onchange="search.submit()" class="form-select border-0" aria-label=".form-select-sm example">
                 <option selected>Sort By</option>
                 <option value="topVoted">Top Voted</option>
@@ -61,7 +61,7 @@
     </div>
     <div class="SEARCH col input-group mb-3 mb-lg-3">
         <div class="nav-item w-100">
-            <form asp-action="search" asp-controller="home" class="position-relative">
+            <form asp-action="search" asp-controller="filters" class="position-relative">
                 <input class="form-control" name="searchTerm" type="search" placeholder="Find an idea" aria-label="Search">
                 <button class="bg-transparent p-2 position-absolute top-50 end-0 translate-middle-y border-0 text-primary-hover text-reset align-items-center" type="submit">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">

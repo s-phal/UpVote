@@ -22,12 +22,26 @@
  @displayNone
  }">
     <ul class="d-flex list-unstyled text-uppercase fw-bold border-5 border-bottom pb-3" style="letter-spacing:3px">
-        <li><a href="~/status/all" class="@if(getStatus.Contains("status/all")) { @borderPrimary } text-decoration-none top-links border-bottom border-5 pb-3">all ideas (@totalCount)</a></li>
-        <li><a href="~/status/considering" class="@if(getStatus.Contains("status/considering")) { @borderPrimary } text-decoration-none top-links border-bottom border-5 pb-3">Considering (@consideringCount)</a></li>
-        <li><a href="~/status/in-progress" class="@if(getStatus.Contains("status/in-progress")) { @borderPrimary } text-decoration-none top-links border-bottom border-5 pb-3">In Progress (@inProgressCount)</a></li>
+        <li><a href="~/ideas/?s=all" class="@if(getStatus.Contains("all")) {
+            @borderPrimary
+ } text-decoration-none top-links border-bottom border-5 pb-3">all ideas (@totalCount)</a></li>
+        <li>
+            <a href="~/ideas/?s=considering" class="@if(getStatus.Contains("considering")) {
+            @borderPrimary
+ } text-decoration-none top-links border-bottom border-5 pb-3">Considering (@consideringCount)</a></li>
+        <li>
+            <a href="~/ideas/?s=in-progress" class="@if(getStatus.Contains("in-progress")) {
+            @borderPrimary
+ } text-decoration-none top-links border-bottom border-5 pb-3">In Progress (@inProgressCount)</a></li>
     </ul>
     <ul class="d-flex list-unstyled text-uppercase fw-bold border-5 border-bottom pb-3" style="letter-spacing:3px">
-        <li><a href="~/status/implemented" class="@if(getStatus.Contains("status/implemented")) { @borderPrimary } text-decoration-none top-links border-bottom border-5 pb-3">implemented (@implementedCount)</a></li>
-        <li><a href="~/status/closed" class="@if(getStatus.Contains("status/closed")) { @borderPrimary } text-decoration-none top-links border-bottom border-5 pb-3">closed (@closedCount)</a></li>
+        <li>
+            <a href="~/ideas/?s=implemented" class="@if(getStatus.Contains("implemented")) {
+            @borderPrimary
+ } text-decoration-none top-links border-bottom border-5 pb-3">implemented (@implementedCount)</a></li>
+        <li>
+            <a href="~/ideas/?s=closed" class="@if(getStatus.Contains("closed")) {
+            @borderPrimary
+ } text-decoration-none top-links border-bottom border-5 pb-3">closed (@closedCount)</a></li>
     </ul>
 </nav>

@@ -16,6 +16,9 @@
 <hr />
 <div class="row">
     <div class="col">
+        <!-- Display Message START-->
+        <partial name="_DisplayMessage" />
+        <!-- Display Message END-->
         <form asp-action="Create" asp-controller="Ideas">
             <input type="hidden" name="MemberId" value="@_userManager.GetUserId(User)"
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
