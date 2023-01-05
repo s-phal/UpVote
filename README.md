@@ -7,6 +7,7 @@ Project was developed using:
 - ASP.NET MVC
 - Entity Framework
 - Bootstrap 5
+- [X.PagedList](https://github.com/dncuug/X.PagedList)
 - [Humanizer](https://github.com/Humanizr/Humanizer)
 - PostgreSQL
 
@@ -25,6 +26,7 @@ Hosting Environment:
   - Content Moderation
   - Spam Management
   - Change Post Status
+- Pagination
 - Image Uploads using the FileStream class
 - Auto generate unique filenames upon upload to prevent file overwrites
 - Member Activity Notifications
