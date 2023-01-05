@@ -27,6 +27,7 @@ Hosting Environment:
   - Spam Management
   - Change Post Status
 - Pagination
+- Display Timestamp/Timespan in a friendly format
 - Image Uploads using the FileStream class
 - Auto generate unique filenames upon upload to prevent file overwrites
 - Member Activity Notifications
