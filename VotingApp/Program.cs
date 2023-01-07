@@ -42,7 +42,7 @@ namespace VotingApp
             }
 
             // generate database migration on first page load for PROD ENV
-            app.UseDatabaseErrorPage();
+            //app.UseDatabaseErrorPage();
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

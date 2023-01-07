@@ -1,1 +1,1 @@
-﻿// TODO add virtual clause to Comment model for test
+﻿// TODO uncomment Migration in Program.cs for production server
