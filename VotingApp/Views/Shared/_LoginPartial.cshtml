@@ -1,49 +1,49 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @inject SignInManager<Member> SignInManager
-@inject UserManager<Member> UserManager
+@inject UserManager<Member> _userManager
 
+@{
+    // get property of current signed in user
+    var user = await _userManager.GetUserAsync(User);
+}
 <ul class="navbar-nav align-items-center" >
     @if (SignInManager.IsSignedIn(User))
     {
+        // display only if user has signed in
+        <li class="nav-item me-4">
+            <partial name="_Notifications" />
+        </li>           
 
-            <li class="nav-item me-4">
-                <partial name="_Notifications" />
-            </li>
-           
-        @foreach (var item in UserManager.Users.Where(m => m.Id == UserManager.GetUserId(User)))
-        {
             <li class="nav-item">
                 <div class="dropdown">
-                <button class="border-0" style="background-color: transparent;" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src="~/uploads/avatars/@item.AvatarFileName" class="avatar rounded-circle" />
-                </button>
-                <ul class="dropdown-menu end-0 mt-3" style="left:auto" aria-labelledby="dropdownMenuButton1">
-                    <li class="px-3 mb-3">
-                        <div class="align-items-center">
-                            <div>
-                                <a class="text-black text-decoration-none">@item.FirstName @item.LastName</a>
-                                <p class="small m-0">@item.Email</p>
+                    <button class="border-0" style="background-color: transparent;" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="~/uploads/avatars/@user.AvatarFileName" class="avatar rounded-circle" />
+                    </button>
+                    <ul class="dropdown-menu end-0 mt-3" style="left:auto" aria-labelledby="dropdownMenuButton1">
+                        <li class="px-3 mb-3">
+                            <div class="align-items-center">
+                                <div>
+                                        <a class="text-black text-decoration-none">@user.FirstName @user.LastName</a>
+                                        <p class="small m-0">@user.Email</p>
+                                </div>
                             </div>
-                        </div>
-                    </li>
-                    <li><hr class="dropdown-divider" /></li>
-                    <li><a class="dropdown-item" href="/Identity/Account/Manage">Edit Profile</a></li>
-                    <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                    <li><button class="dropdown-item" type="submit">Sign Out</button></li>
-                    </form>
-                </ul>
-            </div>
-            </li>         
-        }
-
+                        </li>
+                        <li><hr class="dropdown-divider" /></li>
+                        <li><a class="dropdown-item" href="/Identity/Account/Manage">Edit Profile</a></li>
+                        <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                        <li><button class="dropdown-item" type="submit">Sign Out</button></li>
+                        </form>
+                    </ul>
+                </div>
+            </li>
     }
-else
-{
-    <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Register</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>
-    </li>
+    else
+    {
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Register</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>
+        </li>
     }
 </ul>

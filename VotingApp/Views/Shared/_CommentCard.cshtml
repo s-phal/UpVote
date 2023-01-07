@@ -3,36 +3,54 @@
 @model VotingApp.Models.Idea
 @inject UserManager<Member> _userManager;
 @inject SignInManager<Member> _signInManager;
+
 @{
-    // string variables to use if comment belongs to an Admin
+
+    // these string variables are used 
+    // to change the look of the comments
+    // based on its status
     string isAdmin = "is-admin";
     string textPrimary = "text-primary";
     string textSecondary = "text-secondary";
-
-
-    // set text colors for moderated posts
     string textModerated = "text-danger opacity-50";
     string textBlack = "text-black";
 
+    // get user property
     var getUserRole = await _userManager.GetUserAsync(User);
 
 }
 
 <!-- Comments START -->
 @{
+    // sort the comments by UpdatedDate
     foreach (var comment in Model.Comments.OrderByDescending(c => c.UpdatedDate))
     {
+        // convert timespan to human readable
         double timestamp = comment.CreatedDate.ToOADate();
         var timeSpan = DateTime.FromOADate(timestamp).AddMicroseconds(-timestamp).Humanize();
 
+        // append Idea status to CSS name
         string setGradientColor = $"gradient-status-{Model.CurrentStatus}";
 
-        <div class="@if (comment.Member.UserRole == "admin") { @isAdmin } comment-container position-relative row mb-2">
+        <div class="comment-container 
+            @if (comment.Member.UserRole == "admin") 
+            { 
+                // display solid colored circle to comment card if comment owner is an admin
+                @isAdmin 
+            } 
+         position-relative row mb-2">
             <div class="col-1">
                 <!--left side leave empty -->
             </div>
             <div class="col ms-1">
-                <div class="@if (comment.Member.UserRole == "admin"  ) { @setGradientColor } card-single mb-3 border-0 rounded-5 shadow-sm @Model.CurrentStatus">
+                <div class="
+                    @if (comment.Member.UserRole == "admin"  ) 
+                {
+                    // append corresponding gradient color to admin comments
+                    // when setting status of an idea
+                    @setGradientColor 
+                } 
+                card-single mb-3 border-0 rounded-5 shadow-sm @Model.CurrentStatus">
                     <div class="row g-0">
                         <div class="AVATAR-IMAGE col-md-1 ms-2 pt-3 text-center">
                             <img src="~/uploads/avatars/@comment.Member.AvatarFileName" alt="avatar" class="avatar rounded-3" />
@@ -52,18 +70,29 @@
                                 @{
                                     if(_signInManager.IsSignedIn(User) && getUserRole.UserRole == "admin")
                                     {
-                                        if(comment.SpamReports != 0) 
-                                        { 
+                                        if(comment.SpamReports != 0)
+                                        {
+                                            // display spam count if more than 0. User must be in the admin role to see.
                                             <div class="text-danger mb-1 text-uppercase">spam reports: @comment.SpamReports</div>
                                         }                                        
                                     }
                                 } 
-                                <p class="card-text @if(comment.IsModerated) { @textModerated } else { @textBlack }">@comment.Body</p>
+                                <p class="card-text 
+                                    @if(comment.IsModerated) 
+                                    { 
+                                        // change text class of comment Body if comment has been moderated
+                                        @textModerated 
+                                    } 
+                                    else { @textBlack } ">@comment.Body</p>
                             </div>
                             <div class="d-flex bd-highlight mb-3">
-                                <div class="FIRSTNAME 
-                                @if (comment.Member.UserRole == "admin") { @textPrimary } 
-                                @if (comment.Member.UserRole != "admin") { @textSecondary } ps-3 bd-highlight fw-bold ">@comment.Member.FirstName</div>
+                                <div class="
+                                @if (comment.Member.UserRole == "admin") 
+                                { 
+                                    // Set comment user name to blue if comment owner is an admin
+                                    @textPrimary 
+                                } 
+                                @if (comment.Member.UserRole != "admin") { @textSecondary } ps-3 bd-highlight fw-bold ">@comment.Member.DisplayName</div>
                                 <div class="TIMESTAMP px-3 bd-highlight text-secondary opacity-50">@timeSpan</div>
                                 <div class="bd-highlight ms-auto pe-3 dropdown">
                                 @if(_signInManager.IsSignedIn(User))
@@ -78,10 +107,12 @@
                                             @{
                                                 if(_signInManager.IsSignedIn(User) && getUserRole.UserRole == "admin" && comment.SpamReports != 0)
                                                 {
+                                                    // display the Not Spam dropdown item if spam count is more than 0. Must be an admin
                                                     <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#notSpamCommentModal-@comment.Id">Not Spam</a></li>
                                                 }
                                                 if (_signInManager.IsSignedIn(User) && getUserRole.UserRole == "admin")
                                                 {
+                                                    // display these admin dropdown items if signed in user is an admin
                                                     <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#moderateCommentModal-@comment.Id">Moderate Comment</a></li>
                                                      <form asp-action="DeleteComment" asp-controller="Comments">
                                                         <input type="hidden" name="Id" value="@comment.Id"/>
@@ -91,6 +122,8 @@
                                                 }
                                                 if (comment.Member.Id == _userManager.GetUserId(User) && comment.IsModerated == false)
                                                 {
+                                                    // display the Edit Comment dropdown item if the comment belongs to the user
+                                                    // this action is disabled if the comment has been moderated
                                                     <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editCommentModal-@comment.Id">Edit Comment</a></li>
                                                     <form asp-action="DeleteComment" asp-controller="Comments">
                                                         <input type="hidden" name="Id" value="@comment.Id"/>

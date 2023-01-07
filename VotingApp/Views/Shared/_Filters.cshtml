@@ -8,7 +8,7 @@
 @inject ApplicationDbContext _context;
 
 @{
-    // get list of categories
+    // get list of categories from the database
     var category = _context.Category.ToList();
 
     // get user role of signed in User
@@ -23,26 +23,20 @@
                 <option selected>Categories</option>
                 @{
                     <option value="">All</option>
-
-
-                    // display list of categories
                     foreach (var catName in category)
                     {
                         <option value="@catName.Name">@catName.Name</option>
                     }
                     if(_signInManager.IsSignedIn(User) && getUserRole.UserRole == "admin")
                     {
+                        // display additional dropdown items if user is an admin
                         <option value="createNewCategory">Create a New Category</option>
                         <option value="viewAllCategories">Delete a Category</option>
                     }
-
-                }             
-
+                }
             </select>
         </form>
-
     </div>
-
 
     <div class="FILTER col-lg-3 mb-3 mb-lg-0">
         <form name="search" asp-action="search" asp-controller="Filters">
@@ -52,12 +46,13 @@
                 <option value="mostComments">Most Commented</option>
                 @if(_signInManager.IsSignedIn(User))
                 {
-                <option value="myIdeas">My Ideas</option>                    
+                    // display additional drop down items if user is signed in
+                    <option value="myIdeas">My Ideas</option>                    
                 }
-
                 @if (_signInManager.IsSignedIn(User) && getUserRole.UserRole == "admin")
                 {
-                <option value="spam">Has Spam</option>                    
+                    // display additional dropdown items if user is an admin
+                    <option value="spam">Has Spam</option>                    
                 }
             </select>
         </form>

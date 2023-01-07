@@ -165,10 +165,10 @@ namespace VotingApp.Helpers
         // converts given timespan into human readable
         public string ConvertTimeSpan(Idea idea)
         {
-            double timestamp = idea.CreatedDate.ToOADate();
-            var timeSpan = DateTime.FromOADate(timestamp).AddMicroseconds(-timestamp).Humanize();
+                double timestamp = idea.CreatedDate.ToOADate();
+                var timeSpan = DateTime.FromOADate(timestamp).AddMicroseconds(-timestamp).Humanize();
+                return timeSpan;
 
-            return timeSpan;
         }
 
 

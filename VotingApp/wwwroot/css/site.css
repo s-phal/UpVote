@@ -360,7 +360,7 @@ a {
     left: 55px;
     content: "";
     width: 3px;
-    height: 100%;
+    height: 95%;
     background: rgb(0, 0, 0, 0.15);
     opacity: .35;
 
@@ -386,7 +386,8 @@ a {
     content: "";
     width: 3px;
     height: calc(100% - 60px);
-    background: #f7f8fc;
+    background: #dc3535;
+    z-index: 100000000000;
 }
 
 .is-admin::before {

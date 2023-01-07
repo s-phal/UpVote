@@ -1,12 +1,15 @@
-﻿@using Microsoft.AspNetCore.Identity;
+﻿@using Humanizer;
+@using Microsoft.AspNetCore.Identity;
 @using Microsoft.EntityFrameworkCore;
 @using VotingApp.Data;
 @inject ApplicationDbContext _context;
 @inject UserManager<Member> _userManager;
 
 @{
+    // get list of notifications that belongs to current user
     var notificationList = await _context.Notification.Where(n => n.MemberId == _userManager.GetUserId(User) && n.Description != "added_idea").OrderByDescending( n => n.CreatedDate).ToListAsync();
 
+    // assign the strings to the corresponding Descriptions
     string markRead = "Mark all notifications as read";
     string addedIdea = "added an idea";
     string postedComment = "posted a comment in";
@@ -34,6 +37,10 @@
             foreach (var notification in notificationList)
             {
                 var user = await _userManager.FindByIdAsync(notification.NotificationOwnerId);
+
+                // convert timespan to human readable
+                double timestamp = notification.CreatedDate.ToOADate();
+                var timeSpan = DateTime.FromOADate(timestamp).AddMicroseconds(-timestamp).Humanize();
                 
 
                 <li class="list-group-item border-0 shadow-sm">
@@ -49,17 +56,13 @@
                     </span>
                     <span class="TITLE fw-bold">@notification.Subject</span>
                     <div class="text-start">
-                        <span class="TIMESPAN text-secondary small"> 5 days ago</span>
+                        <span class="TIMESPAN text-secondary small">@timeSpan</span>
                     </div>
                 </a>
                 </li>
                 
             }
         }
-        
-
-
-
 
         <li class="list-group-item border-0 shadow-sm text-end text-secondary">
             <span>@if (notificationList.Count() == 0) { @noNotifications } else { 

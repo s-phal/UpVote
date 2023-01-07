@@ -32,14 +32,56 @@
                                 <span asp-validation-for="Input.Password" class="text-danger"></span>
                             </div>
                             <!-- Checkbox -->
-                            <div class="form-check d-flex justify-content-start mb-4 me-3">
+                            <div class="form-check d-flex justify-content-start mb-4 me-3 d-none">
                                 <label asp-for="Input.RememberMe" class="form-label">
                                     <input class="form-check-input" asp-for="Input.RememberMe" />
                                     @Html.DisplayNameFor(m => m.Input.RememberMe)
                                 </label>
                             </div>
+
+
                                 <button id="login-submit" type="submit" class="w-100 btn btn-lg text-white btn-info rounded-5">Log in</button>
+
+
+
+
                             <div class="text-start mt-3">
+
+                                <h5>Log in with any of the following demo users.</h5>
+
+                                <div style="margin-bottom:20px; margin-top:20px">
+                                    <div><span class="text-danger">username: admin@example.com</span></div>
+                                    <div><span class="text-danger">password: Admin123!</span></div>
+                                </div>
+
+                                <div style="margin-bottom:20px; margin-top:20px">
+                                    <div><span>username: user1@example.com</span></div>
+                                    <div><span>password: Pass123!</span></div>
+                                </div>
+
+                                <div style="margin-bottom:20px">
+                                    <div><span>username: user2@example.com</span></div>
+                                    <div><span>password: Pass123!</span></div>
+                                </div>
+
+                                <div style="margin-bottom:20px">
+                                    <div><span>username: user3@example.com</span></div>
+                                    <div><span>password: Pass123!</span></div>
+                                </div>
+
+                            </div>
+
+
+
+
+
+
+
+
+
+
+
+                            <div class="text-start mt-3 d-none">
                                 <p><a class="text-decoration-none" id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a></p>
                                 <p><a class="text-decoration-none" asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a></p>
                                 <p style="display:none">

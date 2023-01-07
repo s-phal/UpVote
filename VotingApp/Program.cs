@@ -41,6 +41,9 @@ namespace VotingApp
                 app.UseHsts();
             }
 
+            // generate database migration on first page load for PROD ENV
+            app.UseDatabaseErrorPage();
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 

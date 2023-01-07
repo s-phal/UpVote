@@ -115,6 +115,7 @@ namespace VotingApp.Controllers
 
                 var searchResults = await _context.Idea
                     .Include(i => i.Comments)
+                    .Include(i => i.Votes)
                     .Where(i => getComments.Contains(i.Id) || i.SpamReports != 0)
                     .ToListAsync();
 

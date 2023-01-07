@@ -92,7 +92,7 @@ namespace VotingApp.Controllers
 
             //notify user of action
             TempData["DisplayMessage"] = "Post has been reset.";
-            return Redirect("~/");
+            return Redirect("~/filters/spam");
         }
 
         [Authorize]
